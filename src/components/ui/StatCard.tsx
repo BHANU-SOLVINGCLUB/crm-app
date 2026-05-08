@@ -1,0 +1,51 @@
+import type { LucideIcon } from 'lucide-react'
+import { ArrowDownRight, ArrowUpRight } from 'lucide-react'
+import clsx from 'clsx'
+
+interface Props {
+  label: string
+  value: string
+  delta?: number
+  hint?: string
+  icon?: LucideIcon
+  accent?: string
+  invertDelta?: boolean
+}
+
+export default function StatCard({ label, value, delta, hint, icon: Icon, accent = '#3b82f6', invertDelta }: Props) {
+  const positive = (delta ?? 0) >= 0
+  const goodDirection = invertDelta ? !positive : positive
+
+  return (
+    <div className="card p-5">
+      <div className="flex items-start justify-between">
+        <div>
+          <div className="text-[12px] uppercase tracking-widest text-slate-400 font-semibold">{label}</div>
+          <div className="mt-2.5 text-[28px] font-bold tracking-tight leading-none">{value}</div>
+        </div>
+        {Icon && (
+          <div
+            className="h-10 w-10 rounded-xl flex items-center justify-center"
+            style={{ background: `${accent}22`, color: accent }}
+          >
+            <Icon className="h-[18px] w-[18px]" strokeWidth={1.8} />
+          </div>
+        )}
+      </div>
+      <div className="mt-3 flex items-center gap-2">
+        {typeof delta === 'number' && (
+          <span
+            className={clsx(
+              'inline-flex items-center gap-0.5 rounded-full px-2 py-0.5 text-[11.5px] font-semibold',
+              goodDirection ? 'bg-brand-green/15 text-brand-green' : 'bg-brand-pink/15 text-brand-pink'
+            )}
+          >
+            {positive ? <ArrowUpRight className="h-3 w-3" /> : <ArrowDownRight className="h-3 w-3" />}
+            {Math.abs(delta).toFixed(1)}%
+          </span>
+        )}
+        {hint && <span className="text-[12px] text-slate-400">{hint}</span>}
+      </div>
+    </div>
+  )
+}

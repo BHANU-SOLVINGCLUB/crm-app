@@ -1,0 +1,884 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Krisantec CRM · Documentation</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#07111f;
+  --bg-2:#081425;
+  --panel:#0f172a;
+  --panel-2:#111c31;
+  --line:rgba(255,255,255,.08);
+  --line-2:rgba(255,255,255,.04);
+  --ink:#f8fafc;
+  --muted:#94a3b8;
+  --dim:#64748b;
+  --blue:#3b82f6;
+  --purple:#8b5cf6;
+  --green:#10b981;
+  --orange:#f59e0b;
+  --pink:#ec4899;
+  --cyan:#06b6d4;
+  --rose:#f43f5e;
+  --teal:#14b8a6;
+}
+html{scroll-behavior:smooth}
+body{
+  font-family:'Inter',system-ui,-apple-system,sans-serif;
+  background:linear-gradient(180deg,var(--bg) 0%,var(--bg-2) 100%);
+  color:var(--ink);
+  line-height:1.65;
+  font-size:15px;
+  -webkit-font-smoothing:antialiased;
+}
+::-webkit-scrollbar{width:10px;height:10px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:rgba(255,255,255,.08);border-radius:999px}
+::-webkit-scrollbar-thumb:hover{background:rgba(255,255,255,.18)}
+
+/* Top bar */
+.topbar{
+  position:sticky;top:0;z-index:50;
+  backdrop-filter:blur(18px);
+  background:rgba(7,17,31,.78);
+  border-bottom:1px solid var(--line);
+  height:64px;display:flex;align-items:center;
+  padding:0 28px;gap:16px;
+}
+.brand{display:flex;align-items:center;gap:10px;font-weight:700;letter-spacing:-.2px}
+.brand-mark{
+  width:30px;height:30px;border-radius:9px;
+  background:linear-gradient(135deg,var(--blue),var(--purple));
+  display:flex;align-items:center;justify-content:center;
+  font-weight:800;font-size:14px;
+}
+.brand-text{font-size:14.5px}
+.brand-sub{font-size:11px;color:var(--muted);font-weight:500;margin-left:6px}
+.topbar nav{margin-left:auto;display:flex;align-items:center;gap:6px}
+.topbar nav a{
+  color:var(--muted);text-decoration:none;font-size:13px;font-weight:500;
+  padding:7px 12px;border-radius:8px;transition:.15s;
+}
+.topbar nav a:hover{color:var(--ink);background:rgba(255,255,255,.04)}
+.btn-app{
+  background:linear-gradient(135deg,var(--blue),var(--purple));
+  color:#fff;padding:8px 14px;border-radius:10px;
+  font-size:13px;font-weight:600;text-decoration:none;
+  display:inline-flex;align-items:center;gap:6px;
+  box-shadow:0 6px 16px rgba(59,130,246,.3);
+}
+
+/* Layout */
+.layout{display:grid;grid-template-columns:260px minmax(0,1fr);max-width:1400px;margin:0 auto;gap:0}
+.sidebar{
+  position:sticky;top:64px;height:calc(100vh - 64px);
+  border-right:1px solid var(--line);
+  padding:28px 16px 28px 28px;overflow-y:auto;
+}
+.sidebar-section{margin-bottom:18px}
+.sidebar-title{
+  font-size:10.5px;text-transform:uppercase;letter-spacing:1.5px;
+  color:var(--dim);font-weight:700;margin:0 8px 8px;
+}
+.sidebar a{
+  display:flex;align-items:center;gap:10px;
+  color:var(--muted);text-decoration:none;
+  padding:8px 12px;border-radius:9px;font-size:13.5px;font-weight:500;
+  transition:.15s;
+}
+.sidebar a:hover{color:var(--ink);background:rgba(255,255,255,.04)}
+.sidebar a.active{
+  color:var(--ink);background:rgba(255,255,255,.06);
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.06);
+}
+.sidebar a .num{
+  width:22px;height:22px;border-radius:6px;
+  background:rgba(255,255,255,.04);
+  display:inline-flex;align-items:center;justify-content:center;
+  font-size:11px;font-weight:700;color:var(--dim);
+  font-family:'JetBrains Mono',monospace;
+}
+.sidebar a.active .num{background:linear-gradient(135deg,var(--blue),var(--purple));color:#fff}
+.sidebar .sub{padding-left:42px;font-size:12.5px;color:var(--dim)}
+.sidebar .sub:hover{color:var(--muted);background:transparent}
+.sidebar .sub.active{color:var(--ink);background:transparent}
+
+/* Content */
+.content{padding:48px 56px 120px;max-width:920px}
+.section{padding-top:24px;margin-bottom:64px;scroll-margin-top:80px}
+.section-eyebrow{
+  display:inline-flex;align-items:center;gap:8px;
+  font-size:11px;letter-spacing:1.8px;text-transform:uppercase;
+  color:var(--blue);font-weight:700;margin-bottom:14px;
+}
+.section-eyebrow .dot{width:6px;height:6px;border-radius:3px;background:currentColor}
+h1{font-size:48px;line-height:1.05;letter-spacing:-1.6px;font-weight:800;margin-bottom:18px}
+h2{font-size:32px;line-height:1.15;letter-spacing:-1px;font-weight:800;margin-bottom:14px}
+h3{font-size:21px;line-height:1.25;letter-spacing:-.4px;font-weight:700;margin:32px 0 10px}
+h4{font-size:16px;font-weight:700;margin:20px 0 8px}
+.lead{font-size:17px;color:var(--muted);max-width:680px;margin-bottom:28px;line-height:1.65}
+p{color:#cbd5e1;margin-bottom:14px}
+p.dim{color:var(--muted)}
+
+/* Cards & callouts */
+.card{
+  background:linear-gradient(180deg,var(--panel),var(--panel-2));
+  border:1px solid var(--line);border-radius:18px;padding:22px;
+  position:relative;overflow:hidden;
+}
+.card::before{
+  content:'';position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(135deg,rgba(255,255,255,.04),transparent 50%);
+}
+.callout{
+  border-left:3px solid var(--blue);
+  background:rgba(59,130,246,.06);
+  border-radius:8px;padding:14px 18px;margin:18px 0;
+  font-size:14px;color:#cbd5e1;
+}
+.callout.purple{border-left-color:var(--purple);background:rgba(139,92,246,.06)}
+.callout.green{border-left-color:var(--green);background:rgba(16,185,129,.06)}
+.callout.orange{border-left-color:var(--orange);background:rgba(245,158,11,.06)}
+.callout strong{color:#fff}
+
+/* Stat tiles */
+.stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;margin:24px 0}
+.stat{padding:18px;border-radius:14px;border:1px solid var(--line);background:rgba(255,255,255,.025)}
+.stat-num{font-size:30px;font-weight:800;letter-spacing:-1px;line-height:1}
+.stat-label{font-size:12px;color:var(--muted);margin-top:6px}
+
+/* Module / industry grid */
+.grid-2{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px;margin:18px 0}
+.module{
+  border:1px solid var(--line);border-radius:14px;padding:18px;
+  background:rgba(255,255,255,.02);position:relative;
+}
+.module h4{font-size:15px;margin:0 0 4px;display:flex;align-items:center;gap:8px}
+.module .desc{font-size:13px;color:var(--muted);line-height:1.55;margin-bottom:10px}
+.module .badge{
+  position:absolute;top:14px;right:14px;
+  font-size:10px;font-weight:700;letter-spacing:.5px;
+  padding:3px 8px;border-radius:99px;text-transform:uppercase;
+}
+.badge-live{background:rgba(16,185,129,.16);color:var(--green);border:1px solid rgba(16,185,129,.3)}
+.badge-soon{background:rgba(255,255,255,.04);color:var(--dim);border:1px solid var(--line)}
+
+/* Pipeline strip */
+.pipeline{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));
+  gap:8px;margin:20px 0;
+}
+.pipeline-step{
+  border:1px solid var(--line);border-radius:10px;padding:12px 8px;
+  text-align:center;background:rgba(255,255,255,.02);
+  font-size:11.5px;font-weight:600;
+}
+.pipeline-step .ico{font-size:20px;display:block;margin-bottom:4px}
+.pipeline-step.live{border-color:rgba(16,185,129,.35);background:rgba(16,185,129,.06)}
+.pipeline-step.live::after{
+  content:'';display:block;width:6px;height:6px;border-radius:3px;
+  background:var(--green);margin:6px auto 0;
+}
+
+/* Industry cards */
+.industry{
+  border:1px solid var(--line);border-radius:14px;padding:18px;
+  background:rgba(255,255,255,.02);
+}
+.industry .head{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.industry .head .ico{
+  width:34px;height:34px;border-radius:9px;
+  display:flex;align-items:center;justify-content:center;font-size:16px;
+}
+.industry .head h4{margin:0;font-size:14.5px}
+.industry .head .tag{font-size:11.5px;color:var(--muted);margin-left:auto}
+.industry .row{display:flex;flex-wrap:wrap;gap:5px;margin-top:10px}
+.industry .pill{
+  font-size:10.5px;padding:3px 8px;border-radius:99px;
+  background:rgba(255,255,255,.04);border:1px solid var(--line);
+  color:#dbeafe;
+}
+.industry .meta{
+  font-size:11.5px;color:var(--dim);margin-top:8px;
+  font-family:'JetBrains Mono',monospace;
+}
+
+/* Tech stack */
+.tech-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;margin:18px 0}
+.tech{
+  border:1px solid var(--line);border-radius:12px;padding:16px;
+  background:rgba(255,255,255,.02);
+}
+.tech .name{font-weight:700;font-size:14.5px;display:flex;align-items:center;gap:8px}
+.tech .ver{
+  font-family:'JetBrains Mono',monospace;font-size:11px;
+  color:var(--dim);background:rgba(255,255,255,.04);
+  padding:2px 7px;border-radius:5px;font-weight:500;
+}
+.tech .why{font-size:12.5px;color:var(--muted);margin-top:6px;line-height:1.5}
+
+/* Code blocks */
+pre{
+  background:#0a1424;border:1px solid var(--line);
+  border-radius:12px;padding:16px 18px;
+  font-family:'JetBrains Mono',monospace;font-size:12.5px;
+  overflow-x:auto;line-height:1.6;
+  margin:14px 0;
+}
+code{
+  font-family:'JetBrains Mono',monospace;font-size:.88em;
+  background:rgba(255,255,255,.06);padding:1px 6px;border-radius:5px;
+  color:#e2e8f0;
+}
+pre code{background:transparent;padding:0;border-radius:0;font-size:inherit;color:#cbd5e1}
+pre .k{color:#c084fc}
+pre .s{color:#86efac}
+pre .c{color:#64748b;font-style:italic}
+pre .t{color:#7dd3fc}
+pre .n{color:#fbbf24}
+
+/* Tables */
+.table{
+  width:100%;border-collapse:separate;border-spacing:0;
+  border:1px solid var(--line);border-radius:12px;overflow:hidden;
+  margin:16px 0;font-size:13px;
+}
+.table th,.table td{
+  padding:11px 14px;text-align:left;
+  border-bottom:1px solid var(--line);
+}
+.table th{
+  background:rgba(255,255,255,.025);
+  font-size:11px;text-transform:uppercase;letter-spacing:.6px;
+  color:var(--muted);font-weight:700;
+}
+.table tr:last-child td{border-bottom:0}
+.table td{color:#cbd5e1}
+.table td code{font-size:11.5px}
+
+/* API method tag */
+.method{
+  display:inline-block;font-family:'JetBrains Mono',monospace;
+  font-size:10.5px;font-weight:700;padding:2px 7px;border-radius:5px;
+  margin-right:6px;letter-spacing:.4px;
+}
+.method.get{background:rgba(16,185,129,.18);color:var(--green)}
+.method.post{background:rgba(59,130,246,.18);color:var(--blue)}
+.method.put{background:rgba(245,158,11,.18);color:var(--orange)}
+.method.del{background:rgba(244,63,94,.18);color:var(--rose)}
+.method.fn{background:rgba(139,92,246,.18);color:var(--purple)}
+
+/* Footer */
+footer{
+  border-top:1px solid var(--line);
+  padding:32px 28px;text-align:center;
+  color:var(--dim);font-size:13px;margin-top:60px;
+}
+footer a{color:var(--muted);text-decoration:none}
+footer a:hover{color:var(--ink)}
+
+/* Mobile */
+@media (max-width:980px){
+  .layout{grid-template-columns:1fr}
+  .sidebar{display:none}
+  .content{padding:32px 22px 80px;max-width:none}
+  h1{font-size:36px}
+  h2{font-size:26px}
+  .topbar{padding:0 18px}
+  .topbar nav a:not(.btn-app){display:none}
+}
+
+a{color:inherit}
+a.link{color:var(--blue);text-decoration:none;font-weight:500;border-bottom:1px solid rgba(59,130,246,.3)}
+a.link:hover{border-bottom-color:var(--blue)}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="brand">
+    <div class="brand-mark">K</div>
+    <div>
+      <span class="brand-text">Krisantec CRM</span>
+      <span class="brand-sub">Docs</span>
+    </div>
+  </div>
+  <nav>
+    <a href="#overview">Overview</a>
+    <a href="#features">Features</a>
+    <a href="#tech-stack">Tech</a>
+    <a href="#api">API</a>
+    <a class="btn-app" href="/">Open App →</a>
+  </nav>
+</header>
+
+<div class="layout">
+
+<aside class="sidebar">
+  <div class="sidebar-section">
+    <div class="sidebar-title">Documentation</div>
+    <a href="#overview" data-target="overview"><span class="num">1</span>Overview</a>
+    <a href="#vision" class="sub" data-target="vision">Vision &amp; goals</a>
+    <a href="#status" class="sub" data-target="status">Project status</a>
+    <a href="#workflow" class="sub" data-target="workflow">Business workflow</a>
+
+    <a href="#features" data-target="features"><span class="num">2</span>Features &amp; Modules</a>
+    <a href="#modules" class="sub" data-target="modules">CRM modules</a>
+    <a href="#marketing-engine" class="sub" data-target="marketing-engine">Marketing engine</a>
+    <a href="#lead-capture" class="sub" data-target="lead-capture">Lead capture</a>
+    <a href="#industry-templates" class="sub" data-target="industry-templates">Industry templates</a>
+
+    <a href="#tech-stack" data-target="tech-stack"><span class="num">3</span>Tech Stack</a>
+    <a href="#stack" class="sub" data-target="stack">Frontend stack</a>
+    <a href="#structure" class="sub" data-target="structure">Project structure</a>
+    <a href="#scripts" class="sub" data-target="scripts">Scripts &amp; tooling</a>
+
+    <a href="#api" data-target="api"><span class="num">4</span>API Reference</a>
+    <a href="#api-types" class="sub" data-target="api-types">Data models</a>
+    <a href="#api-store" class="sub" data-target="api-store">Industry store</a>
+    <a href="#api-extending" class="sub" data-target="api-extending">Extending the app</a>
+  </div>
+</aside>
+
+<main class="content">
+
+<!-- ========= 1. OVERVIEW ========= -->
+<section class="section" id="overview">
+  <div class="section-eyebrow"><span class="dot"></span>Section 1 · Overview</div>
+  <h1>Krisantec CRM</h1>
+  <p class="lead">
+    A modular, industry-aware CRM platform that adapts every page — fields, campaigns, platforms, funnels, sample data —
+    to the active business vertical. Built as a frontend-first preview with persisted local state and zero backend.
+  </p>
+
+  <div id="vision"></div>
+  <h3>Vision</h3>
+  <p>
+    One CRM ecosystem covering <strong>marketing, sales, finance, operations, support and retention</strong> across
+    healthcare, real estate, e-commerce, SaaS, education, manufacturing, hospitality and agency businesses.
+    Switch the industry from the top bar — and the entire workspace re-shapes itself.
+  </p>
+
+  <div class="stat-grid">
+    <div class="stat"><div class="stat-num">8</div><div class="stat-label">Industry templates</div></div>
+    <div class="stat"><div class="stat-num">14</div><div class="stat-label">Workflow stages</div></div>
+    <div class="stat"><div class="stat-num">700+</div><div class="stat-label">Sample records</div></div>
+    <div class="stat"><div class="stat-num">2 / 8</div><div class="stat-label">Modules live</div></div>
+  </div>
+
+  <div id="status"></div>
+  <h3>Project status</h3>
+  <div class="callout green">
+    <strong>Phase 1 (live):</strong> Marketing Engine + Lead Capture, both fully industry-aware.
+    Dashboard with workflow strip and lead-trend chart.
+  </div>
+  <div class="callout">
+    <strong>Phase 2 (next):</strong> Lead Qualification (AI scoring + auto-routing), Sales Pipeline (kanban), Customer Care, Finance.
+  </div>
+  <div class="callout orange">
+    <strong>Backend:</strong> none yet. State persists to <code>localStorage</code> via Zustand. Data is editable per industry; “Reset” restores sample data.
+  </div>
+
+  <div id="workflow"></div>
+  <h3>End-to-end business workflow</h3>
+  <p class="dim">Every customer touchpoint, mapped as a 14-stage flow. Two stages are wired up; the rest are scaffolded.</p>
+  <div class="pipeline">
+    <div class="pipeline-step live"><span class="ico">📣</span>Marketing</div>
+    <div class="pipeline-step live"><span class="ico">🎯</span>Lead Capture</div>
+    <div class="pipeline-step"><span class="ico">🧠</span>Qualification</div>
+    <div class="pipeline-step"><span class="ico">💼</span>Sales Pipeline</div>
+    <div class="pipeline-step"><span class="ico">📄</span>Quotation</div>
+    <div class="pipeline-step"><span class="ico">🤝</span>Closure</div>
+    <div class="pipeline-step"><span class="ico">💳</span>Invoice</div>
+    <div class="pipeline-step"><span class="ico">🛒</span>Procurement</div>
+    <div class="pipeline-step"><span class="ico">⚙️</span>Delivery</div>
+    <div class="pipeline-step"><span class="ico">🎧</span>Support</div>
+    <div class="pipeline-step"><span class="ico">⭐</span>Feedback</div>
+    <div class="pipeline-step"><span class="ico">🔧</span>Renewal</div>
+    <div class="pipeline-step"><span class="ico">📈</span>Retention</div>
+    <div class="pipeline-step"><span class="ico">🚀</span>Referral</div>
+  </div>
+</section>
+
+<!-- ========= 2. FEATURES & MODULES ========= -->
+<section class="section" id="features">
+  <div class="section-eyebrow"><span class="dot"></span>Section 2 · Features, Modules &amp; Templates</div>
+  <h2>What's inside</h2>
+  <p class="lead">
+    Modules group functionality. Industry templates re-shape that functionality with vertical-specific
+    fields, sample data, platforms, KPIs and language.
+  </p>
+
+  <div id="modules"></div>
+  <h3>CRM modules</h3>
+  <div class="grid-2">
+    <div class="module">
+      <span class="badge badge-live">Live</span>
+      <h4>📣 Marketing Engine</h4>
+      <div class="desc">Campaigns, platforms, creatives, funnels, ROI — auto-tuned per industry.</div>
+    </div>
+    <div class="module">
+      <span class="badge badge-live">Live</span>
+      <h4>🎯 Lead Capture</h4>
+      <div class="desc">Sheet-based lead inbox with industry-specific columns, statuses and sources.</div>
+    </div>
+    <div class="module">
+      <span class="badge badge-soon">Soon</span>
+      <h4>🧠 Lead Qualification</h4>
+      <div class="desc">AI scoring, auto-routing, assignment rules, intent signals.</div>
+    </div>
+    <div class="module">
+      <span class="badge badge-soon">Soon</span>
+      <h4>💼 Sales Pipeline</h4>
+      <div class="desc">Kanban deal stages, quotes, proposals, win/loss analytics.</div>
+    </div>
+    <div class="module">
+      <span class="badge badge-soon">Soon</span>
+      <h4>💳 Finance</h4>
+      <div class="desc">Invoices, subscriptions, GST reports, payment collection.</div>
+    </div>
+    <div class="module">
+      <span class="badge badge-soon">Soon</span>
+      <h4>🎧 Customer Care</h4>
+      <div class="desc">Help desk, ticket management, SLA tracking, knowledge base.</div>
+    </div>
+    <div class="module">
+      <span class="badge badge-soon">Soon</span>
+      <h4>⭐ Feedback</h4>
+      <div class="desc">NPS, CSAT, Google reviews, sentiment analysis.</div>
+    </div>
+    <div class="module">
+      <span class="badge badge-soon">Soon</span>
+      <h4>🔁 Retention &amp; Loyalty</h4>
+      <div class="desc">Renewals, upsells, referrals, VIP programs, repeat business.</div>
+    </div>
+  </div>
+
+  <div id="marketing-engine"></div>
+  <h3>Marketing engine</h3>
+  <p>The Marketing module surfaces five distinct content blocks, each industry-aware:</p>
+  <ul style="color:#cbd5e1;padding-left:20px;margin-bottom:14px">
+    <li><strong>KPI strip</strong> — spend, leads, conversions, avg cost-per-lead with month-over-month deltas.</li>
+    <li><strong>Performance trend</strong> — 7-day area chart of leads &amp; conversions.</li>
+    <li><strong>Conversion funnel</strong> — stages relabeled per industry (e.g. <em>Inquiries → Quotations → Orders</em> for manufacturing vs <em>Trial Signups → Activated → Paid</em> for SaaS).</li>
+    <li><strong>Platforms in play</strong> — vertical-relevant platforms (Practo / 99acres / IndiaMART / LinkedIn / etc.) with spend, CPL, CTR, leads, conversions.</li>
+    <li><strong>Creatives library</strong> — gallery of ad creatives with status (Live / Paused / Draft / Review), type, impressions, clicks, CTR.</li>
+    <li><strong>Active campaigns</strong> — table with budget burn-bar, channel, objective, reach, leads, conversions, dates.</li>
+  </ul>
+
+  <div id="lead-capture"></div>
+  <h3>Lead capture</h3>
+  <p>The Lead Capture module is a true editable spreadsheet:</p>
+  <table class="table">
+    <thead><tr><th>Capability</th><th>Detail</th></tr></thead>
+    <tbody>
+      <tr><td>Schema</td><td>Industry-specific columns — text, email, phone, select, number, currency, date.</td></tr>
+      <tr><td>Editing</td><td>Click any cell to edit. Edits auto-save to <code>localStorage</code> per industry.</td></tr>
+      <tr><td>Filtering</td><td>Search across all fields + status pill filters (industry-specific statuses).</td></tr>
+      <tr><td>Bulk actions</td><td>Multi-select with bulk delete, per-row delete, single-click new row.</td></tr>
+      <tr><td>Stats</td><td>Total leads, top source, won/closed count, pipeline value (auto-detected).</td></tr>
+      <tr><td>Reset</td><td>One-click reset to original sample data (per industry).</td></tr>
+    </tbody>
+  </table>
+
+  <div id="industry-templates"></div>
+  <h3>Industry templates</h3>
+  <p class="dim">Eight verticals shipped with bespoke marketing + lead-capture data tuned to how each industry actually operates.</p>
+  <div class="grid-2">
+
+    <div class="industry">
+      <div class="head">
+        <div class="ico" style="background:rgba(16,185,129,.18);color:var(--green)">🏥</div>
+        <h4>Healthcare</h4>
+        <span class="tag">Clinics &amp; hospitals</span>
+      </div>
+      <div class="row">
+        <span class="pill">WhatsApp</span><span class="pill">Practo</span><span class="pill">JustDial</span><span class="pill">Google Ads</span>
+      </div>
+      <div class="meta">Lead fields: Patient · Concern · Doctor · Appointment</div>
+    </div>
+
+    <div class="industry">
+      <div class="head">
+        <div class="ico" style="background:rgba(245,158,11,.18);color:var(--orange)">🏠</div>
+        <h4>Real Estate</h4>
+        <span class="tag">Builders &amp; brokers</span>
+      </div>
+      <div class="row">
+        <span class="pill">99acres</span><span class="pill">MagicBricks</span><span class="pill">Meta Ads</span><span class="pill">YouTube</span>
+      </div>
+      <div class="meta">Lead fields: Buyer · Project · BHK · Site Visit · Stage</div>
+    </div>
+
+    <div class="industry">
+      <div class="head">
+        <div class="ico" style="background:rgba(236,72,153,.18);color:var(--pink)">📦</div>
+        <h4>E-commerce</h4>
+        <span class="tag">D2C &amp; online stores</span>
+      </div>
+      <div class="row">
+        <span class="pill">Meta Ads</span><span class="pill">Google Shopping</span><span class="pill">Influencer</span><span class="pill">Email</span>
+      </div>
+      <div class="meta">Lead fields: Customer · Cart · Channel · Segment</div>
+    </div>
+
+    <div class="industry">
+      <div class="head">
+        <div class="ico" style="background:rgba(59,130,246,.18);color:var(--blue)">💻</div>
+        <h4>SaaS</h4>
+        <span class="tag">Subscription software</span>
+      </div>
+      <div class="row">
+        <span class="pill">LinkedIn</span><span class="pill">Google Search</span><span class="pill">Product Hunt</span><span class="pill">G2</span>
+      </div>
+      <div class="meta">Lead fields: Company · Role · Plan · MRR · Trial Ends</div>
+    </div>
+
+    <div class="industry">
+      <div class="head">
+        <div class="ico" style="background:rgba(139,92,246,.18);color:var(--purple)">🎓</div>
+        <h4>Education</h4>
+        <span class="tag">Schools, EdTech &amp; coaching</span>
+      </div>
+      <div class="row">
+        <span class="pill">Meta Ads</span><span class="pill">YouTube</span><span class="pill">JustDial</span><span class="pill">School Tie-up</span>
+      </div>
+      <div class="meta">Lead fields: Student · Parent · Course · Mode · Counselling</div>
+    </div>
+
+    <div class="industry">
+      <div class="head">
+        <div class="ico" style="background:rgba(6,182,212,.18);color:var(--cyan)">🏭</div>
+        <h4>Manufacturing</h4>
+        <span class="tag">Industrial / B2B</span>
+      </div>
+      <div class="row">
+        <span class="pill">IndiaMART</span><span class="pill">TradeIndia</span><span class="pill">LinkedIn</span><span class="pill">Trade Show</span>
+      </div>
+      <div class="meta">Lead fields: Company · Product · Quantity · Order Value</div>
+    </div>
+
+    <div class="industry">
+      <div class="head">
+        <div class="ico" style="background:rgba(244,63,94,.18);color:var(--rose)">🏨</div>
+        <h4>Hospitality</h4>
+        <span class="tag">Hotels &amp; resorts</span>
+      </div>
+      <div class="row">
+        <span class="pill">MakeMyTrip</span><span class="pill">Booking.com</span><span class="pill">TripAdvisor</span><span class="pill">WhatsApp</span>
+      </div>
+      <div class="meta">Lead fields: Guest · Property · Room · Check-in · Nights</div>
+    </div>
+
+    <div class="industry">
+      <div class="head">
+        <div class="ico" style="background:rgba(20,184,166,.18);color:var(--teal)">💼</div>
+        <h4>Agency / Services</h4>
+        <span class="tag">Consulting &amp; freelance</span>
+      </div>
+      <div class="row">
+        <span class="pill">LinkedIn</span><span class="pill">Referral</span><span class="pill">Email</span><span class="pill">Conference</span>
+      </div>
+      <div class="meta">Lead fields: Client · Service · Budget · Timeline · Stage</div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ========= 3. TECH STACK ========= -->
+<section class="section" id="tech-stack">
+  <div class="section-eyebrow"><span class="dot"></span>Section 3 · Tech Stack</div>
+  <h2>How it's built</h2>
+  <p class="lead">
+    A small, fast, modern frontend stack. No backend, no database. State is stored in the browser via
+    <code>localStorage</code> with Zustand's <code>persist</code> middleware.
+  </p>
+
+  <div id="stack"></div>
+  <h3>Frontend stack</h3>
+  <div class="tech-grid">
+    <div class="tech">
+      <div class="name">React <span class="ver">v19</span></div>
+      <div class="why">UI library. Functional components only, no class components.</div>
+    </div>
+    <div class="tech">
+      <div class="name">TypeScript <span class="ver">v6</span></div>
+      <div class="why">Strict types across data models, store and components.</div>
+    </div>
+    <div class="tech">
+      <div class="name">Vite <span class="ver">v8</span></div>
+      <div class="why">Dev server, HMR, production bundling. Custom middleware for the doc route.</div>
+    </div>
+    <div class="tech">
+      <div class="name">Tailwind CSS <span class="ver">v3</span></div>
+      <div class="why">Utility classes + custom theme tokens (panel, line, brand-blue, etc.).</div>
+    </div>
+    <div class="tech">
+      <div class="name">Zustand <span class="ver">v5</span></div>
+      <div class="why">Tiny global store with built-in <code>persist</code> for industry + lead overrides.</div>
+    </div>
+    <div class="tech">
+      <div class="name">React Router <span class="ver">v7</span></div>
+      <div class="why">Client-side routing for Dashboard / Marketing / Leads.</div>
+    </div>
+    <div class="tech">
+      <div class="name">Recharts <span class="ver">v3</span></div>
+      <div class="why">Area, line and bar charts for trend, funnel and platform analytics.</div>
+    </div>
+    <div class="tech">
+      <div class="name">Lucide React <span class="ver">latest</span></div>
+      <div class="why">Icon set used across sidebar, topbar, modules and stat cards.</div>
+    </div>
+  </div>
+
+  <div id="structure"></div>
+  <h3>Project structure</h3>
+<pre><code><span class="c">crm-app/</span>
+├── public/
+│   └── krisantec/doc/      <span class="c">// this documentation site</span>
+├── src/
+│   ├── data/
+│   │   ├── industries.ts   <span class="c">// 8 industry definitions</span>
+│   │   ├── marketing.ts    <span class="c">// platforms · creatives · campaigns · stats</span>
+│   │   └── leads.ts        <span class="c">// lead schema + sample rows per industry</span>
+│   ├── store/
+│   │   └── industryStore.ts <span class="c">// zustand + persist</span>
+│   ├── components/
+│   │   ├── layout/         <span class="c">// Sidebar, Topbar, IndustrySwitcher</span>
+│   │   └── ui/             <span class="c">// StatCard, PageHeader, SectionHeader</span>
+│   ├── pages/
+│   │   ├── Dashboard.tsx
+│   │   ├── Marketing.tsx
+│   │   └── LeadCapture.tsx
+│   ├── lib/format.ts        <span class="c">// INR / number formatters</span>
+│   ├── App.tsx              <span class="c">// router + shell</span>
+│   └── main.tsx
+├── tailwind.config.js
+├── vite.config.ts
+└── package.json</code></pre>
+
+  <div id="scripts"></div>
+  <h3>Scripts &amp; tooling</h3>
+  <table class="table">
+    <thead><tr><th>Script</th><th>What it does</th></tr></thead>
+    <tbody>
+      <tr><td><code>npm run dev</code></td><td>Start Vite dev server (<code>http://localhost:5180</code>, falls back to next free port).</td></tr>
+      <tr><td><code>npm run build</code></td><td><code>tsc -b</code> typecheck + Vite production bundle into <code>dist/</code>.</td></tr>
+      <tr><td><code>npm run preview</code></td><td>Serve the production build locally for verification.</td></tr>
+      <tr><td><code>npm run lint</code></td><td>ESLint over the project.</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ========= 4. API DOC ========= -->
+<section class="section" id="api">
+  <div class="section-eyebrow"><span class="dot"></span>Section 4 · API Reference</div>
+  <h2>API &amp; data layer</h2>
+  <p class="lead">
+    There's no HTTP backend yet — the “API” is the typed data layer + the Zustand store.
+    All data shapes below come straight from <code>src/data/*.ts</code>.
+  </p>
+
+  <div id="api-types"></div>
+  <h3>Core data models</h3>
+
+  <h4><span class="method fn">type</span><code>IndustryKey</code></h4>
+<pre><code><span class="k">type</span> <span class="t">IndustryKey</span> =
+  | <span class="s">'healthcare'</span>
+  | <span class="s">'realestate'</span>
+  | <span class="s">'ecommerce'</span>
+  | <span class="s">'saas'</span>
+  | <span class="s">'education'</span>
+  | <span class="s">'manufacturing'</span>
+  | <span class="s">'hospitality'</span>
+  | <span class="s">'agency'</span>
+</code></pre>
+
+  <h4><span class="method fn">interface</span><code>Industry</code></h4>
+<pre><code><span class="k">interface</span> <span class="t">Industry</span> {
+  key:     <span class="t">IndustryKey</span>
+  name:    <span class="t">string</span>
+  tagline: <span class="t">string</span>
+  icon:    <span class="t">LucideIcon</span>
+  accent:  <span class="t">string</span>     <span class="c">// hex color (e.g. '#10b981')</span>
+  emoji:   <span class="t">string</span>
+}
+</code></pre>
+
+  <h4><span class="method fn">interface</span><code>MarketingData</code></h4>
+<pre><code><span class="k">interface</span> <span class="t">MarketingData</span> {
+  stats:     <span class="t">MarketingStats</span>      <span class="c">// totals + deltas + trend + funnel</span>
+  platforms: <span class="t">PlatformStat</span>[]      <span class="c">// 5–6 channels with spend/leads/conv/CPL/CTR</span>
+  creatives: <span class="t">Creative</span>[]          <span class="c">// gallery items with status &amp; perf</span>
+  campaigns: <span class="t">Campaign</span>[]          <span class="c">// goal-driven multi-channel campaigns</span>
+}
+
+<span class="k">interface</span> <span class="t">PlatformStat</span> {
+  name: <span class="t">string</span>;       spend: <span class="t">number</span>;       leads: <span class="t">number</span>
+  conversions: <span class="t">number</span>;  cpl: <span class="t">number</span>;         ctr: <span class="t">number</span>
+  color: <span class="t">string</span>;      icon: <span class="t">string</span>
+}
+
+<span class="k">interface</span> <span class="t">Campaign</span> {
+  id: <span class="t">string</span>;        name: <span class="t">string</span>;        channel: <span class="t">string</span>
+  objective: <span class="s">'Awareness'</span> | <span class="s">'Lead Gen'</span> | <span class="s">'Conversion'</span> | <span class="s">'Retention'</span> | <span class="s">'Engagement'</span>
+  status: <span class="s">'Running'</span> | <span class="s">'Scheduled'</span> | <span class="s">'Paused'</span> | <span class="s">'Completed'</span>
+  budget: <span class="t">number</span>;     spent: <span class="t">number</span>;     reach: <span class="t">number</span>
+  leads: <span class="t">number</span>;      conversions: <span class="t">number</span>
+  startDate: <span class="t">string</span>;  endDate: <span class="t">string</span>
+}
+</code></pre>
+
+  <h4><span class="method fn">interface</span><code>LeadSchema</code> &amp; <code>LeadRow</code></h4>
+<pre><code><span class="k">type</span> <span class="t">LeadColumnType</span> =
+  | <span class="s">'text'</span> | <span class="s">'email'</span> | <span class="s">'phone'</span> | <span class="s">'select'</span>
+  | <span class="s">'number'</span> | <span class="s">'currency'</span> | <span class="s">'date'</span>
+
+<span class="k">interface</span> <span class="t">LeadColumn</span> {
+  key: <span class="t">string</span>;       label: <span class="t">string</span>;     type: <span class="t">LeadColumnType</span>
+  options?: <span class="t">string</span>[];  width?: <span class="t">number</span>
+}
+
+<span class="k">interface</span> <span class="t">LeadSchema</span> {
+  columns:  <span class="t">LeadColumn</span>[]
+  sources:  <span class="t">string</span>[]
+  statuses: <span class="t">string</span>[]
+}
+
+<span class="k">type</span> <span class="t">LeadRow</span> = <span class="t">Record</span>&lt;<span class="t">string</span>, <span class="t">string</span> | <span class="t">number</span>&gt;
+</code></pre>
+
+  <div id="api-store"></div>
+  <h3>Industry store</h3>
+  <p>The single source of truth, defined in <code>src/store/industryStore.ts</code>:</p>
+
+  <table class="table">
+    <thead><tr><th>Member</th><th>Type</th><th>Description</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><span class="method get">state</span><code>current</code></td>
+        <td><code>IndustryKey</code></td>
+        <td>Active industry, persisted to <code>localStorage</code>.</td>
+      </tr>
+      <tr>
+        <td><span class="method post">action</span><code>setIndustry(key)</code></td>
+        <td><code>(IndustryKey) =&gt; void</code></td>
+        <td>Switch the active industry — every page re-renders with new data.</td>
+      </tr>
+      <tr>
+        <td><span class="method get">state</span><code>leadsOverrides</code></td>
+        <td><code>Partial&lt;Record&lt;IndustryKey, LeadRow[]&gt;&gt;</code></td>
+        <td>Per-industry user edits to the leads sheet.</td>
+      </tr>
+      <tr>
+        <td><span class="method get">getter</span><code>getLeads(key)</code></td>
+        <td><code>(IndustryKey) =&gt; LeadRow[]</code></td>
+        <td>Returns user overrides if present, otherwise the seeded sample rows.</td>
+      </tr>
+      <tr>
+        <td><span class="method put">action</span><code>setLeads(key, rows)</code></td>
+        <td><code>(IndustryKey, LeadRow[]) =&gt; void</code></td>
+        <td>Replace rows for an industry. Persisted automatically.</td>
+      </tr>
+      <tr>
+        <td><span class="method del">action</span><code>resetLeads(key)</code></td>
+        <td><code>(IndustryKey) =&gt; void</code></td>
+        <td>Delete overrides for an industry — sample data is restored.</td>
+      </tr>
+      <tr>
+        <td><span class="method fn">hook</span><code>useCurrentIndustry()</code></td>
+        <td><code>() =&gt; Industry</code></td>
+        <td>Convenience hook that returns the full <code>Industry</code> object for the active key.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h4>Usage example</h4>
+<pre><code><span class="k">import</span> { useIndustryStore, useCurrentIndustry } <span class="k">from</span> <span class="s">'@/store/industryStore'</span>
+<span class="k">import</span> { marketingByIndustry } <span class="k">from</span> <span class="s">'@/data/marketing'</span>
+
+<span class="k">function</span> <span class="n">SpendCard</span>() {
+  <span class="k">const</span> industry = <span class="n">useCurrentIndustry</span>()
+  <span class="k">const</span> key = <span class="n">useIndustryStore</span>(s =&gt; s.current)
+  <span class="k">const</span> data = marketingByIndustry[key]
+  <span class="k">return</span> &lt;<span class="t">div</span>&gt;{industry.name}: ₹{data.stats.totalSpend}&lt;/<span class="t">div</span>&gt;
+}
+</code></pre>
+
+  <div id="api-extending"></div>
+  <h3>Extending the app</h3>
+
+  <h4>Add a new industry</h4>
+  <ol style="color:#cbd5e1;padding-left:20px;margin-bottom:14px">
+    <li>Add the key to the <code>IndustryKey</code> union in <code>src/data/industries.ts</code>.</li>
+    <li>Push a new <code>Industry</code> entry (name, tagline, icon, accent, emoji) to the <code>industries</code> array.</li>
+    <li>Add a corresponding <code>MarketingData</code> object to <code>marketingByIndustry</code> in <code>src/data/marketing.ts</code>.</li>
+    <li>Add a corresponding <code>LeadsConfig</code> to <code>leadsByIndustry</code> in <code>src/data/leads.ts</code>.</li>
+  </ol>
+
+  <h4>Add a new lead column</h4>
+<pre><code><span class="c">// src/data/leads.ts → leadsByIndustry.healthcare.schema.columns</span>
+{
+  key:   <span class="s">'priority'</span>,
+  label: <span class="s">'Priority'</span>,
+  type:  <span class="s">'select'</span>,
+  options: [<span class="s">'Low'</span>, <span class="s">'Medium'</span>, <span class="s">'High'</span>, <span class="s">'Urgent'</span>],
+  width: 110,
+}
+</code></pre>
+  <p class="dim">The sheet picks up the new column automatically. Existing rows return <code>undefined</code> for it until edited.</p>
+
+  <h4>Add a new platform / creative / campaign</h4>
+  <p>Append entries to <code>marketingByIndustry[&lt;key&gt;].platforms</code>, <code>.creatives</code>, or <code>.campaigns</code>. The Marketing page rerenders automatically.</p>
+
+  <div class="callout purple">
+    <strong>Wiring a real backend later</strong> — replace the static imports in <code>src/data/*.ts</code>
+    with fetch calls inside the store, or introduce a thin API layer
+    (e.g. <code>src/api/marketing.ts</code>) that mirrors the same interfaces. Pages and
+    components stay unchanged because they consume the typed shapes, not the source.
+  </div>
+
+</section>
+
+</main>
+</div>
+
+<footer>
+  <p>Krisantec CRM · v0.1 frontend preview · <a href="/">Open the app →</a></p>
+</footer>
+
+<script>
+// Active section highlight in sidebar
+const links = document.querySelectorAll('.sidebar a[data-target]');
+const sectionIds = Array.from(links).map(a => a.dataset.target);
+const setActive = (id) => {
+  links.forEach(a => a.classList.toggle('active', a.dataset.target === id));
+};
+const obs = new IntersectionObserver((entries) => {
+  const visible = entries
+    .filter(e => e.isIntersecting)
+    .sort((a,b) => a.boundingClientRect.top - b.boundingClientRect.top)[0];
+  if (visible) setActive(visible.target.id);
+}, { rootMargin: '-20% 0px -70% 0px', threshold: 0 });
+
+sectionIds.forEach(id => {
+  const el = document.getElementById(id);
+  if (el) obs.observe(el);
+});
+
+// Smooth click handler that also updates active state immediately
+links.forEach(a => {
+  a.addEventListener('click', () => {
+    setTimeout(() => setActive(a.dataset.target), 50);
+  });
+});
+</script>
+
+</body>
+</html>
