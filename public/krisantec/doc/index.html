@@ -311,6 +311,7 @@ a.link:hover{border-bottom-color:var(--blue)}
   </div>
   <nav>
     <a href="#overview">Overview</a>
+    <a href="#daily-work">Daily Work</a>
     <a href="#features">Features</a>
     <a href="#tech-stack">Tech</a>
     <a href="#api">API</a>
@@ -326,6 +327,7 @@ a.link:hover{border-bottom-color:var(--blue)}
     <a href="#overview" data-target="overview"><span class="num">1</span>Overview</a>
     <a href="#vision" class="sub" data-target="vision">Vision &amp; goals</a>
     <a href="#status" class="sub" data-target="status">Project status</a>
+    <a href="#daily-work" class="sub" data-target="daily-work">Daily work status</a>
     <a href="#workflow" class="sub" data-target="workflow">Business workflow</a>
 
     <a href="#features" data-target="features"><span class="num">2</span>Features &amp; Modules</a>
@@ -403,6 +405,15 @@ a.link:hover{border-bottom-color:var(--blue)}
     <div class="pipeline-step"><span class="ico">🔧</span>Renewal</div>
     <div class="pipeline-step"><span class="ico">📈</span>Retention</div>
     <div class="pipeline-step"><span class="ico">🚀</span>Referral</div>
+  </div>
+
+  <div id="daily-work"></div>
+  <h3>Daily work status and brief</h3>
+  <p class="dim">Track progress by date using <code>/krisantec/doc/workstatus/YYYY-MM-DD</code>.</p>
+
+  <div class="card" style="margin-top:12px">
+    <h4 style="margin-top:0">Selected date status</h4>
+    <div id="workstatus-entry"></div>
   </div>
 </section>
 
@@ -878,6 +889,74 @@ links.forEach(a => {
     setTimeout(() => setActive(a.dataset.target), 50);
   });
 });
+
+// Daily workstatus renderer for /krisantec/doc/workstatus/{date}
+const workStatusData = {
+  '2026-05-08': {
+    status: 'Completed',
+    brief: [
+      '- Built Marketing Engine page with KPI strip, trend chart, conversion funnel, platform analytics, creatives library filters, and campaign table filters.',
+      '- Built Lead Capture sheet with industry based columns, inline cell editing, search, status filtering, row selection, bulk delete, add row, and reset to seeded data.',
+      '- Wired industry aware data models for 8 verticals in marketing and leads datasets with template specific platforms, funnels, statuses, and sample records.',
+      '- Added Zustand persist store for current industry and per industry lead overrides using localStorage.',
+      '- Enhanced dashboard with live workflow strip, module cards, and trend/stat widgets connected to active industry data.',
+      '- Implemented docs work status route support: /krisantec/doc/workstatus/YYYY-MM-DD with latest entry fallback and Daily Work section navigation.'
+    ].join('\n'),
+    blockers: 'None',
+    nextPlan: [
+      '- Add daily entries with real completed items only.',
+      '- Move workStatusData to a separate JSON file for easier non code updates.'
+    ].join('\n'),
+  },
+};
+
+const workStatusContainer = document.getElementById('workstatus-entry');
+if (workStatusContainer) {
+  const pathMatch = window.location.pathname.match(/\/krisantec\/doc\/workstatus\/(\d{4}-\d{2}-\d{2})\/?$/);
+  const queryDate = new URLSearchParams(window.location.search).get('workDate');
+  const availableDates = Object.keys(workStatusData).sort();
+  const latestDate = availableDates[availableDates.length - 1];
+  const requestedDate = (pathMatch && pathMatch[1]) || queryDate || latestDate;
+  const entry = workStatusData[requestedDate] || workStatusData[latestDate];
+  const selectedDate = workStatusData[requestedDate] ? requestedDate : latestDate;
+
+  if (entry) {
+    const toListItems = (text) =>
+      String(text)
+        .split('\n')
+        .map((line) => line.trim())
+        .filter((line) => line.startsWith('- '))
+        .map((line) => `<li>${line.slice(2)}</li>`)
+        .join('');
+
+    const briefItems = toListItems(entry.brief);
+    const nextPlanItems = toListItems(entry.nextPlan);
+    const fallbackBanner = requestedDate !== selectedDate
+      ? `<div class="callout orange" style="margin:0 0 12px 0"><strong>Requested date ${requestedDate} not found.</strong> Showing latest update (${selectedDate}).</div>`
+      : '';
+
+    workStatusContainer.innerHTML = `
+      ${fallbackBanner}
+      <div class="table" style="margin:0">
+        <table style="width:100%;border-collapse:collapse">
+          <tbody>
+            <tr><th style="width:160px">Date</th><td>${selectedDate}</td></tr>
+            <tr><th>Work Status</th><td>${entry.status}</td></tr>
+            <tr><th>Blockers</th><td>${entry.blockers}</td></tr>
+            <tr>
+              <th style="vertical-align:top">Brief</th>
+              <td>${briefItems ? `<ul style="margin:0;padding-left:18px">${briefItems}</ul>` : entry.brief}</td>
+            </tr>
+            <tr>
+              <th style="vertical-align:top">Next Plan</th>
+              <td>${nextPlanItems ? `<ul style="margin:0;padding-left:18px">${nextPlanItems}</ul>` : entry.nextPlan}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    `;
+  }
+}
 </script>
 
 </body>

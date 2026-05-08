@@ -8,6 +8,15 @@ function staticDocFallback() {
     name: 'static-doc-fallback',
     configureServer(server: { middlewares: { use: (fn: (req: { url?: string }, _res: unknown, next: () => void) => void) => void } }) {
       server.middlewares.use((req, _res, next) => {
+        if (req.url) {
+          const workStatusMatch = req.url.match(/^\/krisantec\/doc\/workstatus\/(\d{4}-\d{2}-\d{2})\/?$/)
+          if (workStatusMatch) {
+            const date = workStatusMatch[1]
+            req.url = `/krisantec/doc/index.html?workDate=${date}#daily-work`
+            next()
+            return
+          }
+        }
         if (req.url && req.url.startsWith('/krisantec/doc') && req.url.endsWith('/')) {
           req.url = req.url + 'index.html'
         }
