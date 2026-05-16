@@ -8,43 +8,54 @@ import {
   Wallet,
   Settings,
   Headphones,
-  Sparkles,
   BookOpen,
   ExternalLink,
+  HelpCircle,
+  Bell,
 } from 'lucide-react'
 import clsx from 'clsx'
 
 const nav = [
-  { to: '/', label: 'Dashboard', icon: LayoutDashboard, active: true },
-  { to: '/marketing', label: 'Marketing', icon: Megaphone, active: true },
-  { to: '/leads', label: 'Lead Capture', icon: Target, active: true },
-  { to: '/sales', label: 'Sales Pipeline', icon: Briefcase, active: false },
-  { to: '/customers', label: 'Customers', icon: Users, active: false },
-  { to: '/finance', label: 'Finance', icon: Wallet, active: false },
-  { to: '/support', label: 'Support', icon: Headphones, active: false },
-  { to: '/settings', label: 'Settings', icon: Settings, active: false },
+  { to: '/',          label: 'Dashboard',     icon: LayoutDashboard, active: true },
+  { to: '/marketing', label: 'Marketing',     icon: Megaphone,       active: true },
+  { to: '/leads',     label: 'Lead Capture',  icon: Target,          active: true },
+  { to: '/sales',     label: 'Sales',         icon: Briefcase,       active: true },
+  { to: '/customers', label: 'Customers',     icon: Users,           active: true },
+  { to: '/finance',   label: 'Finance',       icon: Wallet,          active: true },
+  { to: '/support',   label: 'Support',       icon: Headphones,      active: false },
+  { to: '/settings',  label: 'Settings',      icon: Settings,        active: false },
 ]
 
 export default function Sidebar() {
   return (
-    <aside className="hidden lg:flex lg:flex-col lg:w-64 shrink-0 border-r border-line bg-black/20 backdrop-blur-xl">
+    <aside
+      className="hidden lg:flex lg:flex-col lg:w-60 shrink-0"
+      style={{ background: '#1a3664', borderRight: '1px solid rgba(255,255,255,0.08)' }}
+    >
+      {/* Logo */}
       <div className="px-5 pt-6 pb-5 flex items-center gap-3">
         <div
-          className="h-9 w-9 rounded-xl flex items-center justify-center font-bold text-white"
-          style={{ background: 'linear-gradient(135deg,#3b82f6,#8b5cf6)' }}
+          className="h-8 w-8 rounded-lg flex items-center justify-center font-bold text-white text-[15px]"
+          style={{ background: 'linear-gradient(135deg,#3b82f6,#1a56db)' }}
         >
           K
         </div>
         <div>
-          <div className="text-[15px] font-bold tracking-tight">Krisantec CRM</div>
-          <div className="text-[11px] text-muted">v0.1 · Frontend preview</div>
+          <div className="text-[14px] font-bold tracking-tight text-white">Krisantec CRM</div>
+          <div className="text-[10px]" style={{ color: 'rgba(255,255,255,0.4)' }}>v0.1 · Frontend preview</div>
         </div>
       </div>
 
-      <div className="px-3 pt-2 pb-1 text-[10px] font-semibold uppercase tracking-widest text-slate-500">
-        Workspace
+      {/* Divider */}
+      <div style={{ height: 1, background: 'rgba(255,255,255,0.07)', margin: '0 16px 12px' }} />
+
+      {/* Nav label */}
+      <div className="px-4 pb-1 text-[10px] font-semibold uppercase tracking-widest" style={{ color: 'rgba(255,255,255,0.35)' }}>
+        Main Menu
       </div>
-      <nav className="flex-1 px-2 py-1 space-y-1 overflow-y-auto">
+
+      {/* Nav links */}
+      <nav className="flex-1 px-2.5 py-1 space-y-0.5 overflow-y-auto">
         {nav.map((item) => {
           const Icon = item.icon
           return (
@@ -54,57 +65,103 @@ export default function Sidebar() {
               end={item.to === '/'}
               className={({ isActive }) =>
                 clsx(
-                  'group relative flex items-center gap-3 rounded-xl px-3 py-2.5 text-[13.5px] font-medium transition',
+                  'group flex items-center gap-3 rounded-lg px-3 py-2.5 text-[13px] font-medium transition-all duration-150',
                   isActive
-                    ? 'bg-white/[0.07] text-white shadow-[inset_0_0_0_1px_rgba(255,255,255,0.06)]'
+                    ? 'text-white'
                     : item.active
-                      ? 'text-slate-300 hover:bg-white/[0.04] hover:text-white'
-                      : 'text-slate-500 cursor-not-allowed'
+                      ? 'text-blue-200 hover:text-white'
+                      : 'cursor-not-allowed opacity-40'
                 )
               }
-              onClick={(e) => {
-                if (!item.active) e.preventDefault()
-              }}
+              style={({ isActive }) => isActive ? {
+                background: 'rgba(255,255,255,0.12)',
+                boxShadow: 'inset 0 0 0 1px rgba(255,255,255,0.08)',
+              } : undefined}
+              onClick={(e) => { if (!item.active) e.preventDefault() }}
             >
-              <Icon className="h-[18px] w-[18px]" strokeWidth={1.7} />
-              <span>{item.label}</span>
-              {!item.active && (
-                <span className="ml-auto text-[9.5px] uppercase tracking-wider text-slate-500 bg-white/5 border border-white/5 rounded-full px-1.5 py-0.5">
-                  Soon
-                </span>
+              {({ isActive }) => (
+                <>
+                  <Icon
+                    className="h-[17px] w-[17px] flex-shrink-0"
+                    strokeWidth={isActive ? 2.2 : 1.8}
+                    style={{ color: isActive ? '#60a5fa' : 'rgba(147,197,253,0.75)' }}
+                  />
+                  <span>{item.label}</span>
+                  {!item.active && (
+                    <span
+                      className="ml-auto text-[9px] uppercase tracking-wider rounded-full px-1.5 py-0.5 font-semibold"
+                      style={{ background: 'rgba(255,255,255,0.07)', color: 'rgba(255,255,255,0.3)' }}
+                    >
+                      Soon
+                    </span>
+                  )}
+                </>
               )}
             </NavLink>
           )
         })}
       </nav>
 
-      <div className="px-3 pt-4 pb-1 text-[10px] font-semibold uppercase tracking-widest text-slate-500">
-        Resources
-      </div>
-      <div className="px-2 pb-2">
+      {/* Divider */}
+      <div style={{ height: 1, background: 'rgba(255,255,255,0.07)', margin: '8px 16px' }} />
+
+      {/* Bottom section */}
+      <div className="px-2.5 pb-2 space-y-0.5">
         <a
           href="/krisantec/doc/index.html"
           target="_blank"
           rel="noreferrer"
-          className="group flex items-center gap-3 rounded-xl px-3 py-2.5 text-[13.5px] font-medium text-slate-300 hover:bg-white/[0.04] hover:text-white transition"
+          className="group flex items-center gap-3 rounded-lg px-3 py-2.5 text-[13px] font-medium transition-all duration-150"
+          style={{ color: 'rgba(147,197,253,0.75)' }}
+          onMouseEnter={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.07)')}
+          onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
         >
-          <BookOpen className="h-[18px] w-[18px]" strokeWidth={1.7} />
-          <span>Project Doc</span>
-          <ExternalLink className="ml-auto h-3.5 w-3.5 text-slate-500 group-hover:text-slate-300" strokeWidth={2} />
+          <BookOpen className="h-[17px] w-[17px] flex-shrink-0" strokeWidth={1.8} />
+          <span>Project Docs</span>
+          <ExternalLink className="ml-auto h-3 w-3 opacity-50" strokeWidth={2} />
         </a>
+        <button
+          className="w-full flex items-center gap-3 rounded-lg px-3 py-2.5 text-[13px] font-medium transition-all duration-150"
+          style={{ color: 'rgba(147,197,253,0.75)' }}
+          onMouseEnter={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.07)')}
+          onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+        >
+          <Bell className="h-[17px] w-[17px] flex-shrink-0" strokeWidth={1.8} />
+          <span>Notifications</span>
+          <span
+            className="ml-auto text-[10px] font-bold rounded-full w-5 h-5 flex items-center justify-center"
+            style={{ background: '#1a56db', color: 'white' }}
+          >
+            3
+          </span>
+        </button>
+        <button
+          className="w-full flex items-center gap-3 rounded-lg px-3 py-2.5 text-[13px] font-medium transition-all duration-150"
+          style={{ color: 'rgba(147,197,253,0.75)' }}
+          onMouseEnter={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.07)')}
+          onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+        >
+          <HelpCircle className="h-[17px] w-[17px] flex-shrink-0" strokeWidth={1.8} />
+          <span>Help & Support</span>
+        </button>
       </div>
 
-      <div className="m-3 mt-auto rounded-2xl border border-line bg-gradient-to-br from-brand-purple/15 to-brand-blue/10 p-4">
-        <div className="flex items-center gap-2 text-[11px] font-semibold text-slate-200">
-          <Sparkles className="h-3.5 w-3.5 text-brand-purple" />
-          AI Workflow Engine
+      {/* User profile strip */}
+      <div
+        className="mx-2.5 mb-3 rounded-xl px-3 py-3 flex items-center gap-3"
+        style={{ background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.08)' }}
+      >
+        <div
+          className="h-8 w-8 rounded-full flex items-center justify-center text-[12px] font-bold text-white flex-shrink-0"
+          style={{ background: 'linear-gradient(135deg,#3b82f6,#6366f1)' }}
+        >
+          JD
         </div>
-        <p className="mt-1.5 text-[12px] leading-snug text-muted">
-          Auto-route leads, score intent and trigger journeys per industry template.
-        </p>
-        <button className="mt-3 w-full text-[11.5px] font-semibold rounded-lg bg-white/10 hover:bg-white/15 transition py-1.5">
-          Explore engine
-        </button>
+        <div className="flex-1 min-w-0">
+          <div className="text-[12.5px] font-semibold text-white truncate">John Doe</div>
+          <div className="text-[11px] truncate" style={{ color: 'rgba(255,255,255,0.4)' }}>Admin</div>
+        </div>
+        <Settings className="h-4 w-4 flex-shrink-0" style={{ color: 'rgba(255,255,255,0.35)' }} strokeWidth={1.8} />
       </div>
     </aside>
   )
