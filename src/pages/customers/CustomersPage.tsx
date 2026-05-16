@@ -296,7 +296,6 @@ export default function CustomersPage() {
       <div className="card p-0 overflow-hidden rounded-tl-none rounded-tr-none" style={{ borderTop: 'none' }}>
         <CustomerTable
           rows={filtered}
-          allRows={customers}
           selected={selected}
           onToggleSelect={toggleSelect}
           onToggleSelectAll={toggleSelectAll}

@@ -8,7 +8,6 @@ export type SortDir = 'asc' | 'desc'
 
 interface Props {
   rows: Customer[]
-  allRows: Customer[]
   selected: Set<number>
   onToggleSelect: (id: number) => void
   onToggleSelectAll: () => void
@@ -62,7 +61,7 @@ const COLS: { key: SortKey; label: string; minW: number }[] = [
 ]
 
 export default function CustomerTable({
-  rows, allRows, selected, onToggleSelect, onToggleSelectAll,
+  rows, selected, onToggleSelect, onToggleSelectAll,
   onRowClick, onCellUpdate, onDeleteRow,
   sortKey, sortDir, onSort,
 }: Props) {
