@@ -10,7 +10,7 @@ interface Props {
   defaultStage?: string
 }
 
-const empty = { company:'', contact:'', email:'', value:0, stage:'lead', prob:50, priority:'medium' as const, closeDate:'', sector:'' }
+const empty = { company:'', contact:'', email:'', value:0, stage:'lead', prob:50, priority:'medium', closeDate:'', sector:'' }
 
 export default function DealModal({ open, onClose, onSave, editDeal, defaultStage }: Props) {
   const [f, setF] = useState({ ...empty })

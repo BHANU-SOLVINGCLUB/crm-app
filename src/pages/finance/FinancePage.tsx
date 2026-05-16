@@ -1,7 +1,5 @@
 import {
   Wallet,
-  ArrowUpRight,
-  ArrowDownRight,
   Download,
   Filter,
   Columns,
@@ -53,7 +51,7 @@ export default function FinancePage() {
         <StatCard
           label="Total revenue"
           value={metrics.totalRevenue}
-          delta={metrics.revenueDelta}
+          hint={metrics.revenueDelta}
           icon={TrendingUp}
           accent="#10b981"
         />
@@ -67,7 +65,7 @@ export default function FinancePage() {
         <StatCard
           label="Collected this month"
           value={metrics.collected}
-          delta={metrics.collectedDelta}
+          hint={metrics.collectedDelta}
           icon={CheckCircle2}
           accent="#10b981"
         />

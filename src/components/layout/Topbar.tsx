@@ -1,4 +1,4 @@
-import { Bell, Search, Plus, ChevronDown } from 'lucide-react'
+import { Bell, Search, Plus } from 'lucide-react'
 import IndustrySwitcher from './IndustrySwitcher'
 
 export default function Topbar() {

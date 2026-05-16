@@ -272,7 +272,7 @@ export default function SalesPipeline() {
               </tr>
             </thead>
             <tbody>
-              {filtered.map(({ deal: d, i }, displayIdx) => (
+              {filtered.map(({ deal: d }, displayIdx) => (
                 <tr
                   key={d.id}
                   className={clsx(selected.has(d.id) && 'selected')}

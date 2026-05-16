@@ -12,7 +12,6 @@ import {
   INITIAL_CUSTOMERS,
   fmtRevenue,
   type Customer,
-  type CustomerStatus,
 } from '../../data/customerData'
 import type { SortKey, SortDir } from './CustomerTable'
 

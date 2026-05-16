@@ -1,7 +1,7 @@
 import clsx from 'clsx'
 import { Trash2, ChevronUp, ChevronDown } from 'lucide-react'
 import type { Customer, CustomerStatus } from '../../data/customerData'
-import { fmtRevenue, statusColor } from '../../data/customerData'
+import { statusColor } from '../../data/customerData'
 
 export type SortKey = 'name' | 'company' | 'revenue' | 'lastActivityDays' | 'renewalDate' | 'status'
 export type SortDir = 'asc' | 'desc'
@@ -109,8 +109,6 @@ export default function CustomerTable({
         <tbody>
           {rows.map((c, displayIdx) => {
             const isSelected = selected.has(c.id)
-            const sc = statusColor[c.status]
-            const globalIdx = allRows.findIndex(r => r.id === c.id)
 
             return (
               <tr
