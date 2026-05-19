@@ -7,6 +7,9 @@ import LeadCapture from './pages/LeadCapture'
 import SalesPipeline from './pages/SalesPipeline'
 import CustomersPage from './pages/customers/CustomersPage'
 import FinancePage from './pages/finance/FinancePage'
+import SupportPage from './pages/support/SupportPage'
+import SettingsPage from './pages/settings/SettingsPage'
+import AnalyticsPage from './pages/AnalyticsPage'
 
 export default function App() {
   return (
@@ -23,6 +26,9 @@ export default function App() {
               <Route path="/sales" element={<SalesPipeline />} />
               <Route path="/customers" element={<CustomersPage />} />
               <Route path="/finance" element={<FinancePage />} />
+              <Route path="/support" element={<SupportPage />} />
+              <Route path="/analytics" element={<AnalyticsPage />} />
+              <Route path="/settings" element={<SettingsPage />} />
               <Route path="*" element={<Dashboard />} />
             </Routes>
           </main>

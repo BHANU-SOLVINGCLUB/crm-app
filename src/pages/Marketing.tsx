@@ -319,20 +319,23 @@ export default function Marketing() {
           subtitle="Every ad, banner, video and lead magnet running for this industry."
           right={
             <div className="flex flex-wrap items-center gap-1.5">
-              {(['All', 'Live', 'Paused', 'Draft', 'Review'] as const).map((f) => (
-                <button
-                  key={f}
-                  onClick={() => setCreativeFilter(f)}
-                  className={clsx(
-                    'rounded-full px-3 py-1.5 text-[11.5px] font-semibold transition border',
-                    creativeFilter === f
-                      ? 'bg-white/10 border-white/15 text-white'
-                      : 'bg-transparent border-white/10 text-slate-400 hover:text-white hover:border-white/20'
-                  )}
-                >
-                  {f}
-                </button>
-              ))}
+              {(['All', 'Live', 'Paused', 'Draft', 'Review'] as const).map((f) => {
+                const active = creativeFilter === f
+                return (
+                  <button
+                    key={f}
+                    onClick={() => setCreativeFilter(f)}
+                    className={clsx(
+                      'rounded-full px-3 py-1.5 text-[11.5px] font-semibold transition border',
+                      active
+                        ? 'bg-brand/10 border-brand/20 text-brand'
+                        : 'bg-transparent border-line text-slate-500 hover:text-slate-900 hover:bg-slate-50 hover:border-slate-300'
+                    )}
+                  >
+                    {f}
+                  </button>
+                )
+              })}
             </div>
           }
         />
@@ -396,20 +399,23 @@ export default function Marketing() {
           subtitle="Goal-driven, multi-channel campaigns with budgets, reach and pipeline impact."
           right={
             <div className="flex items-center gap-1.5">
-              {(['All', 'Running', 'Scheduled', 'Paused', 'Completed'] as const).map((f) => (
-                <button
-                  key={f}
-                  onClick={() => setCampaignFilter(f)}
-                  className={clsx(
-                    'rounded-full px-3 py-1.5 text-[11.5px] font-semibold transition border',
-                    campaignFilter === f
-                      ? 'bg-white/10 border-white/15 text-white'
-                      : 'bg-transparent border-white/10 text-slate-400 hover:text-white hover:border-white/20'
-                  )}
-                >
-                  {f}
-                </button>
-              ))}
+              {(['All', 'Running', 'Scheduled', 'Paused', 'Completed'] as const).map((f) => {
+                const active = campaignFilter === f
+                return (
+                  <button
+                    key={f}
+                    onClick={() => setCampaignFilter(f)}
+                    className={clsx(
+                      'rounded-full px-3 py-1.5 text-[11.5px] font-semibold transition border',
+                      active
+                        ? 'bg-brand/10 border-brand/20 text-brand'
+                        : 'bg-transparent border-line text-slate-500 hover:text-slate-900 hover:bg-slate-50 hover:border-slate-300'
+                    )}
+                  >
+                    {f}
+                  </button>
+                )
+              })}
             </div>
           }
         />

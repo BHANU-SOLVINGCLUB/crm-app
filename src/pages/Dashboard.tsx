@@ -94,19 +94,19 @@ export default function Dashboard() {
               onClick={(e) => !w.active && e.preventDefault()}
               className={`group relative rounded-2xl border p-3.5 text-center transition ${
                 w.active
-                  ? 'bg-gradient-to-b from-panel to-panel2 border-line hover:border-brand-blue/40 hover:-translate-y-0.5'
-                  : 'border-dashed border-white/10 bg-white/[0.015] cursor-not-allowed'
+                  ? 'bg-white border-line shadow-sm hover:border-brand/40 hover:-translate-y-0.5'
+                  : 'border-dashed border-line bg-slate-50/50 cursor-not-allowed opacity-60'
               }`}
             >
               <div className="text-[24px]">{w.icon}</div>
-              <div className={`mt-1.5 text-[12px] font-semibold ${w.active ? 'text-white' : 'text-slate-500'}`}>
+              <div className={`mt-1.5 text-[12px] font-semibold ${w.active ? 'text-slate-800' : 'text-slate-400'}`}>
                 {w.label}
               </div>
               {!w.active && (
-                <div className="text-[9px] uppercase tracking-widest text-slate-600 mt-1">Roadmap</div>
+                <div className="text-[9px] uppercase tracking-widest text-slate-400 mt-1">Roadmap</div>
               )}
               {w.active && (
-                <div className="absolute top-2 right-2 h-1.5 w-1.5 rounded-full bg-brand-green live-dot" />
+                <div className="absolute top-2 right-2 h-1.5 w-1.5 rounded-full bg-emerald-500 live-dot" />
               )}
             </Link>
           ))}
@@ -143,7 +143,7 @@ export default function Dashboard() {
               </div>
               <p className="mt-1 text-[12px] text-slate-400">{industry.tagline}</p>
             </div>
-            <ul className="space-y-1.5 text-[12.5px] text-slate-300">
+            <ul className="space-y-1.5 text-[12.5px] text-slate-600">
               <li className="flex items-center gap-2"><span className="text-brand-green">✓</span> Lead sheet columns</li>
               <li className="flex items-center gap-2"><span className="text-brand-green">✓</span> Marketing platforms & creatives</li>
               <li className="flex items-center gap-2"><span className="text-brand-green">✓</span> Campaign objectives</li>
@@ -168,8 +168,8 @@ export default function Dashboard() {
                 {...props}
                 className={`group rounded-2xl border border-line p-5 transition ${
                   m.live
-                    ? 'bg-gradient-to-br from-panel to-panel2 hover:border-brand-blue/40 hover:-translate-y-0.5 cursor-pointer'
-                    : 'bg-white/[0.02] opacity-70'
+                    ? 'bg-white hover:border-brand/40 hover:-translate-y-0.5 cursor-pointer shadow-sm text-slate-800'
+                    : 'bg-slate-50/50 opacity-60 border-dashed'
                 }`}
               >
                 <div className="flex items-start justify-between">
@@ -180,15 +180,15 @@ export default function Dashboard() {
                     <Icon className="h-[18px] w-[18px]" strokeWidth={1.8} />
                   </div>
                   {m.live ? (
-                    <span className="chip !text-brand-green">● Live</span>
+                    <span className="chip !text-emerald-600 bg-emerald-50">● Live</span>
                   ) : (
                     <span className="chip">Soon</span>
                   )}
                 </div>
-                <div className="mt-3 text-[16px] font-bold">{m.label}</div>
-                <p className="text-[12.5px] text-slate-400 mt-1">{m.desc}</p>
+                <div className="mt-3 text-[16px] font-bold text-slate-900">{m.label}</div>
+                <p className="text-[12.5px] text-slate-500 mt-1">{m.desc}</p>
                 {m.live && (
-                  <div className="mt-3 inline-flex items-center gap-1 text-[12px] font-semibold text-brand-blue group-hover:gap-2 transition-all">
+                  <div className="mt-3 inline-flex items-center gap-1 text-[12px] font-semibold text-brand group-hover:gap-2 transition-all">
                     Open module <ArrowRight className="h-3.5 w-3.5" />
                   </div>
                 )}

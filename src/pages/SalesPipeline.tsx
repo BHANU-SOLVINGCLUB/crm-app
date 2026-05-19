@@ -28,7 +28,7 @@ function StageCell({ value, onChange }: { value: string; onChange: (v: string) =
         style={{ color: st?.color }}
       >
         {STAGE_OPTIONS.map(o => (
-          <option key={o} value={o} className="bg-[#0c1424] text-white font-normal">
+          <option key={o} value={o} className="bg-white text-slate-800 font-normal">
             {STAGES.find(s => s.id === o)?.name ?? o}
           </option>
         ))}
@@ -47,7 +47,7 @@ function PriorityCell({ value, onChange }: { value: string; onChange: (v: string
         style={{ color: pColor(value) }}
       >
         {PRIORITY_OPTIONS.map(o => (
-          <option key={o} value={o} className="bg-[#0c1424] text-white font-normal">{o}</option>
+          <option key={o} value={o} className="bg-white text-slate-800 font-normal">{o}</option>
         ))}
       </select>
     </div>
@@ -212,17 +212,26 @@ export default function SalesPipeline() {
             <span className="chip"><Filter className="h-3 w-3" /> Stage</span>
             {['All', ...STAGE_OPTIONS].map(s => {
               const st = STAGES.find(x => x.id === s)
+              const active = stageFilter === s
+              const tone = st?.color ?? '#1a56db'
               return (
                 <button
                   key={s}
                   onClick={() => setStageFilter(s)}
                   className={clsx(
                     'rounded-full px-3 py-1.5 text-[11.5px] font-semibold transition border',
-                    stageFilter === s
-                      ? 'bg-white/10 border-white/15 text-white'
-                      : 'bg-transparent border-white/10 text-slate-400 hover:text-white hover:border-white/20'
+                    active
+                      ? 'border-transparent'
+                      : 'bg-transparent border-line text-slate-500 hover:text-slate-900 hover:bg-slate-50 hover:border-slate-300'
                   )}
-                  style={stageFilter === s && st ? { color: st.color } : undefined}
+                  style={active
+                    ? {
+                        color: tone,
+                        backgroundColor: s === 'All' ? 'rgba(0, 0, 0, 0.05)' : `${tone}15`,
+                        borderColor: s === 'All' ? 'rgba(0, 0, 0, 0.1)' : `${tone}30`
+                      }
+                    : undefined
+                  }
                 >
                   {st?.name ?? 'All'}
                 </button>
@@ -395,11 +404,11 @@ export default function SalesPipeline() {
 
       {/* Outcome overlay */}
       {outcome && (
-        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center">
-          <div className="bg-[#0c1424] border border-white/10 rounded-2xl p-10 text-center w-80 shadow-2xl">
+        <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center">
+          <div className="bg-white border border-line rounded-2xl p-10 text-center w-80 shadow-card-lg text-slate-800">
             <div className="text-6xl mb-4">{outcome.type === 'won' ? '🎉' : '😔'}</div>
-            <div className="text-[22px] font-bold mb-2">{outcome.type === 'won' ? 'Deal Won!' : 'Deal Lost'}</div>
-            <p className="text-slate-400 text-[14px] mb-6 leading-relaxed">
+            <div className="text-[22px] font-bold mb-2 text-slate-900">{outcome.type === 'won' ? 'Deal Won!' : 'Deal Lost'}</div>
+            <p className="text-slate-500 text-[14px] mb-6 leading-relaxed">
               {outcome.type === 'won'
                 ? `${outcome.deal.company} said YES! You earned ${fmt(outcome.deal.value)}.`
                 : `${outcome.deal.company} didn't close this time.`}

@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { NavLink } from 'react-router-dom'
 import {
   LayoutDashboard,
@@ -12,21 +13,26 @@ import {
   ExternalLink,
   HelpCircle,
   Bell,
+  PieChart,
 } from 'lucide-react'
 import clsx from 'clsx'
+import HelpSupportDrawer from '../ui/HelpSupportDrawer'
 
 const nav = [
   { to: '/',          label: 'Dashboard',     icon: LayoutDashboard, active: true },
   { to: '/marketing', label: 'Marketing',     icon: Megaphone,       active: true },
   { to: '/leads',     label: 'Lead Capture',  icon: Target,          active: true },
   { to: '/sales',     label: 'Sales',         icon: Briefcase,       active: true },
+  { to: '/analytics', label: 'Analytics',     icon: PieChart,        active: true },
   { to: '/customers', label: 'Customers',     icon: Users,           active: true },
   { to: '/finance',   label: 'Finance',       icon: Wallet,          active: true },
-  { to: '/support',   label: 'Support',       icon: Headphones,      active: false },
-  { to: '/settings',  label: 'Settings',      icon: Settings,        active: false },
+  { to: '/support',   label: 'Support',       icon: Headphones,      active: true },
+  { to: '/settings',  label: 'Settings',      icon: Settings,        active: true },
 ]
 
 export default function Sidebar() {
+  const [isHelpOpen, setIsHelpOpen] = useState(false)
+
   return (
     <aside
       className="hidden lg:flex lg:flex-col lg:w-60 shrink-0"
@@ -136,6 +142,7 @@ export default function Sidebar() {
           </span>
         </button>
         <button
+          onClick={() => setIsHelpOpen(true)}
           className="w-full flex items-center gap-3 rounded-lg px-3 py-2.5 text-[13px] font-medium transition-all duration-150"
           style={{ color: 'rgba(147,197,253,0.75)' }}
           onMouseEnter={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.07)')}
@@ -145,24 +152,8 @@ export default function Sidebar() {
           <span>Help & Support</span>
         </button>
       </div>
-
-      {/* User profile strip */}
-      <div
-        className="mx-2.5 mb-3 rounded-xl px-3 py-3 flex items-center gap-3"
-        style={{ background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.08)' }}
-      >
-        <div
-          className="h-8 w-8 rounded-full flex items-center justify-center text-[12px] font-bold text-white flex-shrink-0"
-          style={{ background: 'linear-gradient(135deg,#3b82f6,#6366f1)' }}
-        >
-          JD
-        </div>
-        <div className="flex-1 min-w-0">
-          <div className="text-[12.5px] font-semibold text-white truncate">John Doe</div>
-          <div className="text-[11px] truncate" style={{ color: 'rgba(255,255,255,0.4)' }}>Admin</div>
-        </div>
-        <Settings className="h-4 w-4 flex-shrink-0" style={{ color: 'rgba(255,255,255,0.35)' }} strokeWidth={1.8} />
-      </div>
+      
+      <HelpSupportDrawer isOpen={isHelpOpen} onClose={() => setIsHelpOpen(false)} />
     </aside>
   )
 }

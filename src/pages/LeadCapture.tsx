@@ -13,6 +13,8 @@ import {
 } from 'lucide-react'
 import clsx from 'clsx'
 import PageHeader from '../components/ui/PageHeader'
+import Drawer from '../components/ui/Drawer'
+import Timeline from '../components/ui/Timeline'
 import { useIndustryStore, useCurrentIndustry } from '../store/industryStore'
 import { leadsByIndustry, type LeadColumn, type LeadRow } from '../data/leads'
 import { formatINR, formatNumber } from '../lib/format'
@@ -47,7 +49,7 @@ function CellRenderer({
           style={isStatus && tone ? { color: tone, fontWeight: 600 } : undefined}
         >
           {col.options.map((o) => (
-            <option key={o} value={o} className="bg-[#0c1424] text-white">
+            <option key={o} value={o} className="bg-white text-slate-800">
               {o}
             </option>
           ))}
@@ -109,6 +111,8 @@ export default function LeadCapture() {
   const [search, setSearch] = useState('')
   const [statusFilter, setStatusFilter] = useState<string>('All')
   const [selected, setSelected] = useState<Set<number>>(new Set())
+  const [selectedLeadIdx, setSelectedLeadIdx] = useState<number | null>(null)
+  const [liveToast, setLiveToast] = useState<{ id: number, message: string } | null>(null)
 
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase()
@@ -149,6 +153,26 @@ export default function LeadCapture() {
     setLeads(industryKey, [blank, ...rows])
   }
 
+  const simulateRealtimeEvent = () => {
+    const blank: LeadRow = {}
+    schema.columns.forEach((c) => {
+      if (c.type === 'currency' || c.type === 'number') blank[c.key] = 0
+      else if (c.type === 'select') blank[c.key] = c.options?.[0] ?? ''
+      else blank[c.key] = ''
+    })
+    const names = ['Acme Corp', 'Stark Industries', 'Wayne Enterprises', 'Globex']
+    blank.name = names[Math.floor(Math.random() * names.length)] + ' (Live Event)'
+    blank.source = 'API Webhook'
+    blank.status = schema.statuses[0]
+    setLeads(industryKey, [blank, ...rows])
+    
+    const toastId = Date.now()
+    setLiveToast({ id: toastId, message: 'New lead incoming via Webhook...' })
+    setTimeout(() => {
+      setLiveToast(current => current?.id === toastId ? null : current)
+    }, 4000)
+  }
+
   const deleteSelected = () => {
     if (selected.size === 0) return
     const next = rows.filter((_, i) => !selected.has(i))
@@ -183,6 +207,10 @@ export default function LeadCapture() {
             <button className="btn-ghost">
               <Upload className="h-4 w-4" />
               Import
+            </button>
+            <button className="btn-ghost text-brand-blue border border-brand-blue/30 hover:bg-brand-blue/10" onClick={simulateRealtimeEvent}>
+              <Sparkles className="h-4 w-4" />
+              Simulate Live
             </button>
             <button className="btn-primary" onClick={addRow}>
               <Plus className="h-4 w-4" />
@@ -238,27 +266,31 @@ export default function LeadCapture() {
               className={clsx(
                 'rounded-full px-3 py-1.5 text-[11.5px] font-semibold transition border',
                 statusFilter === 'All'
-                  ? 'bg-white/10 border-white/15 text-white'
-                  : 'bg-transparent border-white/10 text-slate-400 hover:text-white hover:border-white/20'
+                  ? 'bg-slate-100 border-slate-300 text-slate-800'
+                  : 'bg-transparent border-line text-slate-500 hover:text-slate-900 hover:bg-slate-50 hover:border-slate-300'
               )}
             >
               All
             </button>
-            {schema.statuses.map((s) => (
-              <button
-                key={s}
-                onClick={() => setStatusFilter(s)}
-                className={clsx(
-                  'rounded-full px-3 py-1.5 text-[11.5px] font-semibold transition border',
-                  statusFilter === s
-                    ? 'bg-white/10 border-white/15 text-white'
-                    : 'bg-transparent border-white/10 text-slate-400 hover:text-white hover:border-white/20'
-                )}
-                style={statusFilter === s ? { color: statusTone(s, schema.statuses) } : undefined}
-              >
-                {s}
-              </button>
-            ))}
+            {schema.statuses.map((s) => {
+              const active = statusFilter === s
+              const tone = statusTone(s, schema.statuses)
+              return (
+                <button
+                  key={s}
+                  onClick={() => setStatusFilter(s)}
+                  className={clsx(
+                    'rounded-full px-3 py-1.5 text-[11.5px] font-semibold transition border',
+                    active
+                      ? 'border-transparent'
+                      : 'bg-transparent border-line text-slate-500 hover:text-slate-900 hover:bg-slate-50 hover:border-slate-300'
+                  )}
+                  style={active ? { color: tone, backgroundColor: `${tone}15`, borderColor: `${tone}30` } : undefined}
+                >
+                  {s}
+                </button>
+              )
+            })}
           </div>
 
           <div className="flex items-center gap-2">
@@ -304,7 +336,15 @@ export default function LeadCapture() {
             </thead>
             <tbody>
               {filtered.map(({ row, i }, displayIdx) => (
-                <tr key={i} className={selected.has(i) ? 'selected' : undefined}>
+                <tr 
+                  key={i} 
+                  className={clsx('cursor-pointer hover:bg-white/[0.02] transition-colors', selected.has(i) && 'selected')}
+                  onClick={(e) => {
+                    const target = e.target as HTMLElement
+                    if (target.tagName === 'INPUT' || target.tagName === 'SELECT' || target.closest('button')) return
+                    setSelectedLeadIdx(i)
+                  }}
+                >
                   <td className="row-num !text-center">
                     <input
                       type="checkbox"
@@ -359,6 +399,78 @@ export default function LeadCapture() {
           </div>
         </div>
       </div>
+
+      {/* Toast Notification */}
+      {liveToast && (
+        <div className="fixed bottom-6 right-6 bg-brand-blue text-white px-5 py-3 rounded-xl shadow-2xl flex items-center gap-3 animate-in slide-in-from-bottom-5 z-50">
+          <Sparkles className="h-5 w-5" />
+          <div className="text-[14px] font-medium">{liveToast.message}</div>
+        </div>
+      )}
+
+      {/* Detail Drawer */}
+      <Drawer
+        isOpen={selectedLeadIdx !== null}
+        onClose={() => setSelectedLeadIdx(null)}
+        title={selectedLeadIdx !== null ? String(rows[selectedLeadIdx]?.name || 'Lead Details') : ''}
+        subtitle="Real-time activity and enrichment data"
+        width="max-w-2xl"
+      >
+        {selectedLeadIdx !== null && (
+          <div className="space-y-8">
+            {/* Quick Actions */}
+            <div className="flex items-center gap-3">
+               <button className="btn-primary flex-1 py-2.5">Send Email</button>
+               <button className="btn-ghost border border-line flex-1 py-2.5 hover:bg-white/5">Log Call</button>
+               <button className="btn-ghost border border-line flex-1 py-2.5 hover:bg-white/5">Schedule</button>
+            </div>
+            
+            {/* Field Overview */}
+            <div>
+              <h3 className="text-[11px] font-bold text-slate-500 uppercase tracking-widest mb-3">Lead Data</h3>
+              <div className="grid grid-cols-2 gap-3">
+                {schema.columns.map(col => (
+                   <div key={col.key} className="bg-white/[0.02] p-3.5 rounded-xl border border-line">
+                     <div className="text-[11px] text-slate-500 mb-1">{col.label}</div>
+                     <div className="text-[14px] font-semibold text-white">
+                        {col.type === 'currency' 
+                          ? formatINR(Number(rows[selectedLeadIdx]?.[col.key]) || 0, { compact: true })
+                          : String(rows[selectedLeadIdx]?.[col.key] || '—')}
+                     </div>
+                   </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Timeline */}
+            <div>
+              <h3 className="text-[11px] font-bold text-slate-500 uppercase tracking-widest mb-4">Activity Timeline</h3>
+              <Timeline 
+                events={[
+                  {
+                    id: 1,
+                    title: 'Viewed Pricing Page',
+                    description: 'Lead spent 4 mins on the enterprise pricing page.',
+                    date: 'Just now',
+                    iconBg: 'rgba(59, 130, 246, 0.15)',
+                    iconColor: '#3b82f6',
+                    icon: <Search className="w-3.5 h-3.5" />
+                  },
+                  {
+                    id: 2,
+                    title: 'Lead Captured',
+                    description: `Captured via ${rows[selectedLeadIdx]?.source || 'Website'}.`,
+                    date: '15 mins ago',
+                    iconBg: 'rgba(16, 185, 129, 0.15)',
+                    iconColor: '#10b981',
+                    icon: <CheckCircle2 className="w-3.5 h-3.5" />
+                  }
+                ]}
+              />
+            </div>
+          </div>
+        )}
+      </Drawer>
     </div>
   )
 }

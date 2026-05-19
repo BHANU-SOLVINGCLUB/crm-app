@@ -1,7 +1,17 @@
+import { useState, useRef, useEffect } from 'react'
 import { Bell, Search, Plus } from 'lucide-react'
 import IndustrySwitcher from './IndustrySwitcher'
+import NotificationDropdown from '../ui/NotificationDropdown'
 
 export default function Topbar() {
+  const [showNotifications, setShowNotifications] = useState(false)
+  const bellRef = useRef<HTMLButtonElement>(null)
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    // Intentionally left empty for now
+  }, [])
+
   return (
     <header
       className="sticky top-0 z-40 flex items-center gap-4 px-6 h-[60px] bg-white border-b"
@@ -65,20 +75,27 @@ export default function Topbar() {
           <span className="hidden sm:inline">Quick Add</span>
         </button>
 
-        {/* Bell */}
-        <button
-          className="relative h-9 w-9 rounded-lg flex items-center justify-center transition-all"
-          style={{ background: '#f3f7fe', border: '1px solid rgba(0,0,0,0.08)' }}
-          onMouseEnter={e => (e.currentTarget.style.background = '#e8f0fb')}
-          onMouseLeave={e => (e.currentTarget.style.background = '#f3f7fe')}
-        >
-          <Bell className="h-[17px] w-[17px]" strokeWidth={1.8} style={{ color: '#4b5563' }} />
-          {/* Notification dot */}
-          <span
-            className="absolute top-1.5 right-1.5 h-2 w-2 rounded-full border-2 border-white"
-            style={{ background: '#7c3aed' }}
-          />
-        </button>
+        <div className="relative">
+          <button
+            ref={bellRef}
+            onClick={() => setShowNotifications(!showNotifications)}
+            className="relative h-9 w-9 rounded-lg flex items-center justify-center transition-all"
+            style={{ background: '#f3f7fe', border: '1px solid rgba(0,0,0,0.08)' }}
+            onMouseEnter={e => (e.currentTarget.style.background = '#e8f0fb')}
+            onMouseLeave={e => (e.currentTarget.style.background = '#f3f7fe')}
+          >
+            <Bell className="h-[17px] w-[17px]" strokeWidth={1.8} style={{ color: '#4b5563' }} />
+            {/* Notification dot */}
+            <span
+              className="absolute top-1.5 right-1.5 h-2 w-2 rounded-full border-2 border-white"
+              style={{ background: '#7c3aed' }}
+            />
+          </button>
+          
+          {showNotifications && (
+            <NotificationDropdown onClose={() => setShowNotifications(false)} />
+          )}
+        </div>
 
         {/* User avatar */}
         <div

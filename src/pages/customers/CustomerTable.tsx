@@ -44,7 +44,7 @@ function StatusCell({ value, onChange }: { value: CustomerStatus; onChange: (v: 
         onClick={e => e.stopPropagation()}
       >
         {STATUS_OPTIONS.map(s => (
-          <option key={s} value={s} className="bg-[#14122a] text-white font-normal">{s}</option>
+          <option key={s} value={s} className="bg-white text-slate-800 font-normal">{s}</option>
         ))}
       </select>
     </div>
@@ -181,7 +181,7 @@ export default function CustomerTable({
                 {/* Last Activity */}
                 <td>
                   <div className="px-3 flex items-center gap-2 h-full">
-                    <span className="text-[12px] text-slate-300 truncate">{c.lastActivity}</span>
+                    <span className="text-[12px] text-slate-500 truncate">{c.lastActivity}</span>
                     {c.lastActivityDays > 0 && (
                       <span
                         className={clsx(

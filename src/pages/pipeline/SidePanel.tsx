@@ -24,14 +24,14 @@ export default function SidePanel({ deal: d, onClose, onMoveStage, onMarkWon, on
       />
 
       {/* Panel */}
-      <div className={`fixed top-0 right-0 h-screen w-[380px] max-w-full bg-[#0a1424] border-l border-white/10 z-50 flex flex-col transition-transform duration-300 ${open ? 'translate-x-0' : 'translate-x-full'}`}>
+      <div className={`fixed top-0 right-0 h-screen w-[380px] max-w-full bg-white border-l border-line z-50 flex flex-col transition-transform duration-300 ${open ? 'translate-x-0' : 'translate-x-full'} text-slate-700 shadow-card-lg`}>
         {d && (
           <>
             {/* Header */}
-            <div className="flex items-center gap-3 px-5 py-4 border-b border-white/10">
+            <div className="flex items-center gap-3 px-5 py-4 border-b border-line bg-slate-50/50">
               <span className="h-3 w-3 rounded-full flex-shrink-0" style={{ background: st?.color }} />
-              <span className="text-[16px] font-bold flex-1 truncate">{d.company}</span>
-              <button onClick={onClose} className="h-8 w-8 rounded-lg border border-white/10 flex items-center justify-center text-slate-400 hover:text-white hover:bg-white/5 transition text-lg">✕</button>
+              <span className="text-[16px] font-bold flex-1 truncate text-slate-900">{d.company}</span>
+              <button onClick={onClose} className="h-8 w-8 rounded-lg border border-line flex items-center justify-center text-slate-400 hover:text-slate-800 hover:bg-slate-100 transition text-lg">✕</button>
             </div>
 
             {/* Body */}
@@ -39,7 +39,7 @@ export default function SidePanel({ deal: d, onClose, onMoveStage, onMarkWon, on
 
               {/* Deal info */}
               <section>
-                <div className="text-[11px] font-bold uppercase tracking-widest text-slate-500 mb-3">Deal Information</div>
+                <div className="text-[11px] font-bold uppercase tracking-widest text-slate-400 mb-3">Deal Information</div>
                 {[
                   ['Value', fmt(d.value)],
                   ['Contact', d.contact],
@@ -49,14 +49,14 @@ export default function SidePanel({ deal: d, onClose, onMoveStage, onMarkWon, on
                   ['Priority', d.priority],
                   ['Close Date', `${d.closeDate}${daysLeft <= 7 ? ` (${daysLeft}d!)` : ''}`],
                 ].map(([label, val]) => (
-                  <div key={label} className="flex items-center justify-between py-2 border-b border-white/5 last:border-none">
+                  <div key={label} className="flex items-center justify-between py-2 border-b border-line last:border-none">
                     <span className="text-[12px] text-slate-500">{label}</span>
                     <span
-                      className="text-[13px] font-semibold"
+                      className="text-[13px] font-semibold text-slate-800"
                       style={{
                         color: label === 'Stage' ? st?.color :
                                label === 'Priority' ? pColor(d.priority) :
-                               label === 'Close Date' && daysLeft <= 7 ? '#f87171' : undefined,
+                               label === 'Close Date' && daysLeft <= 7 ? '#ef4444' : undefined,
                         background: label === 'Priority' ? pBg(d.priority) : undefined,
                         padding: label === 'Priority' ? '2px 10px' : undefined,
                         borderRadius: label === 'Priority' ? '99px' : undefined,
@@ -71,16 +71,16 @@ export default function SidePanel({ deal: d, onClose, onMoveStage, onMarkWon, on
 
               {/* Win probability */}
               <section>
-                <div className="text-[11px] font-bold uppercase tracking-widest text-slate-500 mb-3">Win Probability</div>
-                <div className="rounded-xl bg-white/[0.04] border border-white/10 p-4">
-                  <div className="flex justify-between text-[13px] mb-2">
+                <div className="text-[11px] font-bold uppercase tracking-widest text-slate-400 mb-3">Win Probability</div>
+                <div className="rounded-xl bg-[#f8fafd] border border-line p-4">
+                  <div className="flex justify-between text-[13px] mb-2 text-slate-700">
                     <span>Likelihood to close</span>
                     <span className="font-bold" style={{ color: probColor(d.prob) }}>{d.prob}%</span>
                   </div>
-                  <div className="h-2 rounded-full bg-white/10 overflow-hidden">
+                  <div className="h-2 rounded-full bg-slate-200 overflow-hidden">
                     <div className="h-full rounded-full transition-all duration-500" style={{ width: `${d.prob}%`, background: probColor(d.prob) }} />
                   </div>
-                  <p className="text-[11px] text-slate-500 mt-2">
+                  <p className="text-[11.5px] text-slate-500 mt-2">
                     {d.prob >= 70 ? 'High confidence — push to close now!' : d.prob >= 40 ? 'Medium — keep nurturing this deal.' : 'Low — needs more qualification.'}
                   </p>
                 </div>
@@ -88,7 +88,7 @@ export default function SidePanel({ deal: d, onClose, onMoveStage, onMarkWon, on
 
               {/* Move stage */}
               <section>
-                <div className="text-[11px] font-bold uppercase tracking-widest text-slate-500 mb-3">Move to Stage</div>
+                <div className="text-[11px] font-bold uppercase tracking-widest text-slate-400 mb-3">Move to Stage</div>
                 <div className="flex flex-wrap gap-2">
                   {STAGES.map(s => (
                     <button
@@ -97,8 +97,10 @@ export default function SidePanel({ deal: d, onClose, onMoveStage, onMarkWon, on
                       className="text-[11px] font-semibold px-3 py-1.5 rounded-full border transition"
                       style={s.id === d.stage
                         ? { background: s.color, borderColor: s.color, color: '#fff' }
-                        : { borderColor: 'rgba(255,255,255,0.1)', color: '#94a3b8' }
+                        : { borderColor: 'rgba(0,0,0,0.08)', color: '#64748b' }
                       }
+                      onMouseEnter={e => { if (s.id !== d.stage) e.currentTarget.style.background = '#f8fafd' }}
+                      onMouseLeave={e => { if (s.id !== d.stage) e.currentTarget.style.background = 'transparent' }}
                     >
                       {s.name}
                     </button>
@@ -108,18 +110,18 @@ export default function SidePanel({ deal: d, onClose, onMoveStage, onMarkWon, on
 
               {/* Activity */}
               <section>
-                <div className="text-[11px] font-bold uppercase tracking-widest text-slate-500 mb-3">Recent Activity</div>
-                <div className="space-y-0 divide-y divide-white/5">
+                <div className="text-[11px] font-bold uppercase tracking-widest text-slate-400 mb-3">Recent Activity</div>
+                <div className="space-y-0 divide-y divide-line">
                   {[
                     { icon: '📞', text: d.lastAct, time: d.lastActDays === 0 ? 'Today' : `${d.lastActDays}d ago` },
                     { icon: '✉️', text: 'Email thread started', time: `${d.lastActDays + 3}d ago` },
                     { icon: '👤', text: 'Deal created', time: `${d.lastActDays + 7}d ago` },
                   ].map((a, i) => (
                     <div key={i} className="flex items-start gap-3 py-3">
-                      <span className="h-8 w-8 rounded-lg bg-white/5 flex items-center justify-center text-[14px] flex-shrink-0">{a.icon}</span>
+                      <span className="h-8 w-8 rounded-lg bg-[#f0f5fb] flex items-center justify-center text-[14px] flex-shrink-0">{a.icon}</span>
                       <div>
-                        <div className="text-[13px] font-medium">{a.text}</div>
-                        <div className="text-[11px] text-slate-500">{a.time}</div>
+                        <div className="text-[13px] font-medium text-slate-800">{a.text}</div>
+                        <div className="text-[11px] text-slate-400">{a.time}</div>
                       </div>
                     </div>
                   ))}
@@ -128,19 +130,19 @@ export default function SidePanel({ deal: d, onClose, onMoveStage, onMarkWon, on
 
               {/* Note */}
               <section>
-                <div className="text-[11px] font-bold uppercase tracking-widest text-slate-500 mb-3">Quick Note</div>
+                <div className="text-[11px] font-bold uppercase tracking-widest text-slate-400 mb-3">Quick Note</div>
                 <textarea
-                  className="w-full rounded-lg border border-white/10 bg-white/[0.04] px-3 py-2 text-sm text-white outline-none placeholder:text-slate-500 focus:border-blue-500/60 resize-none h-20 transition"
+                  className="w-full rounded-lg border border-line bg-[#f8fafd] px-3 py-2 text-sm text-slate-800 outline-none placeholder:text-slate-400 focus:border-brand/60 resize-none h-20 transition"
                   placeholder="Add a note about this deal..."
                 />
-                <button className="mt-2 w-full py-1.5 rounded-lg border border-white/10 text-[12px] font-semibold text-slate-300 hover:bg-white/5 transition">✓ Save Note</button>
+                <button className="mt-2 w-full py-1.5 rounded-lg border border-line text-[12px] font-semibold text-slate-600 hover:bg-slate-50 transition">✓ Save Note</button>
               </section>
             </div>
 
             {/* Footer actions */}
-            <div className="flex gap-2 px-5 py-4 border-t border-white/10">
-              <button onClick={onMarkWon} className="flex-1 py-2 rounded-lg bg-green-600 hover:bg-green-700 text-white text-[13px] font-semibold transition flex items-center justify-center gap-1">🏆 Won</button>
-              <button onClick={onMarkLost} className="flex-1 py-2 rounded-lg border border-red-500/40 text-red-400 hover:bg-red-500/10 text-[13px] font-semibold transition flex items-center justify-center gap-1">✕ Lost</button>
+            <div className="flex gap-2 px-5 py-4 border-t border-line bg-slate-50/50">
+              <button onClick={onMarkWon} className="flex-1 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-[13px] font-semibold transition flex items-center justify-center gap-1">🏆 Won</button>
+              <button onClick={onMarkLost} className="flex-1 py-2 rounded-lg border border-red-500/40 text-red-500 hover:bg-red-50/50 text-[13px] font-semibold transition flex items-center justify-center gap-1">✕ Lost</button>
               <button onClick={onEdit} className="flex-1 py-2 rounded-lg btn-primary text-[13px] font-semibold flex items-center justify-center gap-1">✏ Edit</button>
             </div>
           </>
