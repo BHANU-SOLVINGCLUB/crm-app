@@ -1,0 +1,78 @@
+.deal-priority-dot {
+  width: 10px;
+  height: 10px;
+  flex-shrink: 0;
+  margin-top: 2px;
+  border-radius: 50%;
+}
+
+.deal-priority-pill {
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 600;
+}
+
+.priority-high {
+  background: #fef2f2;
+  color: #e24b4a;
+}
+
+.deal-priority-dot.priority-high {
+  background: #e24b4a;
+}
+
+.priority-medium {
+  background: #fffbeb;
+  color: #ef9f27;
+}
+
+.deal-priority-dot.priority-medium {
+  background: #ef9f27;
+}
+
+.priority-low {
+  background: #f9fafb;
+  color: #9ca3af;
+}
+
+.deal-priority-dot.priority-low {
+  background: #9ca3af;
+}
+
+.deal-prob-fill,
+.side-prob-fill {
+  height: 100%;
+  border-radius: 999px;
+  transition: width 0.2s ease;
+}
+
+.prob-high {
+  background: #16a34a;
+  color: #16a34a;
+}
+
+.prob-medium {
+  background: #f59e0b;
+  color: #f59e0b;
+}
+
+.prob-low {
+  background: #e24b4a;
+  color: #e24b4a;
+}
+
+.prob-width-15 { width: 15%; }
+.prob-width-20 { width: 20%; }
+.prob-width-30 { width: 30%; }
+.prob-width-35 { width: 35%; }
+.prob-width-50 { width: 50%; }
+.prob-width-55 { width: 55%; }
+.prob-width-65 { width: 65%; }
+.prob-width-70 { width: 70%; }
+.prob-width-85 { width: 85%; }
+.prob-width-100 { width: 100%; }
+
+.deal-date-urgent {
+  color: #f87171;
+}

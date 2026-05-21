@@ -1,0 +1,14 @@
+.timeline-dot {
+  position: absolute;
+  top: 4px;
+  left: -17px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: 3px solid var(--panel2);
+  border-radius: 50%;
+  background: #1e293b;
+  color: #94a3b8;
+}

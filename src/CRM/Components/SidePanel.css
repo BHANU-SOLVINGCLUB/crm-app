@@ -1,0 +1,71 @@
+.side-stage-dot {
+  width: 12px;
+  height: 12px;
+  flex-shrink: 0;
+  border-radius: 50%;
+}
+
+.stage-lead,
+.stage-bg-lead { background: #7b7fff; }
+.stage-contacted,
+.stage-bg-contacted { background: #4ca9ff; }
+.stage-qualified,
+.stage-bg-qualified { background: #00c9a7; }
+.stage-proposal,
+.stage-bg-proposal { background: #f4a83a; }
+.stage-negotiation,
+.stage-bg-negotiation { background: #ff8c42; }
+.stage-closed,
+.stage-bg-closed { background: #16a34a; }
+
+.stage-text-lead { color: #7b7fff; }
+.stage-text-contacted { color: #4ca9ff; }
+.stage-text-qualified { color: #00c9a7; }
+.stage-text-proposal { color: #f4a83a; }
+.stage-text-negotiation { color: #ff8c42; }
+.stage-text-closed { color: #16a34a; }
+
+.side-info-value {
+  color: #1f2937;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.side-priority {
+  padding: 2px 10px;
+  border-radius: 99px;
+  font-size: 12px;
+}
+
+.side-close-urgent {
+  color: #ef4444;
+}
+
+.prob-text-high { color: #16a34a; }
+.prob-text-medium { color: #f59e0b; }
+.prob-text-low { color: #e24b4a; }
+
+.side-stage-button {
+  padding: 6px 12px;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 999px;
+  color: #64748b;
+  font-size: 11px;
+  font-weight: 600;
+  transition: background 0.2s ease;
+}
+
+.side-stage-button:hover {
+  background: #f8fafd;
+}
+
+.side-stage-button.active {
+  color: #fff;
+}
+
+.stage-border-lead.active { border-color: #7b7fff; }
+.stage-border-contacted.active { border-color: #4ca9ff; }
+.stage-border-qualified.active { border-color: #00c9a7; }
+.stage-border-proposal.active { border-color: #f4a83a; }
+.stage-border-negotiation.active { border-color: #ff8c42; }
+.stage-border-closed.active { border-color: #16a34a; }

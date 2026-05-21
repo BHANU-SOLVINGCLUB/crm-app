@@ -1,24 +1,25 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
-import Sidebar from './components/layout/Sidebar'
-import Topbar from './components/layout/Topbar'
-import Dashboard from './pages/Dashboard'
-import Marketing from './pages/Marketing'
-import LeadCapture from './pages/LeadCapture'
-import SalesPipeline from './pages/SalesPipeline'
-import CustomersPage from './pages/customers/CustomersPage'
-import FinancePage from './pages/finance/FinancePage'
-import SupportPage from './pages/support/SupportPage'
-import SettingsPage from './pages/settings/SettingsPage'
-import AnalyticsPage from './pages/AnalyticsPage'
+import Sidebar from './CRM/Components/Sidebar'
+import Topbar from './CRM/Components/Topbar'
+import Dashboard from './CRM/Pages/Dashboard'
+import Marketing from './CRM/Pages/Marketing'
+import LeadCapture from './CRM/Pages/LeadCapture'
+import SalesPipeline from './CRM/Pages/SalesPipeline'
+import CustomersPage from './CRM/Pages/CustomersPage'
+import FinancePage from './CRM/Pages/FinancePage'
+import SupportPage from './CRM/Pages/SupportPage'
+import SettingsPage from './CRM/Pages/SettingsPage'
+import AnalyticsPage from './CRM/Pages/AnalyticsPage'
+import './App.css'
 
 export default function App() {
   return (
     <BrowserRouter>
-      <div className="flex min-h-screen">
+      <div className="crm-app-shell">
         <Sidebar />
-        <div className="flex-1 min-w-0 flex flex-col">
+        <div className="crm-main-shell">
           <Topbar />
-          <main className="flex-1">
+          <main className="crm-page-shell">
             <Routes>
               <Route path="/" element={<Dashboard />} />
               <Route path="/marketing" element={<Marketing />} />

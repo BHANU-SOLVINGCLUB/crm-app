@@ -1,0 +1,15 @@
+.crm-app-shell {
+  display: flex;
+  min-height: 100vh;
+}
+
+.crm-main-shell {
+  display: flex;
+  flex: 1;
+  min-width: 0;
+  flex-direction: column;
+}
+
+.crm-page-shell {
+  flex: 1;
+}
