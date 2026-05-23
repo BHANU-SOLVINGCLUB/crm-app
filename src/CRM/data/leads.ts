@@ -18,6 +18,22 @@ export interface LeadSchema {
 
 export type LeadRow = Record<string, string | number>
 
+export interface LeadInteraction {
+  id: string
+  leadId: string
+  leadLabel: string
+  interactionType: string
+  interactionChannel: string
+  interactionAt: string
+  interactionOutcome: string
+  followUpAt: string
+  followUpMode: string
+  remarks: string
+  autoStatusUpdate: boolean
+  followUpRequired: boolean
+  createdAt: string
+}
+
 export interface LeadsConfig {
   schema: LeadSchema
   rows: LeadRow[]
@@ -34,11 +50,11 @@ export const leadsByIndustry: Record<IndustryKey, LeadsConfig> = {
         { key: 'doctor', label: 'Preferred Doctor', type: 'select', width: 180, options: ['Dr. Mehta', 'Dr. Sharma', 'Dr. Iyer', 'Dr. Khan', 'Any Available'] },
         { key: 'source', label: 'Source', type: 'select', width: 140, options: ['WhatsApp', 'Google Ads', 'Meta Ads', 'JustDial', 'Referral', 'Walk-in'] },
         { key: 'appointment', label: 'Appointment', type: 'date', width: 140 },
-        { key: 'status', label: 'Status', type: 'select', width: 130, options: ['New', 'Contacted', 'Booked', 'Visited', 'Follow-up', 'Closed'] },
+        { key: 'status', label: 'Status', type: 'select', width: 130, options: ['New', 'Contacted', 'Booked', 'Visited', 'Follow-up', 'Closed', 'Spam', 'Duplicate'] },
         { key: 'value', label: 'Est. Value', type: 'currency', width: 120 },
       ],
       sources: ['WhatsApp', 'Google Ads', 'Meta Ads', 'JustDial', 'Referral', 'Walk-in'],
-      statuses: ['New', 'Contacted', 'Booked', 'Visited', 'Follow-up', 'Closed'],
+      statuses: ['New', 'Contacted', 'Booked', 'Visited', 'Follow-up', 'Closed', 'Spam', 'Duplicate'],
     },
     rows: [
       { name: 'Aarav Sharma', phone: '+91 98201 12345', email: 'aarav.s@gmail.com', condition: 'General Checkup', doctor: 'Dr. Mehta', source: 'WhatsApp', appointment: '2026-05-12', status: 'Booked', value: 2500 },
@@ -68,10 +84,10 @@ export const leadsByIndustry: Record<IndustryKey, LeadsConfig> = {
         { key: 'location', label: 'Location', type: 'select', width: 140, options: ['Mumbai', 'Pune', 'Bengaluru', 'Hyderabad', 'NCR', 'Chennai'] },
         { key: 'source', label: 'Source', type: 'select', width: 140, options: ['99acres', 'MagicBricks', 'Meta Ads', 'Google Ads', 'Walk-in', 'Channel Partner'] },
         { key: 'visit', label: 'Site Visit', type: 'date', width: 140 },
-        { key: 'status', label: 'Stage', type: 'select', width: 140, options: ['New', 'Contacted', 'Site Visit', 'Negotiation', 'Token Paid', 'Booked', 'Lost'] },
+        { key: 'status', label: 'Stage', type: 'select', width: 140, options: ['New', 'Contacted', 'Site Visit', 'Negotiation', 'Token Paid', 'Booked', 'Lost', 'Spam', 'Duplicate'] },
       ],
       sources: ['99acres', 'MagicBricks', 'Meta Ads', 'Google Ads', 'Walk-in', 'Channel Partner'],
-      statuses: ['New', 'Contacted', 'Site Visit', 'Negotiation', 'Token Paid', 'Booked', 'Lost'],
+      statuses: ['New', 'Contacted', 'Site Visit', 'Negotiation', 'Token Paid', 'Booked', 'Lost', 'Spam', 'Duplicate'],
     },
     rows: [
       { name: 'Amit Khanna', phone: '+91 98201 12000', email: 'amit.k@gmail.com', project: 'Skyline Towers', config: '3 BHK', budget: 12500000, location: 'Mumbai', source: '99acres', visit: '2026-05-12', status: 'Site Visit' },
@@ -100,10 +116,10 @@ export const leadsByIndustry: Record<IndustryKey, LeadsConfig> = {
         { key: 'channel', label: 'Channel', type: 'select', width: 140, options: ['Meta Ads', 'Google Shopping', 'Email', 'Influencer', 'Organic', 'WhatsApp'] },
         { key: 'segment', label: 'Segment', type: 'select', width: 130, options: ['New', 'Repeat', 'VIP', 'Lapsed', 'Cart Abandoner'] },
         { key: 'lastVisit', label: 'Last Visit', type: 'date', width: 130 },
-        { key: 'status', label: 'Status', type: 'select', width: 140, options: ['New', 'Engaged', 'Cart Abandoned', 'Recovered', 'Ordered', 'Returned'] },
+        { key: 'status', label: 'Status', type: 'select', width: 140, options: ['New', 'Engaged', 'Cart Abandoned', 'Recovered', 'Ordered', 'Returned', 'Spam', 'Duplicate'] },
       ],
       sources: ['Meta Ads', 'Google Shopping', 'Email', 'Influencer', 'Organic', 'WhatsApp'],
-      statuses: ['New', 'Engaged', 'Cart Abandoned', 'Recovered', 'Ordered', 'Returned'],
+      statuses: ['New', 'Engaged', 'Cart Abandoned', 'Recovered', 'Ordered', 'Returned', 'Spam', 'Duplicate'],
     },
     rows: [
       { name: 'Tanya Bhatia', email: 'tanya.b@gmail.com', phone: '+91 98765 11000', product: 'Apparel', cart: 4200, channel: 'Meta Ads', segment: 'Cart Abandoner', lastVisit: '2026-05-07', status: 'Cart Abandoned' },
@@ -133,10 +149,10 @@ export const leadsByIndustry: Record<IndustryKey, LeadsConfig> = {
         { key: 'mrr', label: 'Potential MRR', type: 'currency', width: 140 },
         { key: 'source', label: 'Source', type: 'select', width: 140, options: ['LinkedIn', 'Google Search', 'Product Hunt', 'G2', 'Email', 'Referral'] },
         { key: 'trialEnds', label: 'Trial Ends', type: 'date', width: 130 },
-        { key: 'status', label: 'Pipeline', type: 'select', width: 140, options: ['New', 'Trial', 'Activated', 'Demo Done', 'Negotiation', 'Won', 'Lost'] },
+        { key: 'status', label: 'Pipeline', type: 'select', width: 140, options: ['New', 'Trial', 'Activated', 'Demo Done', 'Negotiation', 'Won', 'Lost', 'Spam', 'Duplicate'] },
       ],
       sources: ['LinkedIn', 'Google Search', 'Product Hunt', 'G2', 'Email', 'Referral'],
-      statuses: ['New', 'Trial', 'Activated', 'Demo Done', 'Negotiation', 'Won', 'Lost'],
+      statuses: ['New', 'Trial', 'Activated', 'Demo Done', 'Negotiation', 'Won', 'Lost', 'Spam', 'Duplicate'],
     },
     rows: [
       { company: 'Brightline Labs', name: 'Maya Chen', email: 'maya@brightline.io', role: 'Founder', teamSize: '11-50', plan: 'Growth', mrr: 1200, source: 'LinkedIn', trialEnds: '2026-05-15', status: 'Trial' },
@@ -167,10 +183,10 @@ export const leadsByIndustry: Record<IndustryKey, LeadsConfig> = {
         { key: 'fee', label: 'Fee Quote', type: 'currency', width: 130 },
         { key: 'source', label: 'Source', type: 'select', width: 140, options: ['Meta Ads', 'Google Ads', 'YouTube', 'JustDial', 'School Tie-up', 'Referral'] },
         { key: 'counsel', label: 'Counselling', type: 'date', width: 140 },
-        { key: 'status', label: 'Status', type: 'select', width: 140, options: ['Inquiry', 'Counselled', 'Test Done', 'Admission Offered', 'Admitted', 'Dropped'] },
+        { key: 'status', label: 'Status', type: 'select', width: 140, options: ['Inquiry', 'Counselled', 'Test Done', 'Admission Offered', 'Admitted', 'Dropped', 'Spam', 'Duplicate'] },
       ],
       sources: ['Meta Ads', 'Google Ads', 'YouTube', 'JustDial', 'School Tie-up', 'Referral'],
-      statuses: ['Inquiry', 'Counselled', 'Test Done', 'Admission Offered', 'Admitted', 'Dropped'],
+      statuses: ['Inquiry', 'Counselled', 'Test Done', 'Admission Offered', 'Admitted', 'Dropped', 'Spam', 'Duplicate'],
     },
     rows: [
       { student: 'Arnav Kulkarni', parent: 'Rajesh Kulkarni', phone: '+91 98201 11221', email: 'rajesh.k@gmail.com', course: 'Class 11', mode: 'Hybrid', city: 'Pune', fee: 84000, source: 'Meta Ads', counsel: '2026-05-12', status: 'Counselled' },
@@ -201,10 +217,10 @@ export const leadsByIndustry: Record<IndustryKey, LeadsConfig> = {
         { key: 'value', label: 'Order Value', type: 'currency', width: 140 },
         { key: 'location', label: 'Location', type: 'text', width: 130 },
         { key: 'source', label: 'Source', type: 'select', width: 140, options: ['IndiaMART', 'TradeIndia', 'LinkedIn', 'Google Ads', 'Trade Show', 'Email'] },
-        { key: 'status', label: 'Stage', type: 'select', width: 140, options: ['Inquiry', 'Quoted', 'Negotiation', 'Sample Sent', 'PO Received', 'Shipped', 'Lost'] },
+        { key: 'status', label: 'Stage', type: 'select', width: 140, options: ['Inquiry', 'Quoted', 'Negotiation', 'Sample Sent', 'PO Received', 'Shipped', 'Lost', 'Spam', 'Duplicate'] },
       ],
       sources: ['IndiaMART', 'TradeIndia', 'LinkedIn', 'Google Ads', 'Trade Show', 'Email'],
-      statuses: ['Inquiry', 'Quoted', 'Negotiation', 'Sample Sent', 'PO Received', 'Shipped', 'Lost'],
+      statuses: ['Inquiry', 'Quoted', 'Negotiation', 'Sample Sent', 'PO Received', 'Shipped', 'Lost', 'Spam', 'Duplicate'],
     },
     rows: [
       { company: 'Tata Motors Vendors', contact: 'Suresh Iyer', phone: '+91 98201 11000', email: 'suresh@tatamv.com', industry: 'Auto', product: 'Industrial Gears', qty: 12000, value: 1840000, location: 'Pune', source: 'IndiaMART', status: 'Quoted' },
@@ -235,10 +251,10 @@ export const leadsByIndustry: Record<IndustryKey, LeadsConfig> = {
         { key: 'nights', label: 'Nights', type: 'number', width: 90 },
         { key: 'value', label: 'Booking Value', type: 'currency', width: 140 },
         { key: 'source', label: 'Source', type: 'select', width: 150, options: ['MakeMyTrip', 'Booking.com', 'Direct Website', 'WhatsApp', 'Meta Ads', 'TripAdvisor'] },
-        { key: 'status', label: 'Status', type: 'select', width: 140, options: ['Inquiry', 'Quoted', 'Tentative', 'Confirmed', 'Checked-in', 'Cancelled'] },
+        { key: 'status', label: 'Status', type: 'select', width: 140, options: ['Inquiry', 'Quoted', 'Tentative', 'Confirmed', 'Checked-in', 'Cancelled', 'Spam', 'Duplicate'] },
       ],
       sources: ['MakeMyTrip', 'Booking.com', 'Direct Website', 'WhatsApp', 'Meta Ads', 'TripAdvisor'],
-      statuses: ['Inquiry', 'Quoted', 'Tentative', 'Confirmed', 'Checked-in', 'Cancelled'],
+      statuses: ['Inquiry', 'Quoted', 'Tentative', 'Confirmed', 'Checked-in', 'Cancelled', 'Spam', 'Duplicate'],
     },
     rows: [
       { guest: 'Aditya Rao', phone: '+91 98201 22112', email: 'aditya.r@gmail.com', property: 'Lakeside Resort', roomType: 'Suite', guests: 2, checkin: '2026-05-15', nights: 3, value: 38400, source: 'MakeMyTrip', status: 'Confirmed' },
@@ -268,10 +284,10 @@ export const leadsByIndustry: Record<IndustryKey, LeadsConfig> = {
         { key: 'value', label: 'Project Value', type: 'currency', width: 140 },
         { key: 'source', label: 'Source', type: 'select', width: 140, options: ['LinkedIn', 'Google Ads', 'Referral', 'Email', 'Twitter', 'Conference'] },
         { key: 'discoveryCall', label: 'Discovery Call', type: 'date', width: 140 },
-        { key: 'status', label: 'Stage', type: 'select', width: 140, options: ['Inquiry', 'Discovery', 'Proposal', 'Negotiation', 'Signed', 'Lost'] },
+        { key: 'status', label: 'Stage', type: 'select', width: 140, options: ['Inquiry', 'Discovery', 'Proposal', 'Negotiation', 'Signed', 'Lost', 'Spam', 'Duplicate'] },
       ],
       sources: ['LinkedIn', 'Google Ads', 'Referral', 'Email', 'Twitter', 'Conference'],
-      statuses: ['Inquiry', 'Discovery', 'Proposal', 'Negotiation', 'Signed', 'Lost'],
+      statuses: ['Inquiry', 'Discovery', 'Proposal', 'Negotiation', 'Signed', 'Lost', 'Spam', 'Duplicate'],
     },
     rows: [
       { company: 'Bluewave Foods', contact: 'Tarun Bhalla', email: 'tarun@bluewave.in', service: 'Branding', budget: '₹2L-₹10L', timeline: '1 month', value: 480000, source: 'LinkedIn', discoveryCall: '2026-05-12', status: 'Proposal' },

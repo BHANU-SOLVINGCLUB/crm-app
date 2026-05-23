@@ -4,6 +4,7 @@ import Topbar from './CRM/Components/Topbar'
 import Dashboard from './CRM/Pages/Dashboard'
 import Marketing from './CRM/Pages/Marketing'
 import LeadCapture from './CRM/Pages/LeadCapture'
+import LeadDetailPage from './CRM/Pages/LeadDetailPage'
 import SalesPipeline from './CRM/Pages/SalesPipeline'
 import CustomersPage from './CRM/Pages/CustomersPage'
 import FinancePage from './CRM/Pages/FinancePage'
@@ -24,6 +25,7 @@ export default function App() {
               <Route path="/" element={<Dashboard />} />
               <Route path="/marketing" element={<Marketing />} />
               <Route path="/leads" element={<LeadCapture />} />
+              <Route path="/leads/:leadId" element={<LeadDetailPage />} />
               <Route path="/sales" element={<SalesPipeline />} />
               <Route path="/customers" element={<CustomersPage />} />
               <Route path="/finance" element={<FinancePage />} />
