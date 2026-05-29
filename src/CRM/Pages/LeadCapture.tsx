@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState, type CSSProperties } from 'react'
 import { createPortal } from 'react-dom'
-import { useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import {
   Plus,
   Filter,
@@ -29,6 +29,7 @@ import PageHeader from '../Components/PageHeader'
 import Drawer from '../Components/Drawer'
 import Timeline from '../Components/Timeline'
 import { useIndustryStore, useCurrentIndustry } from '../store/industryStore'
+import { pushAppToast } from '../store/uiStore'
 import { leadsByIndustry, type LeadColumn, type LeadInteraction, type LeadRow } from '../data/leads'
 import { normalizeIndustryKey } from '../data/industries'
 import { formatINR, formatNumber } from '../lib/format'
@@ -169,8 +170,23 @@ const interactionTypeOptions = [
 const interactionChannelOptions = ['Phone', 'WhatsApp', 'SMS', 'Email', 'Walk-in', 'Google Meet']
 const followUpModeOptions = ['Call Back', 'WhatsApp Message', 'SMS', 'Email', 'Meeting', 'No Follow-up']
 
+function buildBlankLeadRow(schema: { columns: LeadColumn[]; statuses: string[] }): LeadRow {
+  const blank: LeadRow = {}
+  schema.columns.forEach((column) => {
+    blank[column.key] =
+      column.type === 'currency' || column.type === 'number'
+        ? 0
+        : column.type === 'select'
+          ? column.options?.[0] ?? ''
+          : ''
+  })
+  blank.status = schema.statuses[0]
+  return blank
+}
+
 export default function LeadCapture() {
   const navigate = useNavigate()
+  const location = useLocation()
   const industry = useCurrentIndustry()
   const industryKey = useIndustryStore((s) => s.current)
   const getLeads = useIndustryStore((s) => s.getLeads)
@@ -248,13 +264,22 @@ export default function LeadCapture() {
   }
 
   const addRow = () => {
-    const blank: LeadRow = {}
-    schema.columns.forEach((c) => {
-      blank[c.key] = c.type === 'currency' || c.type === 'number' ? 0 : c.type === 'select' ? c.options?.[0] ?? '' : ''
-    })
-    blank.status = schema.statuses[0]
-    addLead(safeIndustryKey, blank)
+    addLead(safeIndustryKey, buildBlankLeadRow(schema))
+    pushToast('New lead row added.')
   }
+
+  useEffect(() => {
+    const params = new URLSearchParams(location.search)
+    if (params.get('quickAdd') !== 'lead') return
+
+    const timer = window.setTimeout(() => {
+      addLead(safeIndustryKey, buildBlankLeadRow(schema))
+      pushToast('Quick Add created a new lead row.')
+      navigate(location.pathname, { replace: true })
+    }, 0)
+
+    return () => window.clearTimeout(timer)
+  }, [addLead, location.pathname, location.search, navigate, safeIndustryKey, schema])
 
   const simulateRealtimeEvent = () => {
     const blank: LeadRow = {}
@@ -418,7 +443,7 @@ export default function LeadCapture() {
               <RotateCcw className="h-4 w-4" />
               Reset
             </button>
-            <button className="btn-ghost">
+            <button className="btn-ghost" onClick={() => pushToast('Import flow will map CSV columns into this lead sheet.')}>
               <Upload className="h-4 w-4" />
               Import
             </button>
@@ -507,7 +532,10 @@ export default function LeadCapture() {
                 Delete ({selected.size})
               </button>
             )}
-            <button className="btn-ghost">
+            <button
+              className="btn-ghost"
+              onClick={() => pushToast(`Export prepared for ${selected.size > 0 ? `${selected.size} selected` : filtered.length} lead(s).`)}
+            >
               <Download className="h-4 w-4" />
               Export
             </button>
@@ -632,10 +660,25 @@ export default function LeadCapture() {
           <div className="leads-drawer-content">
             {/* Quick Actions */}
             <div className="leads-drawer-actions">
-               <button className="btn-primary leads-drawer-action-btn">Send Email</button>
-               <button className="btn-ghost leads-drawer-action-btn leads-drawer-action-ghost">Log Call</button>
-               <button className="btn-ghost leads-drawer-action-btn leads-drawer-action-ghost">Schedule</button>
-            </div>
+               <button
+                 className="btn-primary leads-drawer-action-btn"
+                 onClick={() => pushAppToast(`Email draft opened for ${getLeadDisplayName(rows[selectedLeadIdx] ?? {})}.`, 'success')}
+               >
+                 Send Email
+               </button>
+               <button
+                 className="btn-ghost leads-drawer-action-btn leads-drawer-action-ghost"
+                 onClick={() => pushAppToast(`Call log started for ${getLeadDisplayName(rows[selectedLeadIdx] ?? {})}.`, 'success')}
+               >
+                 Log Call
+               </button>
+               <button
+                 className="btn-ghost leads-drawer-action-btn leads-drawer-action-ghost"
+                 onClick={() => pushAppToast(`Follow-up scheduling opened for ${getLeadDisplayName(rows[selectedLeadIdx] ?? {})}.`, 'success')}
+               >
+                 Schedule
+               </button>
+             </div>
             
             {/* Field Overview */}
             <div>

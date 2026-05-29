@@ -1,6 +1,6 @@
 .sidebar {
   display: none;
-  width: 240px;
+  width: 264px;
   flex-shrink: 0;
   flex-direction: column;
   border-right: 1px solid rgba(255, 255, 255, 0.08);
@@ -11,31 +11,61 @@
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 24px 20px 20px;
+  margin: 18px 16px 14px;
+  padding: 16px 18px;
+  border: 1px solid rgba(147, 197, 253, 0.14);
+  border-radius: 20px;
+  background:
+    radial-gradient(circle at top left, rgba(96, 165, 250, 0.22), transparent 42%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.05), rgba(8, 15, 30, 0.1));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
 }
 
 .sidebar-brand-mark {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 32px;
-  height: 32px;
-  border-radius: 8px;
-  background: linear-gradient(135deg, #3b82f6, #1a56db);
+  width: 46px;
+  height: 46px;
+  border-radius: 14px;
+  background: linear-gradient(145deg, #cfe2ff, #5a9bff 58%, #2563eb);
+  box-shadow: 0 10px 22px rgba(37, 99, 235, 0.22);
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.sidebar-brand-mark-ring {
+  position: absolute;
+  inset: 5px;
+  border: 1px solid rgba(255, 255, 255, 0.32);
+  border-radius: 10px;
+}
+
+.sidebar-brand-mark-letter {
+  position: relative;
   color: #fff;
-  font-size: 15px;
-  font-weight: 700;
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  text-shadow: 0 4px 10px rgba(15, 23, 42, 0.24);
+}
+
+.sidebar-brand-copy {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  flex: 1;
 }
 
 .sidebar-brand-title {
   color: #fff;
-  font-size: 14px;
-  font-weight: 700;
-}
-
-.sidebar-brand-subtitle {
-  color: rgba(255, 255, 255, 0.4);
-  font-size: 10px;
+  font-size: 16px;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  line-height: 1;
+  white-space: nowrap;
+  text-shadow: 0 6px 16px rgba(15, 23, 42, 0.22);
 }
 
 .sidebar-divider {

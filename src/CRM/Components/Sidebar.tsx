@@ -13,9 +13,9 @@ import {
   ExternalLink,
   HelpCircle,
   Bell,
-  PieChart,
 } from 'lucide-react'
 import HelpSupportDrawer from './HelpSupportDrawer'
+import { pushAppToast } from '../store/uiStore'
 import './Sidebar.css'
 
 const nav = [
@@ -23,7 +23,6 @@ const nav = [
   { to: '/marketing', label: 'Marketing', icon: Megaphone, active: true },
   { to: '/leads', label: 'Lead Capture', icon: Target, active: true },
   { to: '/sales', label: 'Sales', icon: Briefcase, active: true },
-  { to: '/analytics', label: 'Analytics', icon: PieChart, active: true },
   { to: '/customers', label: 'Customers', icon: Users, active: true },
   { to: '/finance', label: 'Finance', icon: Wallet, active: true },
   { to: '/support', label: 'Support', icon: Headphones, active: true },
@@ -36,10 +35,12 @@ export default function Sidebar() {
   return (
     <aside className="sidebar">
       <div className="sidebar-brand">
-        <div className="sidebar-brand-mark">K</div>
-        <div>
+        <div className="sidebar-brand-mark" aria-hidden="true">
+          <span className="sidebar-brand-mark-ring" />
+          <span className="sidebar-brand-mark-letter">K</span>
+        </div>
+        <div className="sidebar-brand-copy">
           <div className="sidebar-brand-title">Krisantec CRM</div>
-          <div className="sidebar-brand-subtitle">v0.1 - Frontend preview</div>
         </div>
       </div>
 
@@ -85,7 +86,7 @@ export default function Sidebar() {
           <span>Project Docs</span>
           <ExternalLink className="sidebar-external-icon" strokeWidth={2} />
         </a>
-        <button className="sidebar-link sidebar-action" type="button">
+        <button className="sidebar-link sidebar-action" type="button" onClick={() => pushAppToast('Notification center opened from the sidebar.', 'success')}>
           <Bell className="sidebar-link-icon" strokeWidth={1.8} />
           <span>Notifications</span>
           <span className="sidebar-count">3</span>

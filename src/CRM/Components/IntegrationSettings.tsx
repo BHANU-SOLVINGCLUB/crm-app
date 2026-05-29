@@ -1,14 +1,27 @@
+import { useState } from 'react'
+import { pushAppToast } from '../store/uiStore'
 import './IntegrationSettings.css'
 
 export default function IntegrationSettings() {
-  const integrations = [
+  const [integrations, setIntegrations] = useState([
     { name: 'Google Workspace', desc: 'Sync emails, calendar events, and contacts.', icon: 'G', connected: true },
     { name: 'Slack', desc: 'Receive real-time notifications in your channels.', icon: '#', connected: false },
     { name: 'Stripe', desc: 'Process payments and sync invoices automatically.', icon: 'S', connected: true },
     { name: 'Zoom', desc: 'Automatically create meeting links for events.', icon: 'Z', connected: false },
     { name: 'Mailchimp', desc: 'Sync your marketing audience and campaigns.', icon: 'M', connected: false },
     { name: 'Zendesk', desc: 'Connect support tickets with CRM customer data.', icon: 'Z', connected: false },
-  ]
+  ])
+
+  const toggleIntegration = (name: string) => {
+    setIntegrations((current) =>
+      current.map((app) => {
+        if (app.name !== name) return app
+        const connected = !app.connected
+        pushAppToast(connected ? `${app.name} connected successfully.` : `${app.name} settings opened.`, 'success')
+        return { ...app, connected }
+      })
+    )
+  }
 
   return (
     <div className="space-y-6">
@@ -32,11 +45,14 @@ export default function IntegrationSettings() {
             </div>
             <h4 className="font-semibold text-slate-800 text-[15px]">{app.name}</h4>
             <p className="text-[13px] text-slate-500 mt-1 mb-5 flex-1">{app.desc}</p>
-            <button className={`w-full py-2 rounded-lg text-[13px] font-semibold transition-colors ${
-              app.connected
-                ? 'bg-slate-50 text-slate-600 border border-slate-200 hover:bg-slate-100'
-                : 'bg-brand-blue/10 text-brand-blue hover:bg-brand-blue/20'
-            }`}>
+            <button
+              className={`w-full py-2 rounded-lg text-[13px] font-semibold transition-colors ${
+                app.connected
+                  ? 'bg-slate-50 text-slate-600 border border-slate-200 hover:bg-slate-100'
+                  : 'bg-brand-blue/10 text-brand-blue hover:bg-brand-blue/20'
+              }`}
+              onClick={() => toggleIntegration(app.name)}
+            >
               {app.connected ? 'Manage Settings' : 'Connect'}
             </button>
           </div>

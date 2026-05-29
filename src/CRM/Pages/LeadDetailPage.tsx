@@ -37,6 +37,7 @@ import { getLeadDetailSeed, getLeadIdFromRow, type LeadDocumentItem, type LeadFo
 import { leadsByIndustry } from '../data/leads'
 import { formatINR } from '../lib/format'
 import { useCurrentIndustry, useIndustryStore } from '../store/industryStore'
+import { pushAppToast } from '../store/uiStore'
 import './LeadDetailPage.css'
 
 const crmStages: LeadStage[] = ['New', 'Contacted', 'Booked', 'Visited', 'Closed/Won']
@@ -550,7 +551,7 @@ function LeadDetailWorkspace({
               Back to Lead Capture
             </button>
           </div>
-          <button type="button" className="btn-ghost">
+          <button type="button" className="btn-ghost" onClick={() => pushAppToast(`Editing opened for ${profile.fullName}.`, 'success')}>
             <UserRoundPen className="h-4 w-4" />
             Edit
           </button>

@@ -1,6 +1,10 @@
-﻿import { Building2, Save } from 'lucide-react'
+import { useRef } from 'react'
+import { Building2, Save } from 'lucide-react'
+import { pushAppToast } from '../store/uiStore'
 
 export default function OrganizationSettings() {
+  const fileInputRef = useRef<HTMLInputElement | null>(null)
+
   return (
     <div className="space-y-6 max-w-3xl">
       <div>
@@ -13,7 +17,19 @@ export default function OrganizationSettings() {
           <Building2 className="h-8 w-8" />
         </div>
         <div>
-          <button className="btn-ghost !text-[13px] mb-2">Upload company logo</button>
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/*"
+            className="hidden"
+            onChange={(event) => {
+              const fileName = event.target.files?.[0]?.name
+              if (fileName) pushAppToast(`Company logo selected: ${fileName}`, 'success')
+            }}
+          />
+          <button className="btn-ghost !text-[13px] mb-2" onClick={() => fileInputRef.current?.click()}>
+            Upload company logo
+          </button>
           <div className="text-[12px] text-slate-500">Square image recommended.</div>
         </div>
       </div>
@@ -29,9 +45,9 @@ export default function OrganizationSettings() {
         </div>
         <div className="col-span-2">
           <label className="block text-[13px] font-medium text-slate-700 mb-1.5">Business Address</label>
-          <textarea className="input min-h-[80px]" defaultValue="123 Business Avenue, Suite 400\nSan Francisco, CA 94107\nUnited States" />
+          <textarea className="input min-h-[80px]" defaultValue={'123 Business Avenue, Suite 400\nSan Francisco, CA 94107\nUnited States'} />
         </div>
-        
+
         <div>
           <label className="block text-[13px] font-medium text-slate-700 mb-1.5">Default Timezone</label>
           <select className="input">
@@ -53,11 +69,10 @@ export default function OrganizationSettings() {
       </div>
 
       <div className="pt-4 flex justify-end">
-        <button className="btn-primary">
+        <button className="btn-primary" onClick={() => pushAppToast('Organization settings saved.', 'success')}>
           <Save className="h-4 w-4" /> Save Organization
         </button>
       </div>
     </div>
   )
 }
-

@@ -1,4 +1,5 @@
-﻿import { Smartphone, Mail, Save } from 'lucide-react'
+import { Smartphone, Mail, Save } from 'lucide-react'
+import { pushAppToast } from '../store/uiStore'
 
 export default function NotificationSettings() {
   const notifGroups = [
@@ -65,11 +66,10 @@ export default function NotificationSettings() {
       </div>
 
       <div className="pt-4 flex justify-end border-t border-line">
-        <button className="btn-primary">
+        <button className="btn-primary" onClick={() => pushAppToast('Notification preferences saved.', 'success')}>
           <Save className="h-4 w-4" /> Save Preferences
         </button>
       </div>
     </div>
   )
 }
-

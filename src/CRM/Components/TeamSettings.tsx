@@ -1,4 +1,5 @@
 import { UserPlus, MoreHorizontal } from 'lucide-react'
+import { pushAppToast } from '../store/uiStore'
 import './TeamSettings.css'
 
 const TEAM = [
@@ -16,7 +17,7 @@ export default function TeamSettings() {
           <h3 className="text-lg font-semibold text-slate-800">Team Management</h3>
           <p className="text-sm text-slate-500 mt-1">Manage users, roles, and access permissions.</p>
         </div>
-        <button className="btn-primary !py-1.5">
+        <button className="btn-primary !py-1.5" onClick={() => pushAppToast('Invite user dialog opened.', 'success')}>
           <UserPlus className="h-4 w-4" /> Invite User
         </button>
       </div>
@@ -54,7 +55,7 @@ export default function TeamSettings() {
                   </span>
                 </td>
                 <td className="px-5 py-3 text-right">
-                  <button className="p-1.5 text-slate-400 hover:text-slate-700 rounded-md hover:bg-slate-100 transition-colors">
+                  <button className="p-1.5 text-slate-400 hover:text-slate-700 rounded-md hover:bg-slate-100 transition-colors" onClick={() => pushAppToast(`Member actions opened for ${member.name}.`, 'success')}>
                     <MoreHorizontal className="h-4 w-4" />
                   </button>
                 </td>

@@ -1,6 +1,12 @@
-﻿import { Camera, Save } from 'lucide-react'
+import { useRef } from 'react'
+import { Camera, Save } from 'lucide-react'
+import { pushAppToast } from '../store/uiStore'
 
 export default function ProfileSettings() {
+  const fileInputRef = useRef<HTMLInputElement | null>(null)
+
+  const triggerUpload = () => fileInputRef.current?.click()
+
   return (
     <div className="space-y-6 max-w-3xl">
       <div>
@@ -10,15 +16,25 @@ export default function ProfileSettings() {
 
       <div className="flex items-center gap-6 pb-6 border-b border-line">
         <div className="relative">
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/*"
+            className="hidden"
+            onChange={(event) => {
+              const fileName = event.target.files?.[0]?.name
+              if (fileName) pushAppToast(`Profile picture selected: ${fileName}`, 'success')
+            }}
+          />
           <div className="h-24 w-24 rounded-full bg-gradient-to-tr from-blue-500 to-indigo-500 flex items-center justify-center text-white text-3xl font-bold shadow-md">
             JD
           </div>
-          <button className="absolute bottom-0 right-0 h-8 w-8 rounded-full bg-white border border-slate-200 shadow-sm flex items-center justify-center text-slate-600 hover:text-brand-blue hover:border-brand-blue transition-colors">
+          <button className="absolute bottom-0 right-0 h-8 w-8 rounded-full bg-white border border-slate-200 shadow-sm flex items-center justify-center text-slate-600 hover:text-brand-blue hover:border-brand-blue transition-colors" onClick={triggerUpload}>
             <Camera className="h-4 w-4" />
           </button>
         </div>
         <div>
-          <button className="btn-ghost !text-[13px] mb-2">Upload new picture</button>
+          <button className="btn-ghost !text-[13px] mb-2" onClick={triggerUpload}>Upload new picture</button>
           <div className="text-[12px] text-slate-500">JPG, GIF or PNG. Max size of 800K.</div>
         </div>
       </div>
@@ -47,11 +63,10 @@ export default function ProfileSettings() {
       </div>
 
       <div className="pt-4 flex justify-end">
-        <button className="btn-primary">
+        <button className="btn-primary" onClick={() => pushAppToast('Profile changes saved.', 'success')}>
           <Save className="h-4 w-4" /> Save Changes
         </button>
       </div>
     </div>
   )
 }
-

@@ -7,6 +7,7 @@ import {
 import clsx from 'clsx'
 import type { Customer } from '../data/customerData'
 import { fmtRevenue } from '../data/customerData'
+import { pushAppToast } from '../store/uiStore'
 import './CustomerDrawer.css'
 
 interface Props {
@@ -64,6 +65,26 @@ export default function CustomerDrawer({ customer, onClose, onUpdate }: Props) {
     if (customer && notes !== customer.notes) {
       onUpdate(customer.id, { notes })
     }
+  }
+
+  const runQuickAction = (action: 'edit' | 'email' | 'activate' | 'ticket') => {
+    if (!customer) return
+    if (action === 'edit') {
+      setTab('info')
+      pushAppToast(`Customer profile ready to edit for ${customer.name}.`, 'success')
+      return
+    }
+    if (action === 'email') {
+      pushAppToast(`Email draft opened for ${customer.name}.`, 'success')
+      return
+    }
+    if (action === 'activate') {
+      onUpdate(customer.id, { status: 'Active' })
+      pushAppToast(`${customer.name} marked as active.`, 'success')
+      return
+    }
+    setTab('tickets')
+    pushAppToast(`Support ticket view opened for ${customer.name}.`, 'success')
   }
 
   if (!customer && !visible) return null
@@ -184,15 +205,15 @@ export default function CustomerDrawer({ customer, onClose, onUpdate }: Props) {
                     <div className="drawer-label">Quick Actions</div>
                     <div className="grid grid-cols-2 gap-2">
                       {[
-                        { icon: <Edit3 className="h-4 w-4" />,        label: 'Edit Customer' },
-                        { icon: <Mail className="h-4 w-4" />,          label: 'Send Email' },
-                        { icon: <CheckCircle2 className="h-4 w-4" />, label: 'Mark Active' },
-                        { icon: <LifeBuoy className="h-4 w-4" />,     label: 'Open Ticket' },
+                        { icon: <Edit3 className="h-4 w-4" />, label: 'Edit Customer', action: 'edit' as const },
+                        { icon: <Mail className="h-4 w-4" />, label: 'Send Email', action: 'email' as const },
+                        { icon: <CheckCircle2 className="h-4 w-4" />, label: 'Mark Active', action: 'activate' as const },
+                        { icon: <LifeBuoy className="h-4 w-4" />, label: 'Open Ticket', action: 'ticket' as const },
                       ].map((a) => (
                         <button
                           key={a.label}
                           className="customer-quick-action flex items-center gap-2 rounded-xl px-3 py-2.5 text-[12.5px] font-medium text-gray-600 hover:text-blue-700 transition"
-                          onClick={() => {/* hook up later */}}
+                          onClick={() => runQuickAction(a.action)}
                         >
                           <span className="customer-quick-action-icon">{a.icon}</span>
                           {a.label}

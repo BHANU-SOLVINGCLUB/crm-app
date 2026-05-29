@@ -1,4 +1,5 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState, type ReactNode } from 'react'
+import { useLocation, useNavigate } from 'react-router-dom'
 import {
   Plus, Search, Trash2, Download, Filter,
   CheckCircle2, TrendingUp, CircleDollarSign, Trophy,
@@ -7,29 +8,52 @@ import clsx from 'clsx'
 import PageHeader from '../Components/PageHeader'
 import SidePanel from '../Components/SidePanel'
 import DealModal from '../Components/DealModal'
+import DealCard from '../Components/DealCard'
 import { STAGES, INITIAL_DEALS, fmt, pColor, probColor } from '../data/pipeline'
 import type { Deal } from '../data/pipeline'
 
-let _nextId = 11
+let nextId = 11
 
-const STAGE_OPTIONS = STAGES.map(s => s.id)
+const STAGE_OPTIONS = STAGES.map((stage) => stage.id)
 const PRIORITY_OPTIONS = ['high', 'medium', 'low']
+const DEAL_OWNERS = ['Aarav Shah', 'Priya Menon', 'Neha Rao', 'Karan Malhotra']
 
-// ─── Cell renderer ───────────────────────────────────────────────────────────
+function getDealOwner(deal: Deal) {
+  return DEAL_OWNERS[deal.id % DEAL_OWNERS.length]
+}
+
+function hasOverdueFollowUp(deal: Deal) {
+  return deal.lastActDays >= 5
+}
+
+function getCloseDateBucket(closeDate: string) {
+  const today = new Date()
+  const target = new Date(closeDate)
+  const days = Math.ceil((target.getTime() - today.getTime()) / 864e5)
+  if (days >= 0 && days <= 7) return 'This Week'
+  if (target.getMonth() === today.getMonth() && target.getFullYear() === today.getFullYear()) return 'This Month'
+  return 'Later'
+}
+
+function getValueBucket(value: number) {
+  if (value > 500000) return 'Above 500K'
+  if (value < 200000) return 'Below 200K'
+  return '200K to 500K'
+}
 
 function StageCell({ value, onChange }: { value: string; onChange: (v: string) => void }) {
-  const st = STAGES.find(s => s.id === value)
+  const stage = STAGES.find((item) => item.id === value)
   return (
     <div className="relative h-full w-full">
       <select
         value={value}
-        onChange={e => onChange(e.target.value)}
+        onChange={(event) => onChange(event.target.value)}
         className="cell-input appearance-none cursor-pointer font-semibold"
-        style={{ color: st?.color }}
+        style={{ color: stage?.color }}
       >
-        {STAGE_OPTIONS.map(o => (
-          <option key={o} value={o} className="bg-white text-slate-800 font-normal">
-            {STAGES.find(s => s.id === o)?.name ?? o}
+        {STAGE_OPTIONS.map((option) => (
+          <option key={option} value={option} className="bg-white text-slate-800 font-normal">
+            {STAGES.find((stageItem) => stageItem.id === option)?.name ?? option}
           </option>
         ))}
       </select>
@@ -42,12 +66,12 @@ function PriorityCell({ value, onChange }: { value: string; onChange: (v: string
     <div className="relative h-full w-full">
       <select
         value={value}
-        onChange={e => onChange(e.target.value)}
+        onChange={(event) => onChange(event.target.value)}
         className="cell-input appearance-none cursor-pointer font-semibold"
         style={{ color: pColor(value) }}
       >
-        {PRIORITY_OPTIONS.map(o => (
-          <option key={o} value={o} className="bg-white text-slate-800 font-normal">{o}</option>
+        {PRIORITY_OPTIONS.map((option) => (
+          <option key={option} value={option} className="bg-white text-slate-800 font-normal">{option}</option>
         ))}
       </select>
     </div>
@@ -61,9 +85,11 @@ function ProbCell({ value, onChange }: { value: number; onChange: (v: number) =>
         <div className="h-full rounded-full" style={{ width: `${value}%`, background: probColor(value) }} />
       </div>
       <input
-        type="number" min={0} max={100}
+        type="number"
+        min={0}
+        max={100}
         value={value}
-        onChange={e => onChange(Number(e.target.value))}
+        onChange={(event) => onChange(Number(event.target.value))}
         className="w-10 bg-transparent border-none outline-none text-right text-[12px] tabular-nums"
         style={{ color: probColor(value) }}
       />
@@ -72,87 +98,138 @@ function ProbCell({ value, onChange }: { value: number; onChange: (v: number) =>
   )
 }
 
-// ─── Main page ───────────────────────────────────────────────────────────────
-
 export default function SalesPipeline() {
+  const navigate = useNavigate()
+  const location = useLocation()
   const [deals, setDeals] = useState<Deal[]>(INITIAL_DEALS)
   const [wonDeals, setWonDeals] = useState<Deal[]>([])
   const [search, setSearch] = useState('')
-  const [stageFilter, setStageFilter] = useState('All')
+  const [filters, setFilters] = useState({
+    stage: 'All',
+    priority: 'All',
+    owner: 'All',
+    closeDate: 'All',
+    value: 'All',
+    overdueOnly: false,
+  })
   const [selected, setSelected] = useState<Set<number>>(new Set())
   const [panelDeal, setPanelDeal] = useState<Deal | null>(null)
   const [modalOpen, setModalOpen] = useState(false)
   const [editDeal, setEditDeal] = useState<Deal | null>(null)
   const [outcome, setOutcome] = useState<{ type: 'won' | 'lost'; deal: Deal } | null>(null)
   const [toast, setToast] = useState<{ msg: string; green?: boolean } | null>(null)
+  const [draggedDealId, setDraggedDealId] = useState<number | null>(null)
 
   const showToast = (msg: string, green?: boolean) => {
     setToast({ msg, green })
     setTimeout(() => setToast(null), 3000)
   }
 
-  // ── Filtered rows ────────────────────────────────────────────────────────────
   const filtered = useMemo(() => {
-    const q = search.trim().toLowerCase()
+    const query = search.trim().toLowerCase()
     return deals
-      .map((d, i) => ({ deal: d, i }))
-      .filter(({ deal: d }) => {
-        if (stageFilter !== 'All' && d.stage !== stageFilter) return false
-        if (!q) return true
-        return [d.company, d.contact, d.email, d.sector, d.priority, d.stage]
-          .some(v => String(v).toLowerCase().includes(q))
-      })
-  }, [deals, search, stageFilter])
+      .map((deal, index) => ({ deal, index }))
+      .filter(({ deal }) => {
+        if (filters.stage !== 'All' && deal.stage !== filters.stage) return false
+        if (filters.priority !== 'All' && deal.priority !== filters.priority) return false
+        if (filters.owner !== 'All' && getDealOwner(deal) !== filters.owner) return false
+        if (filters.closeDate !== 'All' && getCloseDateBucket(deal.closeDate) !== filters.closeDate) return false
+        if (filters.value !== 'All' && getValueBucket(deal.value) !== filters.value) return false
+        if (filters.overdueOnly && !hasOverdueFollowUp(deal)) return false
+        if (!query) return true
 
-  // ── Stats ────────────────────────────────────────────────────────────────────
+        return [
+          deal.company,
+          deal.contact,
+          deal.email,
+          deal.sector,
+          deal.priority,
+          deal.stage,
+          getDealOwner(deal),
+        ].some((value) => String(value).toLowerCase().includes(query))
+      })
+  }, [deals, filters, search])
+
   const stats = useMemo(() => {
-    const totalVal = deals.reduce((s, d) => s + d.value, 0)
-    const weighted = deals.reduce((s, d) => s + d.value * d.prob / 100, 0)
-    const wonVal = wonDeals.reduce((s, d) => s + d.value, 0) + 540000
-    return { totalVal, weighted, wonVal, wonCount: wonDeals.length + 1 }
+    const totalVal = deals.reduce((sum, deal) => sum + deal.value, 0)
+    const weighted = deals.reduce((sum, deal) => sum + deal.value * deal.prob / 100, 0)
+    const wonVal = wonDeals.reduce((sum, deal) => sum + deal.value, 0) + 540000
+    const overdue = deals.filter(hasOverdueFollowUp).length
+    return { totalVal, weighted, wonVal, wonCount: wonDeals.length + 1, overdue }
   }, [deals, wonDeals])
 
-  // ── Mutation helpers ─────────────────────────────────────────────────────────
-  const updateCell = (dealId: number, key: keyof Deal, val: string | number) => {
-    setDeals(prev => prev.map(d => d.id === dealId ? { ...d, [key]: val } : d))
-    if (panelDeal?.id === dealId) setPanelDeal(prev => prev ? { ...prev, [key]: val } : null)
+  const stageColumns = useMemo(() => (
+    STAGES.map((stage) => ({
+      ...stage,
+      deals: filtered.map((item) => item.deal).filter((deal) => deal.stage === stage.id),
+    }))
+  ), [filtered])
+
+  const updateCell = (dealId: number, key: keyof Deal, value: string | number) => {
+    setDeals((current) => current.map((deal) => (deal.id === dealId ? { ...deal, [key]: value } : deal)))
+    if (panelDeal?.id === dealId) setPanelDeal((current) => current ? { ...current, [key]: value } : null)
   }
 
   const addRow = () => {
     const newDeal: Deal = {
-      id: _nextId++, company: '', contact: '', email: '', value: 0,
-      stage: 'lead', prob: 30, priority: 'medium',
-      closeDate: '', sector: '', lastAct: 'Deal created', lastActDays: 0,
+      id: nextId++,
+      company: '',
+      contact: '',
+      email: '',
+      value: 0,
+      stage: 'lead',
+      prob: 30,
+      priority: 'medium',
+      closeDate: '',
+      sector: '',
+      lastAct: 'Deal created',
+      lastActDays: 0,
     }
-    setDeals(prev => [newDeal, ...prev])
+    setDeals((current) => [newDeal, ...current])
+    showToast('New deal row added', true)
   }
 
+  useEffect(() => {
+    const params = new URLSearchParams(location.search)
+    if (params.get('quickAdd') !== 'deal') return
+
+    const timer = window.setTimeout(() => {
+      setEditDeal(null)
+      setModalOpen(true)
+      showToast('Quick Add opened a new deal form', true)
+      navigate(location.pathname, { replace: true })
+    }, 0)
+
+    return () => window.clearTimeout(timer)
+  }, [location.pathname, location.search, navigate])
+
   const deleteSelected = () => {
-    setDeals(prev => prev.filter(d => !selected.has(d.id)))
+    setDeals((current) => current.filter((deal) => !selected.has(deal.id)))
     setSelected(new Set())
     showToast(`${selected.size} deal(s) deleted`)
   }
 
   const toggleSelect = (id: number) => {
-    setSelected(prev => {
-      const next = new Set(prev)
-      next.has(id) ? next.delete(id) : next.add(id)
+    setSelected((current) => {
+      const next = new Set(current)
+      if (next.has(id)) next.delete(id)
+      else next.add(id)
       return next
     })
   }
 
   const toggleSelectAll = () => {
     if (selected.size === filtered.length) setSelected(new Set())
-    else setSelected(new Set(filtered.map(f => f.deal.id)))
+    else setSelected(new Set(filtered.map((item) => item.deal.id)))
   }
 
   const handleSaveDeal = (data: Omit<Deal, 'id' | 'lastAct' | 'lastActDays'>) => {
     if (editDeal) {
-      setDeals(prev => prev.map(d => d.id === editDeal.id ? { ...d, ...data } : d))
-      if (panelDeal?.id === editDeal.id) setPanelDeal(prev => prev ? { ...prev, ...data } : null)
+      setDeals((current) => current.map((deal) => (deal.id === editDeal.id ? { ...deal, ...data } : deal)))
+      if (panelDeal?.id === editDeal.id) setPanelDeal((current) => current ? { ...current, ...data } : null)
       showToast(`${data.company} updated!`, true)
     } else {
-      setDeals(prev => [{ ...data, id: _nextId++, lastAct: 'Deal created', lastActDays: 0 }, ...prev])
+      setDeals((current) => [{ ...data, id: nextId++, lastAct: 'Deal created', lastActDays: 0 }, ...current])
       showToast(`${data.company} added!`, true)
     }
     setModalOpen(false)
@@ -161,23 +238,97 @@ export default function SalesPipeline() {
 
   const handleMarkOutcome = (type: 'won' | 'lost') => {
     if (!panelDeal) return
-    const d = panelDeal
-    setOutcome({ type, deal: d })
-    if (type === 'won') setWonDeals(p => [...p, d])
-    setDeals(p => p.filter(x => x.id !== d.id))
+    const deal = panelDeal
+    setOutcome({ type, deal })
+    if (type === 'won') setWonDeals((current) => [...current, deal])
+    setDeals((current) => current.filter((item) => item.id !== deal.id))
     setPanelDeal(null)
   }
 
-  // ─── Render ──────────────────────────────────────────────────────────────────
+  const openDealDetail = (deal: Deal) => {
+    navigate(`/sales/${deal.id}`, {
+      state: {
+        deal: {
+          id: deal.id,
+          companyName: deal.company,
+          contactPerson: deal.contact,
+          contactEmail: deal.email,
+          dealValue: deal.value,
+          stage: deal.stage === 'closed' ? 'closed_won' : deal.stage,
+          priority: deal.priority,
+          probability: deal.prob,
+          closeDate: deal.closeDate,
+          owner: getDealOwner(deal),
+          dealName: `${deal.company} ${deal.sector} Expansion`,
+        },
+      },
+    })
+  }
+
+  const exportDeals = () => {
+    const rows = filtered.map(({ deal }) => [
+      deal.company,
+      deal.contact,
+      deal.email,
+      fmt(deal.value),
+      STAGES.find((stage) => stage.id === deal.stage)?.name ?? deal.stage,
+      deal.priority,
+      `${deal.prob}%`,
+      deal.closeDate,
+      getDealOwner(deal),
+      hasOverdueFollowUp(deal) ? 'Yes' : 'No',
+    ])
+
+    const csv = [
+      ['Company', 'Contact', 'Email', 'Value', 'Stage', 'Priority', 'Probability', 'Close Date', 'Deal Owner', 'Overdue Follow-up'],
+      ...rows,
+    ]
+      .map((row) => row.map((value) => `"${String(value).replaceAll('"', '""')}"`).join(','))
+      .join('\n')
+
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' })
+    const url = URL.createObjectURL(blob)
+    const anchor = document.createElement('a')
+    anchor.href = url
+    anchor.download = 'sales-pipeline.csv'
+    anchor.click()
+    URL.revokeObjectURL(url)
+    showToast('Pipeline exported', true)
+  }
+
+  const moveDealToStage = (dealId: number, stageId: string) => {
+    const probability = STAGES.find((stage) => stage.id === stageId)?.id === 'closed'
+      ? 100
+      : STAGES.find((stage) => stage.id === stageId)?.id === 'negotiation'
+        ? 85
+        : STAGES.find((stage) => stage.id === stageId)?.id === 'proposal'
+          ? 70
+          : STAGES.find((stage) => stage.id === stageId)?.id === 'qualified'
+            ? 55
+            : STAGES.find((stage) => stage.id === stageId)?.id === 'contacted'
+              ? 35
+              : 20
+
+    setDeals((current) => current.map((deal) => (
+      deal.id === dealId
+        ? { ...deal, stage: stageId, prob: probability, lastAct: `Moved to ${STAGES.find((stage) => stage.id === stageId)?.name ?? stageId}`, lastActDays: 0 }
+        : deal
+    )))
+    if (panelDeal?.id === dealId) {
+      setPanelDeal((current) => current ? { ...current, stage: stageId, prob: probability } : null)
+    }
+    showToast('Deal moved to new stage', true)
+  }
+
   return (
     <div className="px-5 lg:px-8 py-6 lg:py-8">
       <PageHeader
         eyebrow="Sales Pipeline"
-        title="Deal sheet & pipeline tracker"
-        subtitle="Edit deals inline, track stages and win probability — all in one live sheet."
+        title="Pipeline control center"
+        subtitle="Manage multiple deals with advanced filters, bulk actions, analytics, a live table, and a full Kanban board."
         actions={
           <>
-            <button className="btn-ghost" onClick={() => showToast('Export coming soon!')}>
+            <button className="btn-ghost" onClick={exportDeals}>
               <Download className="h-4 w-4" /> Export
             </button>
             <button className="btn-primary" onClick={() => { setEditDeal(null); setModalOpen(true) }}>
@@ -187,73 +338,77 @@ export default function SalesPipeline() {
         }
       />
 
-      {/* Stats strip */}
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 mb-6">
-        <MiniStat label="Active Deals"      value={String(deals.length)}           hint="across all stages"      accent="#3b82f6" icon={<Filter className="h-4 w-4" />} />
-        <MiniStat label="Pipeline Value"    value={fmt(stats.totalVal)}             hint="if all deals close"     accent="#10b981" icon={<CircleDollarSign className="h-4 w-4" />} />
-        <MiniStat label="Weighted Forecast" value={fmt(Math.round(stats.weighted))} hint="probability-adjusted"   accent="#f59e0b" icon={<TrendingUp className="h-4 w-4" />} />
-        <MiniStat label="Closed Won"        value={String(stats.wonCount)}          hint={fmt(stats.wonVal) + ' earned'} accent="#16a34a" icon={<Trophy className="h-4 w-4" />} />
+      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-5 mb-6">
+        <MiniStat label="Active Deals" value={String(deals.length)} hint="across all stages" accent="#3b82f6" icon={<Filter className="h-4 w-4" />} />
+        <MiniStat label="Pipeline Value" value={fmt(stats.totalVal)} hint="if all deals close" accent="#10b981" icon={<CircleDollarSign className="h-4 w-4" />} />
+        <MiniStat label="Weighted Forecast" value={fmt(Math.round(stats.weighted))} hint="probability-adjusted" accent="#f59e0b" icon={<TrendingUp className="h-4 w-4" />} />
+        <MiniStat label="Closed Won" value={String(stats.wonCount)} hint={`${fmt(stats.wonVal)} earned`} accent="#16a34a" icon={<Trophy className="h-4 w-4" />} />
+        <MiniStat label="Overdue Follow-ups" value={String(stats.overdue)} hint="needs attention" accent="#dc2626" icon={<Trash2 className="h-4 w-4" />} />
       </div>
 
-      {/* Toolbar */}
-      <div className="card p-3 mb-4">
-        <div className="flex flex-wrap items-center gap-2">
-          <div className="relative flex-1 min-w-[200px] max-w-sm">
+      <div className="card p-4 mb-4">
+        <div className="flex flex-wrap items-center gap-3">
+          <div className="relative flex-1 min-w-[220px]">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500" />
             <input
               value={search}
-              onChange={e => setSearch(e.target.value)}
-              placeholder="Search company, contact, sector…"
+              onChange={(event) => setSearch(event.target.value)}
+              placeholder="Search company, contact, owner, sector..."
               className="input pl-9"
             />
           </div>
 
-          <div className="flex items-center gap-1 flex-wrap">
-            <span className="chip"><Filter className="h-3 w-3" /> Stage</span>
-            {['All', ...STAGE_OPTIONS].map(s => {
-              const st = STAGES.find(x => x.id === s)
-              const active = stageFilter === s
-              const tone = st?.color ?? '#1a56db'
-              return (
-                <button
-                  key={s}
-                  onClick={() => setStageFilter(s)}
-                  className={clsx(
-                    'rounded-full px-3 py-1.5 text-[11.5px] font-semibold transition border',
-                    active
-                      ? 'border-transparent'
-                      : 'bg-transparent border-line text-slate-500 hover:text-slate-900 hover:bg-slate-50 hover:border-slate-300'
-                  )}
-                  style={active
-                    ? {
-                        color: tone,
-                        backgroundColor: s === 'All' ? 'rgba(0, 0, 0, 0.05)' : `${tone}15`,
-                        borderColor: s === 'All' ? 'rgba(0, 0, 0, 0.1)' : `${tone}30`
-                      }
-                    : undefined
-                  }
-                >
-                  {st?.name ?? 'All'}
-                </button>
-              )
-            })}
-          </div>
-
-          <div className="flex items-center gap-2 ml-auto">
-            {selected.size > 0 && (
-              <button onClick={deleteSelected} className="btn-ghost !text-brand-pink hover:!bg-brand-pink/10">
-                <Trash2 className="h-4 w-4" /> Delete ({selected.size})
-              </button>
-            )}
-            <button className="btn-ghost" onClick={addRow}>
-              <Plus className="h-4 w-4" /> New row
+          {selected.size > 0 && (
+            <button onClick={deleteSelected} className="btn-ghost !text-brand-pink hover:!bg-brand-pink/10">
+              <Trash2 className="h-4 w-4" /> Delete ({selected.size})
             </button>
-          </div>
+          )}
+
+          <button className="btn-ghost" onClick={addRow}>
+            <Plus className="h-4 w-4" /> New row
+          </button>
+        </div>
+
+        <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-6 mt-4">
+          <select className="input" value={filters.stage} onChange={(event) => setFilters((current) => ({ ...current, stage: event.target.value }))}>
+            <option value="All">Stage</option>
+            {STAGES.map((stage) => <option key={stage.id} value={stage.id}>{stage.name}</option>)}
+          </select>
+          <select className="input" value={filters.priority} onChange={(event) => setFilters((current) => ({ ...current, priority: event.target.value }))}>
+            <option value="All">Priority</option>
+            <option value="high">High</option>
+            <option value="medium">Medium</option>
+            <option value="low">Low</option>
+          </select>
+          <select className="input" value={filters.owner} onChange={(event) => setFilters((current) => ({ ...current, owner: event.target.value }))}>
+            <option value="All">Deal Owner</option>
+            {DEAL_OWNERS.map((owner) => <option key={owner} value={owner}>{owner}</option>)}
+          </select>
+          <select className="input" value={filters.closeDate} onChange={(event) => setFilters((current) => ({ ...current, closeDate: event.target.value }))}>
+            <option value="All">Close Date</option>
+            <option value="This Week">This Week</option>
+            <option value="This Month">This Month</option>
+            <option value="Later">Later</option>
+          </select>
+          <select className="input" value={filters.value} onChange={(event) => setFilters((current) => ({ ...current, value: event.target.value }))}>
+            <option value="All">Deal Value</option>
+            <option value="Above 500K">Above 500K</option>
+            <option value="200K to 500K">200K to 500K</option>
+            <option value="Below 200K">Below 200K</option>
+          </select>
+          <label className="flex items-center gap-2 rounded-xl border border-line px-3 py-2.5 text-sm font-semibold text-slate-600">
+            <input
+              type="checkbox"
+              checked={filters.overdueOnly}
+              onChange={(event) => setFilters((current) => ({ ...current, overdueOnly: event.target.checked }))}
+              className="accent-blue-500"
+            />
+            Overdue Tasks
+          </label>
         </div>
       </div>
 
-      {/* Sheet */}
-      <div className="card p-0 overflow-hidden">
+      <div className="card p-0 overflow-hidden mb-6">
         <div className="overflow-auto max-h-[65vh]">
           <table className="sheet">
             <thead>
@@ -275,78 +430,84 @@ export default function SalesPipeline() {
                 <th style={{ minWidth: 90 }}>Priority</th>
                 <th style={{ minWidth: 180 }}>Win Probability</th>
                 <th style={{ minWidth: 120 }}>Close Date</th>
+                <th style={{ minWidth: 120 }}>Owner</th>
                 <th style={{ minWidth: 120 }}>Sector</th>
                 <th style={{ minWidth: 130 }}>Last Activity</th>
                 <th style={{ width: 60 }} />
               </tr>
             </thead>
             <tbody>
-              {filtered.map(({ deal: d }, displayIdx) => (
+              {filtered.map(({ deal, index }) => (
                 <tr
-                  key={d.id}
-                  className={clsx(selected.has(d.id) && 'selected')}
-                  onClick={e => {
-                    // only open panel when clicking row number cell
-                    if ((e.target as HTMLElement).closest('.row-num')) return
-                    if ((e.target as HTMLElement).tagName === 'INPUT' || (e.target as HTMLElement).tagName === 'SELECT') return
-                    setPanelDeal(d)
+                  key={deal.id}
+                  className={clsx(selected.has(deal.id) && 'selected')}
+                  onClick={(event) => {
+                    if ((event.target as HTMLElement).closest('.row-num')) return
+                    if ((event.target as HTMLElement).tagName === 'INPUT' || (event.target as HTMLElement).tagName === 'SELECT') return
+                    setPanelDeal(deal)
                   }}
                   style={{ cursor: 'pointer' }}
                 >
-                  <td className="row-num !text-center" onClick={e => e.stopPropagation()}>
+                  <td className="row-num !text-center" onClick={(event) => event.stopPropagation()}>
                     <input
                       type="checkbox"
-                      checked={selected.has(d.id)}
-                      onChange={() => toggleSelect(d.id)}
+                      checked={selected.has(deal.id)}
+                      onChange={() => toggleSelect(deal.id)}
                       className="accent-blue-500"
                     />
                   </td>
-                  <td className="row-num">{displayIdx + 1}</td>
-
-                  {/* Company */}
-                  <td><input value={d.company} onChange={e => updateCell(d.id, 'company', e.target.value)} className="cell-input font-semibold" placeholder="Company name" /></td>
-                  {/* Contact */}
-                  <td><input value={d.contact} onChange={e => updateCell(d.id, 'contact', e.target.value)} className="cell-input" placeholder="Contact" /></td>
-                  {/* Email */}
-                  <td><input value={d.email} onChange={e => updateCell(d.id, 'email', e.target.value)} className="cell-input" type="email" placeholder="email@co.in" /></td>
-                  {/* Value */}
+                  <td className="row-num">{index + 1}</td>
+                  <td>
+                    <button
+                      type="button"
+                      className="h-full w-full px-3 text-left font-semibold text-slate-800 transition hover:text-blue-600"
+                      onClick={(event) => {
+                        event.stopPropagation()
+                        openDealDetail(deal)
+                      }}
+                    >
+                      {deal.company || 'Open deal'}
+                    </button>
+                  </td>
+                  <td><input value={deal.contact} onChange={(event) => updateCell(deal.id, 'contact', event.target.value)} className="cell-input" placeholder="Contact" /></td>
+                  <td><input value={deal.email} onChange={(event) => updateCell(deal.id, 'email', event.target.value)} className="cell-input" type="email" placeholder="email@co.in" /></td>
                   <td>
                     <input
                       type="number"
-                      value={d.value || ''}
-                      onChange={e => updateCell(d.id, 'value', Number(e.target.value))}
+                      value={deal.value || ''}
+                      onChange={(event) => updateCell(deal.id, 'value', Number(event.target.value))}
                       className="cell-input text-right tabular-nums text-emerald-400 font-semibold"
                       placeholder="0"
                     />
                   </td>
-                  {/* Stage */}
-                  <td><StageCell value={d.stage} onChange={v => updateCell(d.id, 'stage', v)} /></td>
-                  {/* Priority */}
-                  <td><PriorityCell value={d.priority} onChange={v => updateCell(d.id, 'priority', v)} /></td>
-                  {/* Prob */}
-                  <td><ProbCell value={d.prob} onChange={v => updateCell(d.id, 'prob', v)} /></td>
-                  {/* Close date */}
+                  <td><StageCell value={deal.stage} onChange={(value) => updateCell(deal.id, 'stage', value)} /></td>
+                  <td><PriorityCell value={deal.priority} onChange={(value) => updateCell(deal.id, 'priority', value)} /></td>
+                  <td><ProbCell value={deal.prob} onChange={(value) => updateCell(deal.id, 'prob', value)} /></td>
                   <td>
                     <input
                       type="date"
-                      value={d.closeDate}
-                      onChange={e => updateCell(d.id, 'closeDate', e.target.value)}
+                      value={deal.closeDate}
+                      onChange={(event) => updateCell(deal.id, 'closeDate', event.target.value)}
                       className="cell-input tabular-nums"
                     />
                   </td>
-                  {/* Sector */}
-                  <td><input value={d.sector} onChange={e => updateCell(d.id, 'sector', e.target.value)} className="cell-input" placeholder="Sector" /></td>
-                  {/* Last act */}
+                  <td>
+                    <div className="px-3 text-[12px] text-slate-400 font-medium h-full flex items-center">{getDealOwner(deal)}</div>
+                  </td>
+                  <td><input value={deal.sector} onChange={(event) => updateCell(deal.id, 'sector', event.target.value)} className="cell-input" placeholder="Sector" /></td>
                   <td>
                     <div className="px-3 flex items-center gap-1 h-full">
-                      <span className="text-[11px] text-slate-400 truncate">{d.lastAct}</span>
-                      {d.lastActDays > 0 && <span className={clsx('text-[10px] font-semibold ml-auto flex-shrink-0', d.lastActDays >= 5 ? 'text-amber-400' : 'text-slate-500')}>{d.lastActDays}d</span>}
+                      <span className="text-[11px] text-slate-400 truncate">{deal.lastAct}</span>
+                      {deal.lastActDays > 0 && (
+                        <span className={clsx('text-[10px] font-semibold ml-auto flex-shrink-0', deal.lastActDays >= 5 ? 'text-amber-400' : 'text-slate-500')}>
+                          {deal.lastActDays}d
+                        </span>
+                      )}
                     </div>
                   </td>
-                  {/* Delete */}
-                  <td className="row-num" onClick={e => e.stopPropagation()}>
+                  <td className="row-num" onClick={(event) => event.stopPropagation()}>
                     <button
-                      onClick={() => { setDeals(p => p.filter(x => x.id !== d.id)); showToast('Deal removed') }}
+                      onClick={() => { setDeals((current) => current.filter((item) => item.id !== deal.id)); showToast('Deal removed') }}
                       className="text-slate-500 hover:text-red-400 transition"
                     >
                       <Trash2 className="h-3.5 w-3.5 mx-auto" />
@@ -356,8 +517,8 @@ export default function SalesPipeline() {
               ))}
               {filtered.length === 0 && (
                 <tr>
-                  <td colSpan={13} className="text-center py-12 text-slate-500">
-                    No deals match your filters. Try clearing search or stage filter.
+                  <td colSpan={14} className="text-center py-12 text-slate-500">
+                    No deals match your filters. Try clearing search or relaxing the advanced filters.
                   </td>
                 </tr>
               )}
@@ -365,7 +526,6 @@ export default function SalesPipeline() {
           </table>
         </div>
 
-        {/* Sheet footer */}
         <div className="px-4 py-3 border-t border-line flex items-center justify-between text-[12px] text-slate-400 bg-black/20">
           <div>
             Showing <span className="text-white font-semibold">{filtered.length}</span> of{' '}
@@ -373,19 +533,66 @@ export default function SalesPipeline() {
             {selected.size > 0 && <> · <span className="text-blue-400">{selected.size} selected</span></>}
           </div>
           <div className="flex items-center gap-2">
-            <span className="chip">⌨ Click any cell to edit</span>
-            <span className="chip">🖱 Click row to view details</span>
+            <span className="chip">Click any cell to edit</span>
+            <span className="chip">Open a deal for deep work</span>
           </div>
         </div>
       </div>
 
-      {/* Side Panel */}
+      <section className="card p-4">
+        <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
+          <div>
+            <div className="text-[11px] uppercase tracking-[0.18em] text-slate-400 font-semibold">Kanban Pipeline</div>
+            <h2 className="text-xl font-bold text-slate-900 mt-1">Visual multi-deal stage management</h2>
+            <p className="text-sm text-slate-500 mt-1">Drag deals between stages, compare workload, and spot bottlenecks quickly.</p>
+          </div>
+          <span className="chip">{filtered.length} visible deals</span>
+        </div>
+
+        <div className="grid gap-4 xl:grid-cols-3 2xl:grid-cols-6">
+          {stageColumns.map((column) => (
+            <div
+              key={column.id}
+              className="rounded-2xl border border-line bg-slate-950/70 p-3"
+              onDragOver={(event) => event.preventDefault()}
+              onDrop={() => {
+                if (!draggedDealId) return
+                moveDealToStage(draggedDealId, column.id)
+                setDraggedDealId(null)
+              }}
+            >
+              <div className="flex items-center justify-between rounded-xl px-3 py-2 mb-3" style={{ background: `${column.color}15`, border: `1px solid ${column.color}25` }}>
+                <span className="text-sm font-semibold" style={{ color: column.color }}>{column.name}</span>
+                <span className="text-xs font-bold text-white/80">{column.deals.length}</span>
+              </div>
+
+              <div className="grid gap-3">
+                {column.deals.map((deal) => (
+                  <DealCard
+                    key={deal.id}
+                    deal={deal}
+                    onDragStart={() => setDraggedDealId(deal.id)}
+                    onDragEnd={() => setDraggedDealId(null)}
+                    onClick={() => openDealDetail(deal)}
+                  />
+                ))}
+                {column.deals.length === 0 && (
+                  <div className="rounded-xl border border-dashed border-white/10 px-3 py-6 text-center text-xs text-slate-500">
+                    No deals in this stage
+                  </div>
+                )}
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
       <SidePanel
         deal={panelDeal}
         onClose={() => setPanelDeal(null)}
         onMoveStage={(id, stage) => {
           updateCell(id, 'stage', stage)
-          setPanelDeal(prev => prev ? { ...prev, stage } : null)
+          setPanelDeal((current) => current ? { ...current, stage } : null)
           showToast('Stage updated', true)
         }}
         onMarkWon={() => handleMarkOutcome('won')}
@@ -393,7 +600,6 @@ export default function SalesPipeline() {
         onEdit={() => { setEditDeal(panelDeal); setModalOpen(true); setPanelDeal(null) }}
       />
 
-      {/* Add/Edit Modal */}
       <DealModal
         open={modalOpen}
         onClose={() => { setModalOpen(false); setEditDeal(null) }}
@@ -402,7 +608,6 @@ export default function SalesPipeline() {
         defaultStage="lead"
       />
 
-      {/* Outcome overlay */}
       {outcome && (
         <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center">
           <div className="bg-white border border-line rounded-2xl p-10 text-center w-80 shadow-card-lg text-slate-800">
@@ -411,7 +616,7 @@ export default function SalesPipeline() {
             <p className="text-slate-500 text-[14px] mb-6 leading-relaxed">
               {outcome.type === 'won'
                 ? `${outcome.deal.company} said YES! You earned ${fmt(outcome.deal.value)}.`
-                : `${outcome.deal.company} didn't close this time.`}
+                : `${outcome.deal.company} did not close this time.`}
             </p>
             <button className="btn-primary w-full justify-center" onClick={() => setOutcome(null)}>
               <CheckCircle2 className="h-4 w-4" /> Done
@@ -420,27 +625,28 @@ export default function SalesPipeline() {
         </div>
       )}
 
-      {/* Toast */}
       {toast && (
         <div className={clsx(
           'fixed bottom-6 left-1/2 -translate-x-1/2 px-5 py-2.5 rounded-full text-[13px] font-semibold text-white shadow-xl flex items-center gap-2 z-50',
           toast.green ? 'bg-green-600' : 'bg-slate-800'
         )}>
-          {toast.green ? '✓' : 'ℹ'} {toast.msg}
+          {toast.green ? '✓' : 'i'} {toast.msg}
         </div>
       )}
     </div>
   )
 }
 
-// ── MiniStat ───────────────────────────────────────────────────────────────────
 function MiniStat({ label, value, hint, accent, icon }: {
-  label: string; value: string; hint?: string; accent: string; icon: React.ReactNode
+  label: string
+  value: string
+  hint?: string
+  accent: string
+  icon: ReactNode
 }) {
   return (
     <div className="card-soft p-4 flex items-center gap-4">
-      <div className="h-11 w-11 rounded-xl flex items-center justify-center flex-shrink-0"
-        style={{ background: `${accent}22`, color: accent }}>
+      <div className="h-11 w-11 rounded-xl flex items-center justify-center flex-shrink-0" style={{ background: `${accent}22`, color: accent }}>
         {icon}
       </div>
       <div className="min-w-0">
@@ -451,5 +657,3 @@ function MiniStat({ label, value, hint, accent, icon }: {
     </div>
   )
 }
-
-

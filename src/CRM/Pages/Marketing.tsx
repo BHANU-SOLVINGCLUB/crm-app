@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+ import { useMemo, useState } from 'react'
 import {
   Activity,
   CircleDollarSign,
@@ -34,6 +34,7 @@ import PageHeader from '../Components/PageHeader'
 import SectionHeader from '../Components/SectionHeader'
 import StatCard from '../Components/StatCard'
 import { useIndustryStore, useCurrentIndustry } from '../store/industryStore'
+import { pushAppToast } from '../store/uiStore'
 import { marketingByIndustry } from '../data/marketing'
 import { formatCompact, formatINR, formatNumber } from '../lib/format'
 import './Marketing.css'
@@ -86,10 +87,18 @@ export default function Marketing() {
         subtitle={`Live view of platforms, creatives, campaigns and performance — tuned for ${industry.tagline.toLowerCase()}.`}
         actions={
           <div className="marketing-header-actions">
-            <button className="btn-ghost">
+            <button
+              className="btn-ghost"
+              onClick={() => {
+                const next = creativeFilter === 'All' ? 'Live' : 'All'
+                setCreativeFilter(next)
+                setCampaignFilter(next === 'All' ? 'All' : 'Running')
+                pushAppToast(next === 'All' ? 'Marketing filters reset.' : 'Showing live creatives and running campaigns.', 'success')
+              }}
+            >
               <Filter className="h-4 w-4" /> Filter
             </button>
-            <button className="btn-primary">
+            <button className="btn-primary" onClick={() => pushAppToast(`New campaign workspace opened for ${industry.name}.`, 'success')}>
               <Plus className="h-4 w-4" /> New Campaign
             </button>
           </div>
