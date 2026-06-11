@@ -7,6 +7,7 @@ import {
   logoutApi,
   registerApi,
 } from '../api/auth'
+import { getTokens } from '../api/client'
 import type { AuthUser } from '../api/types'
 
 export type PlatformModule = 'crm' | 'sales' | 'support' | 'finance' | 'hr' | 'inventory' | 'projects'
@@ -92,13 +93,13 @@ const defaultOrganization: OrganizationProfile = {
 }
 
 const defaultSignupDraft: SignupDraft = {
-  fullName: 'Bhavik Kumar',
-  companyName: 'Krisantec Health',
-  email: 'admin@cityclinic.com',
-  mobile: '+91 98765 43210',
-  password: 'testpass123',
-  country: 'India',
-  businessType: 'Healthcare Services',
+  fullName: '',
+  companyName: '',
+  email: '',
+  mobile: '',
+  password: '',
+  country: '',
+  businessType: '',
 }
 
 function applyAuthUser(user: AuthUser) {
@@ -185,8 +186,15 @@ export const usePlatformStore = create<PlatformState>()(
       },
 
       hydrateSession: async () => {
-        const cached = getStoredUser()
-        if (!cached) return
+        const tokens = getTokens()
+        if (!tokens?.access) {
+          set({
+            authUser: null,
+            isAuthenticated: false,
+            authLoading: false,
+          })
+          return
+        }
         set({ authLoading: true })
         try {
           const user = await fetchMe()

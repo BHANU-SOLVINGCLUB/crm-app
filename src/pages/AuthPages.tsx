@@ -351,11 +351,11 @@ export function ResetPasswordPage() {
       >
         <label className="auth-span-full">
           <span>New Password</span>
-          <input className="input" type="password" defaultValue="Welcome@123" />
+          <input className="input" type="password" />
         </label>
         <label className="auth-span-full">
           <span>Confirm Password</span>
-          <input className="input" type="password" defaultValue="Welcome@123" />
+          <input className="input" type="password" />
         </label>
         <button className="btn-primary auth-submit auth-span-full" type="submit">Update password</button>
       </form>
@@ -407,7 +407,7 @@ export function VerifyEmailPage() {
 export function TwoFactorPage() {
   const navigate = useNavigate()
   const verifyTwoFactor = usePlatformStore((state) => state.verifyTwoFactor)
-  const [code, setCode] = useState('842611')
+  const [code, setCode] = useState('')
 
   return (
     <AuthLayout
