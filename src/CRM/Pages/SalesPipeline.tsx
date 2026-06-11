@@ -11,6 +11,16 @@ import DealModal from '../Components/DealModal'
 import DealCard from '../Components/DealCard'
 import { STAGES, INITIAL_DEALS, fmt, pColor, probColor } from '../data/pipeline'
 import type { Deal } from '../data/pipeline'
+import {
+  apiDealToUi,
+  createDeal,
+  deleteDealApi,
+  fetchDeals,
+  uiDealToApi,
+  updateDealApi,
+} from '../../api/sales'
+import { usePlatformStore } from '../../store/usePlatformStore'
+import { useIndustryStore } from '../store/industryStore'
 
 let nextId = 11
 
@@ -52,7 +62,7 @@ function StageCell({ value, onChange }: { value: string; onChange: (v: string) =
         style={{ color: stage?.color }}
       >
         {STAGE_OPTIONS.map((option) => (
-          <option key={option} value={option} className="bg-white text-slate-800 font-normal">
+          <option key={option} value={option} className="bg-white text-theme-primary font-normal">
             {STAGES.find((stageItem) => stageItem.id === option)?.name ?? option}
           </option>
         ))}
@@ -71,7 +81,7 @@ function PriorityCell({ value, onChange }: { value: string; onChange: (v: string
         style={{ color: pColor(value) }}
       >
         {PRIORITY_OPTIONS.map((option) => (
-          <option key={option} value={option} className="bg-white text-slate-800 font-normal">{option}</option>
+          <option key={option} value={option} className="bg-white text-theme-primary font-normal">{option}</option>
         ))}
       </select>
     </div>
@@ -93,7 +103,7 @@ function ProbCell({ value, onChange }: { value: number; onChange: (v: number) =>
         className="w-10 bg-transparent border-none outline-none text-right text-[12px] tabular-nums"
         style={{ color: probColor(value) }}
       />
-      <span className="text-slate-500 text-[11px]">%</span>
+      <span className="text-theme-secondary text-[11px]">%</span>
     </div>
   )
 }
@@ -101,7 +111,11 @@ function ProbCell({ value, onChange }: { value: number; onChange: (v: number) =>
 export default function SalesPipeline() {
   const navigate = useNavigate()
   const location = useLocation()
+  const authUser = usePlatformStore((s) => s.authUser)
+  const orgId = authUser?.organization?.id
+  const industryKey = useIndustryStore((s) => s.current)
   const [deals, setDeals] = useState<Deal[]>(INITIAL_DEALS)
+  const [apiReady, setApiReady] = useState(false)
   const [wonDeals, setWonDeals] = useState<Deal[]>([])
   const [search, setSearch] = useState('')
   const [filters, setFilters] = useState({
@@ -124,6 +138,19 @@ export default function SalesPipeline() {
     setToast({ msg, green })
     setTimeout(() => setToast(null), 3000)
   }
+
+  useEffect(() => {
+    if (!orgId) {
+      setApiReady(false)
+      return
+    }
+    fetchDeals(orgId, { industry: industryKey })
+      .then((items) => {
+        setDeals(items.map(apiDealToUi))
+        setApiReady(true)
+      })
+      .catch(() => showToast('Could not load deals from backend'))
+  }, [orgId, industryKey])
 
   const filtered = useMemo(() => {
     const query = search.trim().toLowerCase()
@@ -168,6 +195,13 @@ export default function SalesPipeline() {
   const updateCell = (dealId: number, key: keyof Deal, value: string | number) => {
     setDeals((current) => current.map((deal) => (deal.id === dealId ? { ...deal, [key]: value } : deal)))
     if (panelDeal?.id === dealId) setPanelDeal((current) => current ? { ...current, [key]: value } : null)
+    if (apiReady && orgId) {
+      const deal = deals.find((item) => item.id === dealId)
+      if (deal) {
+        const payload = uiDealToApi({ ...deal, [key]: value, industry: industryKey })
+        void updateDealApi(orgId, dealId, payload)
+      }
+    }
   }
 
   const addRow = () => {
@@ -184,6 +218,15 @@ export default function SalesPipeline() {
       sector: '',
       lastAct: 'Deal created',
       lastActDays: 0,
+    }
+    if (apiReady && orgId) {
+      void createDeal(orgId, uiDealToApi({ ...newDeal, industry: industryKey }))
+        .then((created) => {
+          setDeals((current) => [apiDealToUi(created), ...current])
+          showToast('New deal row added', true)
+        })
+        .catch(() => showToast('Failed to create deal'))
+      return
     }
     setDeals((current) => [newDeal, ...current])
     showToast('New deal row added', true)
@@ -204,9 +247,20 @@ export default function SalesPipeline() {
   }, [location.pathname, location.search, navigate])
 
   const deleteSelected = () => {
+    const count = selected.size
+    if (apiReady && orgId) {
+      void Promise.all([...selected].map((id) => deleteDealApi(orgId, id)))
+        .then(() => {
+          setDeals((current) => current.filter((deal) => !selected.has(deal.id)))
+          setSelected(new Set())
+          showToast(`${count} deal(s) deleted`)
+        })
+        .catch(() => showToast('Failed to delete deals'))
+      return
+    }
     setDeals((current) => current.filter((deal) => !selected.has(deal.id)))
     setSelected(new Set())
-    showToast(`${selected.size} deal(s) deleted`)
+    showToast(`${count} deal(s) deleted`)
   }
 
   const toggleSelect = (id: number) => {
@@ -224,6 +278,27 @@ export default function SalesPipeline() {
   }
 
   const handleSaveDeal = (data: Omit<Deal, 'id' | 'lastAct' | 'lastActDays'>) => {
+    if (apiReady && orgId) {
+      if (editDeal) {
+        void updateDealApi(orgId, editDeal.id, uiDealToApi({ ...editDeal, ...data, industry: industryKey }))
+          .then((updated) => {
+            const mapped = apiDealToUi(updated)
+            setDeals((current) => current.map((deal) => (deal.id === editDeal.id ? mapped : deal)))
+            if (panelDeal?.id === editDeal.id) setPanelDeal(mapped)
+            showToast(`${data.company} updated!`, true)
+          })
+      } else {
+        void createDeal(orgId, uiDealToApi({ ...data, industry: industryKey, lastAct: 'Deal created', lastActDays: 0 }))
+          .then((created) => {
+            setDeals((current) => [apiDealToUi(created), ...current])
+            showToast(`${data.company} added!`, true)
+          })
+      }
+      setModalOpen(false)
+      setEditDeal(null)
+      return
+    }
+
     if (editDeal) {
       setDeals((current) => current.map((deal) => (deal.id === editDeal.id ? { ...deal, ...data } : deal)))
       if (panelDeal?.id === editDeal.id) setPanelDeal((current) => current ? { ...current, ...data } : null)
@@ -349,7 +424,7 @@ export default function SalesPipeline() {
       <div className="card p-4 mb-4">
         <div className="flex flex-wrap items-center gap-3">
           <div className="relative flex-1 min-w-[220px]">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-theme-secondary" />
             <input
               value={search}
               onChange={(event) => setSearch(event.target.value)}
@@ -396,7 +471,7 @@ export default function SalesPipeline() {
             <option value="200K to 500K">200K to 500K</option>
             <option value="Below 200K">Below 200K</option>
           </select>
-          <label className="flex items-center gap-2 rounded-xl border border-line px-3 py-2.5 text-sm font-semibold text-slate-600">
+          <label className="flex items-center gap-2 rounded-xl border border-theme px-3 py-2.5 text-sm font-semibold text-theme-secondary">
             <input
               type="checkbox"
               checked={filters.overdueOnly}
@@ -460,7 +535,7 @@ export default function SalesPipeline() {
                   <td>
                     <button
                       type="button"
-                      className="h-full w-full px-3 text-left font-semibold text-slate-800 transition hover:text-blue-600"
+                      className="h-full w-full px-3 text-left font-semibold text-theme-primary transition hover:text-blue-600"
                       onClick={(event) => {
                         event.stopPropagation()
                         openDealDetail(deal)
@@ -492,14 +567,14 @@ export default function SalesPipeline() {
                     />
                   </td>
                   <td>
-                    <div className="px-3 text-[12px] text-slate-400 font-medium h-full flex items-center">{getDealOwner(deal)}</div>
+                    <div className="px-3 text-[12px] text-theme-muted font-medium h-full flex items-center">{getDealOwner(deal)}</div>
                   </td>
                   <td><input value={deal.sector} onChange={(event) => updateCell(deal.id, 'sector', event.target.value)} className="cell-input" placeholder="Sector" /></td>
                   <td>
                     <div className="px-3 flex items-center gap-1 h-full">
-                      <span className="text-[11px] text-slate-400 truncate">{deal.lastAct}</span>
+                      <span className="text-[11px] text-theme-muted truncate">{deal.lastAct}</span>
                       {deal.lastActDays > 0 && (
-                        <span className={clsx('text-[10px] font-semibold ml-auto flex-shrink-0', deal.lastActDays >= 5 ? 'text-amber-400' : 'text-slate-500')}>
+                        <span className={clsx('text-[10px] font-semibold ml-auto flex-shrink-0', deal.lastActDays >= 5 ? 'text-amber-400' : 'text-theme-secondary')}>
                           {deal.lastActDays}d
                         </span>
                       )}
@@ -508,7 +583,7 @@ export default function SalesPipeline() {
                   <td className="row-num" onClick={(event) => event.stopPropagation()}>
                     <button
                       onClick={() => { setDeals((current) => current.filter((item) => item.id !== deal.id)); showToast('Deal removed') }}
-                      className="text-slate-500 hover:text-red-400 transition"
+                      className="text-theme-secondary hover:text-red-400 transition"
                     >
                       <Trash2 className="h-3.5 w-3.5 mx-auto" />
                     </button>
@@ -517,7 +592,7 @@ export default function SalesPipeline() {
               ))}
               {filtered.length === 0 && (
                 <tr>
-                  <td colSpan={14} className="text-center py-12 text-slate-500">
+                  <td colSpan={14} className="text-center py-12 text-theme-secondary">
                     No deals match your filters. Try clearing search or relaxing the advanced filters.
                   </td>
                 </tr>
@@ -526,7 +601,7 @@ export default function SalesPipeline() {
           </table>
         </div>
 
-        <div className="px-4 py-3 border-t border-line flex items-center justify-between text-[12px] text-slate-400 bg-black/20">
+        <div className="px-4 py-3 border-t border-theme flex items-center justify-between text-[12px] text-theme-muted bg-black/20">
           <div>
             Showing <span className="text-white font-semibold">{filtered.length}</span> of{' '}
             <span className="text-white font-semibold">{deals.length}</span> deals
@@ -542,9 +617,9 @@ export default function SalesPipeline() {
       <section className="card p-4">
         <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
           <div>
-            <div className="text-[11px] uppercase tracking-[0.18em] text-slate-400 font-semibold">Kanban Pipeline</div>
-            <h2 className="text-xl font-bold text-slate-900 mt-1">Visual multi-deal stage management</h2>
-            <p className="text-sm text-slate-500 mt-1">Drag deals between stages, compare workload, and spot bottlenecks quickly.</p>
+            <div className="text-[11px] uppercase tracking-[0.18em] text-theme-muted font-semibold">Kanban Pipeline</div>
+            <h2 className="text-xl font-bold text-theme-primary mt-1">Visual multi-deal stage management</h2>
+            <p className="text-sm text-theme-secondary mt-1">Drag deals between stages, compare workload, and spot bottlenecks quickly.</p>
           </div>
           <span className="chip">{filtered.length} visible deals</span>
         </div>
@@ -553,7 +628,7 @@ export default function SalesPipeline() {
           {stageColumns.map((column) => (
             <div
               key={column.id}
-              className="rounded-2xl border border-line bg-slate-950/70 p-3"
+              className="rounded-2xl border border-theme bg-slate-950/70 p-3"
               onDragOver={(event) => event.preventDefault()}
               onDrop={() => {
                 if (!draggedDealId) return
@@ -577,7 +652,7 @@ export default function SalesPipeline() {
                   />
                 ))}
                 {column.deals.length === 0 && (
-                  <div className="rounded-xl border border-dashed border-white/10 px-3 py-6 text-center text-xs text-slate-500">
+                  <div className="rounded-xl border border-dashed border-white/10 px-3 py-6 text-center text-xs text-theme-secondary">
                     No deals in this stage
                   </div>
                 )}
@@ -610,10 +685,10 @@ export default function SalesPipeline() {
 
       {outcome && (
         <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center">
-          <div className="bg-white border border-line rounded-2xl p-10 text-center w-80 shadow-card-lg text-slate-800">
+          <div className="bg-white border border-theme rounded-2xl p-10 text-center w-80 shadow-card-lg text-theme-primary">
             <div className="text-6xl mb-4">{outcome.type === 'won' ? '🎉' : '😔'}</div>
-            <div className="text-[22px] font-bold mb-2 text-slate-900">{outcome.type === 'won' ? 'Deal Won!' : 'Deal Lost'}</div>
-            <p className="text-slate-500 text-[14px] mb-6 leading-relaxed">
+            <div className="text-[22px] font-bold mb-2 text-theme-primary">{outcome.type === 'won' ? 'Deal Won!' : 'Deal Lost'}</div>
+            <p className="text-theme-secondary text-[14px] mb-6 leading-relaxed">
               {outcome.type === 'won'
                 ? `${outcome.deal.company} said YES! You earned ${fmt(outcome.deal.value)}.`
                 : `${outcome.deal.company} did not close this time.`}
@@ -650,9 +725,9 @@ function MiniStat({ label, value, hint, accent, icon }: {
         {icon}
       </div>
       <div className="min-w-0">
-        <div className="text-[11px] uppercase tracking-widest text-slate-500 font-semibold">{label}</div>
+        <div className="text-[11px] uppercase tracking-widest text-theme-secondary font-semibold">{label}</div>
         <div className="text-[20px] font-bold leading-tight truncate">{value}</div>
-        {hint && <div className="text-[11.5px] text-slate-400 mt-0.5">{hint}</div>}
+        {hint && <div className="text-[11.5px] text-theme-muted mt-0.5">{hint}</div>}
       </div>
     </div>
   )

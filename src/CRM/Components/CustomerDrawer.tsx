@@ -1,4 +1,4 @@
-﻿import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import {
   X, Phone, Mail, Calendar, CreditCard,
   MessageSquare, ShoppingBag, LifeBuoy, ChevronRight,
@@ -104,7 +104,7 @@ export default function CustomerDrawer({ customer, onClose, onUpdate }: Props) {
         {customer && (
           <>
             {/* Header */}
-            <div className="px-5 pt-5 pb-4 border-b border-line flex-shrink-0">
+            <div className="px-5 pt-5 pb-4 border-b border-theme flex-shrink-0">
               <div className="flex items-start gap-3">
                 {/* Avatar */}
                 <div
@@ -230,15 +230,15 @@ export default function CustomerDrawer({ customer, onClose, onUpdate }: Props) {
                   <div className="drawer-section">
                     <div className="drawer-label">Purchase History</div>
                     {customer.purchaseHistory.length === 0 ? (
-                      <p className="text-[13px] text-slate-500">No purchases recorded.</p>
+                      <p className="text-[13px] text-theme-secondary">No purchases recorded.</p>
                     ) : (
                       <table className="ph-table">
                         <tbody>
                           {customer.purchaseHistory.map((p, i) => (
                             <tr key={i}>
                               <td className="ph-item-cell">
-                                <div className="text-[12.5px] font-medium text-slate-900 leading-snug">{p.item}</div>
-                                <div className="text-[11px] text-slate-500 mt-0.5">{p.date}</div>
+                                <div className="text-[12.5px] font-medium text-theme-primary leading-snug">{p.item}</div>
+                                <div className="text-[11px] text-theme-secondary mt-0.5">{p.date}</div>
                               </td>
                               <td className="amount">{p.amount === 0 ? 'Free' : fmtRevenue(p.amount)}</td>
                             </tr>
@@ -262,7 +262,7 @@ export default function CustomerDrawer({ customer, onClose, onUpdate }: Props) {
                   <div className="drawer-section">
                     <div className="drawer-label">Support Tickets</div>
                     {customer.supportTickets.length === 0 ? (
-                      <p className="text-[13px] text-slate-500">No open tickets. 🎉</p>
+                      <p className="text-[13px] text-theme-secondary">No open tickets. 🎉</p>
                     ) : (
                       <div className="space-y-3">
                         {customer.supportTickets.map((t, i) => (
@@ -301,7 +301,7 @@ export default function CustomerDrawer({ customer, onClose, onUpdate }: Props) {
                       onBlur={handleNotesBlur}
                       placeholder="Add notes about this customer…"
                     />
-                    <div className="text-[11px] text-slate-500 mt-2">Notes are saved automatically on blur.</div>
+                    <div className="text-[11px] text-theme-secondary mt-2">Notes are saved automatically on blur.</div>
                   </div>
                 </div>
               )}
@@ -323,9 +323,9 @@ function InfoRow({
 }) {
   return (
     <div className="flex items-start gap-3">
-      <span className="text-slate-500 mt-0.5 flex-shrink-0">{icon}</span>
+      <span className="text-theme-secondary mt-0.5 flex-shrink-0">{icon}</span>
       <div className="min-w-0">
-        <div className="text-[11px] text-slate-500 font-medium mb-0.5">{label}</div>
+        <div className="text-[11px] text-theme-secondary font-medium mb-0.5">{label}</div>
         <div className={clsx('text-[13px] text-slate-200 break-all', valueClass)}>{value}</div>
       </div>
     </div>

@@ -55,9 +55,9 @@ const statusColors: Record<string, string> = {
   Running: 'bg-brand-green/15 text-brand-green border-brand-green/30',
   Scheduled: 'bg-brand-blue/15 text-brand-blue border-brand-blue/30',
   Paused: 'bg-brand-orange/15 text-brand-orange border-brand-orange/30',
-  Draft: 'bg-white/5 text-slate-400 border-white/10',
+  Draft: 'bg-white/5 text-theme-muted border-white/10',
   Review: 'bg-brand-purple/15 text-brand-purple border-brand-purple/30',
-  Completed: 'bg-white/5 text-slate-400 border-white/10',
+  Completed: 'bg-white/5 text-theme-muted border-white/10',
 }
 
 export default function Marketing() {

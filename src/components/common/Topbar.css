@@ -1,0 +1,231 @@
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  height: 60px;
+  padding: 0 24px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+  background: #fff;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+}
+
+.topbar-left,
+.topbar-actions,
+.topbar-notification-wrap {
+  flex-shrink: 0;
+}
+
+.topbar-divider {
+  width: 1px;
+  height: 24px;
+  flex-shrink: 0;
+  background: #e5e7eb;
+}
+
+.topbar-search-area {
+  max-width: 576px;
+  flex: 1;
+}
+
+.topbar-search {
+  position: relative;
+}
+
+.topbar-search-icon {
+  position: absolute;
+  top: 50%;
+  left: 12px;
+  width: 16px;
+  height: 16px;
+  color: #9ca3af;
+  pointer-events: none;
+  transform: translateY(-50%);
+}
+
+.topbar-search-input {
+  width: 100%;
+  padding: 8px 16px 8px 36px;
+  border: 1px solid rgba(0, 0, 0, 0.09);
+  border-radius: 8px;
+  outline: none;
+  background: #f3f7fe;
+  color: #111827;
+  font-size: 13.5px;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.topbar-search-input:focus {
+  border-color: rgba(26, 86, 219, 0.45);
+  box-shadow: 0 0 0 3px rgba(26, 86, 219, 0.08);
+}
+
+.topbar-spacer {
+  flex: 1;
+}
+
+.topbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.topbar-quick-add-wrap {
+  position: relative;
+}
+
+.topbar-add-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border: 0;
+  border-radius: 8px;
+  background: #1a56db;
+  box-shadow: 0 2px 6px rgba(26, 86, 219, 0.3);
+  color: #fff;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+  transition: background 0.2s ease, box-shadow 0.2s ease;
+}
+
+.topbar-add-btn:hover {
+  background: #1648c0;
+  box-shadow: 0 4px 12px rgba(26, 86, 219, 0.4);
+}
+
+.topbar-add-icon {
+  width: 16px;
+  height: 16px;
+}
+
+.topbar-quick-add-menu {
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 0;
+  width: 296px;
+  padding: 8px;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 16px;
+  background: #fff;
+  box-shadow: 0 18px 45px rgba(15, 23, 42, 0.18);
+}
+
+.topbar-quick-add-item {
+  display: grid;
+  grid-template-columns: 36px 1fr;
+  gap: 12px;
+  width: 100%;
+  padding: 10px 12px;
+  border: 0;
+  border-radius: 12px;
+  background: transparent;
+  color: #0f172a;
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.topbar-quick-add-item:hover {
+  background: #f8fafc;
+}
+
+.topbar-quick-add-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: rgba(26, 86, 219, 0.1);
+  color: #1a56db;
+}
+
+.topbar-quick-add-item strong,
+.topbar-quick-add-item small {
+  display: block;
+}
+
+.topbar-quick-add-item strong {
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.topbar-quick-add-item small {
+  margin-top: 2px;
+  color: #64748b;
+  font-size: 11.5px;
+  line-height: 1.4;
+}
+
+.topbar-notification-wrap {
+  position: relative;
+}
+
+.topbar-bell-btn {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 8px;
+  background: #f3f7fe;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.topbar-bell-btn:hover {
+  background: #e8f0fb;
+}
+
+.topbar-bell-icon {
+  width: 17px;
+  height: 17px;
+  color: #4b5563;
+}
+
+.topbar-notification-dot {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 8px;
+  height: 8px;
+  border: 2px solid #fff;
+  border-radius: 50%;
+  background: #7c3aed;
+}
+
+.topbar-avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #7c3aed, #6366f1);
+  color: #fff;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+@media (max-width: 640px) {
+  .topbar {
+    gap: 10px;
+    padding: 0 12px;
+  }
+
+  .topbar-divider,
+  .topbar-search-area,
+  .topbar-spacer,
+  .topbar-add-text,
+  .topbar-quick-add-menu {
+    display: none;
+  }
+}

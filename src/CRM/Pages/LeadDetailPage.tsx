@@ -76,12 +76,18 @@ function getInitials(name: string) {
     .toUpperCase()
 }
 
-function formatDateLabel(value: string) {
-  return new Date(value).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })
+function formatDateLabel(value: string | undefined | null) {
+  if (!value) return 'N/A'
+  const date = new Date(value)
+  if (isNaN(date.getTime())) return 'Invalid Date'
+  return date.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })
 }
 
-function formatTimeLabel(value: string) {
-  return new Date(value).toLocaleTimeString('en-IN', { hour: 'numeric', minute: '2-digit' })
+function formatTimeLabel(value: string | undefined | null) {
+  if (!value) return 'N/A'
+  const date = new Date(value)
+  if (isNaN(date.getTime())) return 'Invalid Date'
+  return date.toLocaleTimeString('en-IN', { hour: 'numeric', minute: '2-digit' })
 }
 
 function nextLeadDetailId(prefix: string) {
@@ -128,9 +134,9 @@ function getActivityMeta(type: TimelineActivityType) {
     case 'followup':
       return { icon: <Clock3 className="h-4 w-4" />, color: 'text-orange-600', bg: 'bg-orange-100' }
     case 'document':
-      return { icon: <FileText className="h-4 w-4" />, color: 'text-slate-600', bg: 'bg-slate-100' }
+      return { icon: <FileText className="h-4 w-4" />, color: 'text-theme-secondary', bg: 'bg-theme-surface' }
     default:
-      return { icon: <Pill className="h-4 w-4" />, color: 'text-slate-600', bg: 'bg-slate-100' }
+      return { icon: <Pill className="h-4 w-4" />, color: 'text-theme-secondary', bg: 'bg-theme-surface' }
   }
 }
 
@@ -200,12 +206,12 @@ export default function LeadDetailPage() {
       <div className="p-6 lg:p-8">
         <Card className="mx-auto max-w-2xl">
           <CardContent className="flex flex-col items-center gap-4 py-12 text-center">
-            <div className="rounded-2xl bg-slate-100 p-4 text-slate-500">
+            <div className="rounded-2xl bg-theme-surface p-4 text-theme-secondary">
               <UserCheck className="h-8 w-8" />
             </div>
             <div>
-              <h2 className="text-xl font-semibold text-slate-900">Lead not found</h2>
-              <p className="mt-2 text-sm text-slate-500">
+              <h2 className="text-xl font-semibold text-theme-primary">Lead not found</h2>
+              <p className="mt-2 text-sm text-theme-secondary">
                 This lead may have been removed or belongs to another industry view.
               </p>
             </div>
@@ -541,12 +547,12 @@ function LeadDetailWorkspace({
       <div className="mx-auto max-w-[1600px] space-y-6">
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div className="space-y-2">
-            <div className="flex items-center gap-2 text-sm text-slate-500">
-              <Link to="/leads" className="transition hover:text-slate-900">Lead Capture</Link>
+            <div className="flex items-center gap-2 text-sm text-theme-secondary">
+              <Link to="/leads" className="transition hover:text-theme-primary">Lead Capture</Link>
               <ChevronRight className="h-4 w-4" />
-              <span className="font-medium text-slate-900">{profile.fullName}</span>
+              <span className="font-medium text-theme-primary">{profile.fullName}</span>
             </div>
-            <button type="button" className="inline-flex items-center gap-2 text-sm font-medium text-slate-500 transition hover:text-slate-900" onClick={() => navigate('/leads')}>
+            <button type="button" className="inline-flex items-center gap-2 text-sm font-medium text-theme-secondary transition hover:text-theme-primary" onClick={() => navigate('/leads')}>
               <ArrowLeft className="h-4 w-4" />
               Back to Lead Capture
             </button>
@@ -565,13 +571,13 @@ function LeadDetailWorkspace({
                   <Avatar className="h-16 w-16 border-4 border-white shadow-sm text-lg">{getInitials(profile.fullName)}</Avatar>
                   <div className="space-y-2.5">
                     <div className="flex flex-wrap items-center gap-3">
-                      <h1 className="text-3xl font-extrabold tracking-tight text-slate-900 drop-shadow-sm">{profile.fullName}</h1>
+                      <h1 className="text-3xl font-extrabold tracking-tight text-theme-primary drop-shadow-sm">{profile.fullName}</h1>
                       <Badge tone={stageTone[profile.status]}>{profile.status}</Badge>
                       {unreadCount > 0 && <Badge tone="rose">{unreadCount} unread</Badge>}
                     </div>
-                    <div className="flex flex-wrap gap-5 text-sm font-medium text-slate-600">
-                      <span className="inline-flex items-center gap-2 bg-white/60 px-2.5 py-1 rounded-md backdrop-blur-sm"><Phone className="h-4 w-4 text-slate-400" />{profile.phone}</span>
-                      <span className="inline-flex items-center gap-2 bg-white/60 px-2.5 py-1 rounded-md backdrop-blur-sm"><Mail className="h-4 w-4 text-slate-400" />{profile.email}</span>
+                    <div className="flex flex-wrap gap-5 text-sm font-medium text-theme-secondary">
+                      <span className="inline-flex items-center gap-2 bg-white/60 px-2.5 py-1 rounded-md backdrop-blur-sm"><Phone className="h-4 w-4 text-theme-muted" />{profile.phone}</span>
+                      <span className="inline-flex items-center gap-2 bg-white/60 px-2.5 py-1 rounded-md backdrop-blur-sm"><Mail className="h-4 w-4 text-theme-muted" />{profile.email}</span>
                     </div>
                   </div>
                 </div>
@@ -579,12 +585,12 @@ function LeadDetailWorkspace({
                 <div className="grid gap-4 sm:grid-cols-2">
                   <Card className="border border-white/60 bg-white/70 backdrop-blur-md shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-xl hover:bg-white/90">
                     <CardContent className="space-y-3 p-5">
-                      <div className="flex items-center justify-between text-[11px] font-bold uppercase tracking-widest text-slate-500">
+                      <div className="flex items-center justify-between text-[11px] font-bold uppercase tracking-widest text-theme-secondary">
                         <span>Lead Score</span>
-                        <span className="bg-slate-100 text-slate-700 px-2 py-0.5 rounded-full">{score}/100</span>
+                        <span className="bg-theme-surface text-theme-primary px-2 py-0.5 rounded-full">{score}/100</span>
                       </div>
                       <Progress value={score} className="h-2" />
-                      <p className="text-[13px] text-slate-500 font-medium">High-intent profile with strong appointment probability.</p>
+                      <p className="text-[13px] text-theme-secondary font-medium">High-intent profile with strong appointment probability.</p>
                     </CardContent>
                   </Card>
                   <Card className="border border-indigo-900/10 bg-gradient-to-br from-slate-900 to-indigo-950 text-white shadow-md transition duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-indigo-900/20">
@@ -702,8 +708,8 @@ function LeadDetailWorkspace({
                   </CardHeader>
                   <CardContent className="space-y-5">
                     <div className="grid gap-3 lg:grid-cols-[minmax(0,1fr)_auto]">
-                      <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
-                        <label className="mb-2 block text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">Add internal note</label>
+                      <div className="rounded-2xl border border-slate-200 bg-theme-surface p-4">
+                        <label className="mb-2 block text-xs font-semibold uppercase tracking-[0.2em] text-theme-secondary">Add internal note</label>
                         <textarea
                           className="crm-field-input min-h-24 resize-y bg-white"
                           placeholder="Capture objection handling, insurance notes, visit readiness, or anything the next staff member should know."
@@ -719,7 +725,7 @@ function LeadDetailWorkspace({
                       </div>
                       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-1">
                         <div className="relative">
-                          <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+                          <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-theme-muted" />
                           <input
                             className="crm-field-input pl-9"
                             placeholder="Search activity"
@@ -728,7 +734,7 @@ function LeadDetailWorkspace({
                           />
                         </div>
                         <div className="relative">
-                          <Filter className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+                          <Filter className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-theme-muted" />
                           <select className="crm-field-input pl-9" value={timelineFilter} onChange={(event) => setTimelineFilter(event.target.value as 'all' | TimelineActivityType)}>
                             {activityTypeOptions.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}
                           </select>
@@ -748,14 +754,14 @@ function LeadDetailWorkspace({
                                   <div className="flex flex-wrap items-start justify-between gap-3">
                                     <div>
                                       <div className="flex items-center gap-2">
-                                        <h4 className="text-sm font-semibold text-slate-900">{item.title}</h4>
+                                        <h4 className="text-sm font-semibold text-theme-primary">{item.title}</h4>
                                         {item.unread && <span className="h-2.5 w-2.5 rounded-full bg-rose-500" />}
                                       </div>
-                                      <p className="mt-1 text-sm leading-6 text-slate-600">{item.description}</p>
+                                      <p className="mt-1 text-sm leading-6 text-theme-secondary">{item.description}</p>
                                     </div>
                                     <Badge tone="slate">{item.actor}</Badge>
                                   </div>
-                                  <div className="flex flex-wrap items-center gap-3 text-xs font-medium uppercase tracking-[0.18em] text-slate-400">
+                                  <div className="flex flex-wrap items-center gap-3 text-xs font-medium uppercase tracking-[0.18em] text-theme-muted">
                                     <span>{formatDateLabel(item.createdAt)}</span>
                                     <span>{formatTimeLabel(item.createdAt)}</span>
                                     <span>{item.type}</span>
@@ -834,8 +840,8 @@ function LeadDetailWorkspace({
                     >
                       <UploadCloud className="h-8 w-8 text-blue-600" />
                       <div>
-                        <div className="text-base font-semibold text-slate-900">Drag & drop files here</div>
-                        <p className="mt-1 text-sm text-slate-500">Supports PDF, images, and Excel files.</p>
+                        <div className="text-base font-semibold text-theme-primary">Drag & drop files here</div>
+                        <p className="mt-1 text-sm text-theme-secondary">Supports PDF, images, and Excel files.</p>
                       </div>
                     </div>
 
@@ -844,11 +850,11 @@ function LeadDetailWorkspace({
                         <Card key={document.id} className="border border-slate-200 shadow-sm">
                           <CardContent className="space-y-4 p-4">
                             <div className="flex items-start gap-3">
-                              <div className="rounded-2xl bg-slate-100 p-3 text-slate-600">{getDocumentIcon(document.fileType)}</div>
+                              <div className="rounded-2xl bg-theme-surface p-3 text-theme-secondary">{getDocumentIcon(document.fileType)}</div>
                               <div className="min-w-0 flex-1">
-                                <div className="truncate text-sm font-semibold text-slate-900">{document.fileName}</div>
-                                <div className="mt-1 text-sm text-slate-500">{document.sizeLabel}</div>
-                                <div className="mt-2 text-xs uppercase tracking-[0.16em] text-slate-400">
+                                <div className="truncate text-sm font-semibold text-theme-primary">{document.fileName}</div>
+                                <div className="mt-1 text-sm text-theme-secondary">{document.sizeLabel}</div>
+                                <div className="mt-2 text-xs uppercase tracking-[0.16em] text-theme-muted">
                                   {formatDateLabel(document.uploadedAt)} • {document.uploadedBy}
                                 </div>
                               </div>
@@ -882,8 +888,8 @@ function LeadDetailWorkspace({
                       {index < crmStages.length - 1 && <div className={`crm-stage-line ${index < stageIndex ? 'crm-stage-line-active' : ''}`} />}
                     </div>
                     <div className="pt-1">
-                      <div className={`text-sm font-semibold ${index <= stageIndex ? 'text-slate-900' : 'text-slate-400'}`}>{stage}</div>
-                      <div className="mt-1 text-xs text-slate-500">{index === stageIndex ? 'Current stage' : 'Pending stage'}</div>
+                      <div className={`text-sm font-semibold ${index <= stageIndex ? 'text-theme-primary' : 'text-theme-muted'}`}>{stage}</div>
+                      <div className="mt-1 text-xs text-theme-secondary">{index === stageIndex ? 'Current stage' : 'Pending stage'}</div>
                     </div>
                   </div>
                 ))}
@@ -1000,7 +1006,7 @@ function EditableField({
 }) {
   return (
     <label className={fullWidth ? 'sm:col-span-2' : undefined}>
-      <span className="mb-2 block text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">{label}</span>
+      <span className="mb-2 block text-xs font-semibold uppercase tracking-[0.18em] text-theme-secondary">{label}</span>
       {children}
     </label>
   )
@@ -1009,8 +1015,8 @@ function EditableField({
 function MetricCard({ label, value }: { label: string; value: string }) {
   return (
     <div className="rounded-2xl border border-white/70 bg-white/80 p-4 shadow-sm backdrop-blur">
-      <div className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">{label}</div>
-      <div className="mt-2 text-sm font-semibold text-slate-900">{value}</div>
+      <div className="text-xs font-semibold uppercase tracking-[0.2em] text-theme-secondary">{label}</div>
+      <div className="mt-2 text-sm font-semibold text-theme-primary">{value}</div>
     </div>
   )
 }
@@ -1042,16 +1048,16 @@ function FollowUpCard({
   onAction?: () => void
 }) {
   return (
-    <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+    <div className="rounded-2xl border border-slate-200 bg-theme-surface p-4">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div className="space-y-2">
           <div className="flex flex-wrap items-center gap-2">
             <Badge tone={item.status === 'Completed' ? 'emerald' : 'amber'}>{item.status}</Badge>
             <Badge tone="slate">{item.type}</Badge>
           </div>
-          <div className="text-sm font-semibold text-slate-900">{item.assignedStaff}</div>
-          <div className="text-sm text-slate-500">{item.notes}</div>
-          <div className="text-xs uppercase tracking-[0.18em] text-slate-400">
+          <div className="text-sm font-semibold text-theme-primary">{item.assignedStaff}</div>
+          <div className="text-sm text-theme-secondary">{item.notes}</div>
+          <div className="text-xs uppercase tracking-[0.18em] text-theme-muted">
             {formatDateLabel(item.scheduledAt)} • {formatTimeLabel(item.scheduledAt)}
           </div>
         </div>
@@ -1080,7 +1086,7 @@ function ActionPill({
   return (
     <button
       type="button"
-      className={`inline-flex items-center gap-2 rounded-full border px-3 py-2 text-sm font-semibold transition ${destructive ? 'border-rose-200 bg-rose-50 text-rose-700 hover:bg-rose-100' : 'border-slate-200 bg-white text-slate-700 hover:border-slate-300 hover:bg-slate-50'}`}
+      className={`inline-flex items-center gap-2 rounded-full border px-3 py-2 text-sm font-semibold transition ${destructive ? 'border-rose-200 bg-rose-50 text-rose-700 hover:bg-rose-100' : 'border-slate-200 bg-white text-theme-primary hover:border-slate-300 hover:bg-theme-surface'}`}
       onClick={onClick}
     >
       {icon}
@@ -1141,8 +1147,8 @@ function Modal({
       <div className="crm-modal-backdrop" onClick={onClose} />
       <div className="crm-modal-card">
         <div className="border-b border-slate-200 px-6 py-5">
-          <h3 className="text-lg font-semibold text-slate-900">{title}</h3>
-          <p className="mt-1 text-sm text-slate-500">{description}</p>
+          <h3 className="text-lg font-semibold text-theme-primary">{title}</h3>
+          <p className="mt-1 text-sm text-theme-secondary">{description}</p>
         </div>
         <div className="px-6 py-5">{children}</div>
         <div className="flex justify-end gap-3 border-t border-slate-200 px-6 py-4">{footer}</div>

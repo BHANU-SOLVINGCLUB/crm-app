@@ -29,7 +29,7 @@ export default function DealCard({ deal: d, onDragStart, onDragEnd, onClick }: P
         <span className={`deal-priority-dot priority-${d.priority}`} title={`${d.priority} priority`} />
       </div>
 
-      <div className="text-[11px] text-slate-400 mb-2 flex items-center gap-1">
+      <div className="text-[11px] text-theme-muted mb-2 flex items-center gap-1">
         <svg className="h-3 w-3" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
         {d.contact}
       </div>
@@ -40,7 +40,7 @@ export default function DealCard({ deal: d, onDragStart, onDragEnd, onClick }: P
         <div className="flex-1 h-1 rounded-full bg-white/10 overflow-hidden">
           <div className={`deal-prob-fill prob-${probTone} ${probWidth}`} />
         </div>
-        <span className="text-[11px] text-slate-400 font-medium w-7">{d.prob}%</span>
+        <span className="text-[11px] text-theme-muted font-medium w-7">{d.prob}%</span>
       </div>
 
       <div className="flex gap-1 flex-wrap mb-2">
@@ -53,7 +53,7 @@ export default function DealCard({ deal: d, onDragStart, onDragEnd, onClick }: P
         )}
       </div>
 
-      <div className="flex items-center justify-between text-[10px] text-slate-500 pt-2 border-t border-white/5">
+      <div className="flex items-center justify-between text-[10px] text-theme-secondary pt-2 border-t border-white/5">
         <span>{d.sector}</span>
         <span className={urgent ? 'deal-date-urgent' : undefined}>{d.closeDate}</span>
       </div>

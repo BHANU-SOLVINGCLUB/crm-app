@@ -77,12 +77,12 @@ export default function FinanceDashboardPage() {
           </div>
           <div className="space-y-3">
             {revenueSegments.map((segment) => (
-              <div key={segment.name} className="flex items-center justify-between rounded-xl bg-slate-50 px-3 py-2">
+              <div key={segment.name} className="flex items-center justify-between rounded-xl bg-theme-surface px-3 py-2">
                 <div className="flex items-center gap-2">
                   <span className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: segment.color }} />
-                  <span className="text-sm font-medium text-slate-700">{segment.name}</span>
+                  <span className="text-sm font-medium text-theme-primary">{segment.name}</span>
                 </div>
-                <span className="text-sm font-semibold text-slate-900">{formatFinanceCurrency(segment.amount, true)}</span>
+                <span className="text-sm font-semibold text-theme-primary">{formatFinanceCurrency(segment.amount, true)}</span>
               </div>
             ))}
           </div>
@@ -94,17 +94,17 @@ export default function FinanceDashboardPage() {
           <SectionHeader title="Pending collections" subtitle="Accounts that need action in the next 72 hours." right={<Link to="/finance/collections" className="text-sm font-semibold text-brand-blue">View all</Link>} />
           <div className="space-y-3">
             {collections.map((item) => (
-              <div key={item.id} className="rounded-2xl border border-line p-4">
+              <div key={item.id} className="rounded-2xl border border-theme p-4">
                 <div className="flex flex-wrap items-start justify-between gap-3">
                   <div>
-                    <div className="text-sm font-semibold text-slate-900">{item.customer}</div>
-                    <div className="mt-1 text-xs text-slate-500">{item.invoiceId} • {item.daysOverdue} days overdue</div>
+                    <div className="text-sm font-semibold text-theme-primary">{item.customer}</div>
+                    <div className="mt-1 text-xs text-theme-secondary">{item.invoiceId} • {item.daysOverdue} days overdue</div>
                   </div>
                   <FinanceStatusBadge status={item.status} />
                 </div>
                 <div className="mt-3 flex items-center justify-between text-sm">
-                  <span className="text-slate-500">Exposure</span>
-                  <span className="font-semibold text-slate-900">{formatFinanceCurrency(item.amount)}</span>
+                  <span className="text-theme-secondary">Exposure</span>
+                  <span className="font-semibold text-theme-primary">{formatFinanceCurrency(item.amount)}</span>
                 </div>
               </div>
             ))}
@@ -120,9 +120,9 @@ export default function FinanceDashboardPage() {
               ['Overdue', invoiceHealth.overdue],
               ['Draft', invoiceHealth.draft],
             ].map(([label, value]) => (
-              <div key={label} className="rounded-2xl bg-slate-50 p-4 text-center">
-                <div className="text-2xl font-bold text-slate-900">{value}</div>
-                <div className="mt-1 text-xs font-semibold uppercase tracking-[0.14em] text-slate-400">{label}</div>
+              <div key={label} className="rounded-2xl bg-theme-surface p-4 text-center">
+                <div className="text-2xl font-bold text-theme-primary">{value}</div>
+                <div className="mt-1 text-xs font-semibold uppercase tracking-[0.14em] text-theme-muted">{label}</div>
               </div>
             ))}
           </div>
@@ -140,7 +140,7 @@ export default function FinanceDashboardPage() {
               <Link
                 key={label}
                 to={href}
-                className="flex items-center justify-between rounded-2xl border border-line px-4 py-3 text-sm font-semibold text-slate-700 transition hover:border-brand-blue/20 hover:bg-slate-50 hover:text-brand-blue"
+                className="flex items-center justify-between rounded-2xl border border-theme px-4 py-3 text-sm font-semibold text-theme-primary transition hover:border-brand-blue/20 hover:bg-theme-surface hover:text-brand-blue"
               >
                 {label}
                 <ArrowRight className="h-4 w-4" />
@@ -155,16 +155,16 @@ export default function FinanceDashboardPage() {
 
       <div className="grid gap-6 xl:grid-cols-2">
         <section className="card p-0">
-          <div className="flex items-center justify-between border-b border-line px-5 py-4">
-            <h3 className="text-lg font-semibold text-slate-900">Recent transactions</h3>
+          <div className="flex items-center justify-between border-b border-theme px-5 py-4">
+            <h3 className="text-lg font-semibold text-theme-primary">Recent transactions</h3>
             <Link to="/finance/payments" className="text-sm font-semibold text-brand-blue">Open ledger</Link>
           </div>
           <div className="divide-y divide-line">
             {recentTransactions.map((item) => (
               <div key={item.id} className="flex items-center justify-between px-5 py-4">
                 <div>
-                  <div className="text-sm font-semibold text-slate-900">{item.customer}</div>
-                  <div className="mt-1 text-xs text-slate-500">{item.type} • {formatFinanceDate(item.createdAt)}</div>
+                  <div className="text-sm font-semibold text-theme-primary">{item.customer}</div>
+                  <div className="mt-1 text-xs text-theme-secondary">{item.type} • {formatFinanceDate(item.createdAt)}</div>
                 </div>
                 <div className={`text-sm font-semibold ${item.positive ? 'text-emerald-600' : 'text-rose-600'}`}>
                   {item.positive ? '+' : '-'} {formatFinanceCurrency(item.amount)}
@@ -175,19 +175,19 @@ export default function FinanceDashboardPage() {
         </section>
 
         <section className="card p-0">
-          <div className="flex items-center justify-between border-b border-line px-5 py-4">
-            <h3 className="text-lg font-semibold text-slate-900">Recent invoices</h3>
+          <div className="flex items-center justify-between border-b border-theme px-5 py-4">
+            <h3 className="text-lg font-semibold text-theme-primary">Recent invoices</h3>
             <Link to="/finance/invoices" className="text-sm font-semibold text-brand-blue">Manage invoices</Link>
           </div>
           <div className="divide-y divide-line">
             {invoices.slice(0, 4).map((invoice) => (
               <div key={invoice.id} className="flex flex-wrap items-center justify-between gap-3 px-5 py-4">
                 <div>
-                  <div className="text-sm font-semibold text-slate-900">{invoice.id}</div>
-                  <div className="mt-1 text-xs text-slate-500">{invoice.company} • due {formatFinanceDate(invoice.dueDate)}</div>
+                  <div className="text-sm font-semibold text-theme-primary">{invoice.id}</div>
+                  <div className="mt-1 text-xs text-theme-secondary">{invoice.company} • due {formatFinanceDate(invoice.dueDate)}</div>
                 </div>
                 <div className="flex items-center gap-3">
-                  <span className="text-sm font-semibold text-slate-900">{formatFinanceCurrency(invoice.amount)}</span>
+                  <span className="text-sm font-semibold text-theme-primary">{formatFinanceCurrency(invoice.amount)}</span>
                   <FinanceStatusBadge status={invoice.status} />
                 </div>
               </div>

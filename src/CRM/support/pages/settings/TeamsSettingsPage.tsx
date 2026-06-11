@@ -12,21 +12,21 @@ export default function TeamsSettingsPage() {
       <section className="card p-5">
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div>
-            <h3 className="text-lg font-semibold text-slate-900">Teams</h3>
-            <p className="mt-1 max-w-2xl text-sm text-slate-500">Make ownership obvious so tickets do not bounce between departments.</p>
+            <h3 className="text-lg font-semibold text-theme-primary">Teams</h3>
+            <p className="mt-1 max-w-2xl text-sm text-theme-secondary">Make ownership obvious so tickets do not bounce between departments.</p>
           </div>
           <button className="btn-primary" onClick={() => pushAppToast('Team configuration saved.', 'success')}>Save changes</button>
         </div>
         <div className="mt-5 grid gap-4">
           {teams.map((team) => (
-            <div key={team.name} className="rounded-2xl border border-line bg-slate-50/70 p-4">
+            <div key={team.name} className="rounded-2xl border border-theme bg-theme-surface p-4">
               <div className="flex flex-wrap items-center justify-between gap-3">
-                <div className="text-sm font-semibold text-slate-900">{team.name}</div>
+                <div className="text-sm font-semibold text-theme-primary">{team.name}</div>
                 <span className="chip">{team.coverage}</span>
               </div>
               <div className="mt-3 grid gap-3 md:grid-cols-2">
-                <div className="text-sm text-slate-600"><span className="font-medium text-slate-900">Queues:</span> {team.queues}</div>
-                <div className="text-sm text-slate-600"><span className="font-medium text-slate-900">Lead:</span> {team.lead}</div>
+                <div className="text-sm text-theme-secondary"><span className="font-medium text-theme-primary">Queues:</span> {team.queues}</div>
+                <div className="text-sm text-theme-secondary"><span className="font-medium text-theme-primary">Lead:</span> {team.lead}</div>
               </div>
             </div>
           ))}

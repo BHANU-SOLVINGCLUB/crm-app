@@ -21,12 +21,12 @@ export default function CollectionsPage() {
         {collections.map((item) => (
           <div key={item.id} className="card p-5">
             <div className="flex items-center justify-between gap-2">
-              <div className="text-sm font-semibold text-slate-900">{item.customer}</div>
+              <div className="text-sm font-semibold text-theme-primary">{item.customer}</div>
               <FinanceStatusBadge status={item.status} />
             </div>
-            <div className="mt-3 text-2xl font-bold tracking-tight text-slate-900">{formatFinanceCurrency(item.amount)}</div>
-            <div className="mt-2 text-sm text-slate-500">{item.daysOverdue} days overdue • next action {formatFinanceDate(item.nextActionDate)}</div>
-            <p className="mt-4 text-sm leading-6 text-slate-600">{item.notes}</p>
+            <div className="mt-3 text-2xl font-bold tracking-tight text-theme-primary">{formatFinanceCurrency(item.amount)}</div>
+            <div className="mt-2 text-sm text-theme-secondary">{item.daysOverdue} days overdue • next action {formatFinanceDate(item.nextActionDate)}</div>
+            <p className="mt-4 text-sm leading-6 text-theme-secondary">{item.notes}</p>
             {item.promiseToPay && (
               <div className="mt-4 rounded-xl bg-orange-50 px-3 py-2 text-sm font-medium text-orange-700">
                 Promise to pay by {formatFinanceDate(item.promiseToPay)}

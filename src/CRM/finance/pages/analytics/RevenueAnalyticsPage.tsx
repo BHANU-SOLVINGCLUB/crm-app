@@ -26,7 +26,7 @@ export default function RevenueAnalyticsPage() {
     <div className="space-y-6 fade-up">
       <div className="grid gap-6 xl:grid-cols-2">
         <section className="card p-5">
-          <h3 className="text-lg font-semibold text-slate-900">Monthly revenue</h3>
+          <h3 className="text-lg font-semibold text-theme-primary">Monthly revenue</h3>
           <div className="mt-4 h-[300px]">
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart data={monthlyFinanceData} margin={{ left: -18, right: 8, top: 8, bottom: 0 }}>
@@ -47,7 +47,7 @@ export default function RevenueAnalyticsPage() {
         </section>
 
         <section className="card p-5">
-          <h3 className="text-lg font-semibold text-slate-900">Quarterly growth & cash flow</h3>
+          <h3 className="text-lg font-semibold text-theme-primary">Quarterly growth & cash flow</h3>
           <div className="mt-4 h-[300px]">
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={monthlyFinanceData} margin={{ left: -18, right: 8, top: 8, bottom: 0 }}>
@@ -66,15 +66,15 @@ export default function RevenueAnalyticsPage() {
 
       <div className="grid gap-6 xl:grid-cols-[1.2fr_1fr]">
         <section className="card p-5">
-          <h3 className="text-lg font-semibold text-slate-900">Revenue by region</h3>
+          <h3 className="text-lg font-semibold text-theme-primary">Revenue by region</h3>
           <div className="mt-4 space-y-4">
             {regionData.map((region) => (
               <div key={region.name}>
                 <div className="mb-2 flex items-center justify-between text-sm">
-                  <span className="font-medium text-slate-700">{region.name}</span>
-                  <span className="font-semibold text-slate-900">{formatFinanceCurrency(region.revenue, true)} • {region.margin}% margin</span>
+                  <span className="font-medium text-theme-primary">{region.name}</span>
+                  <span className="font-semibold text-theme-primary">{formatFinanceCurrency(region.revenue, true)} • {region.margin}% margin</span>
                 </div>
-                <div className="h-3 overflow-hidden rounded-full bg-slate-100">
+                <div className="h-3 overflow-hidden rounded-full bg-theme-surface">
                   <div className="h-full rounded-full bg-gradient-to-r from-brand-blue to-sky-400" style={{ width: `${region.margin * 2.4}%` }} />
                 </div>
               </div>
@@ -83,7 +83,7 @@ export default function RevenueAnalyticsPage() {
         </section>
 
         <section className="card p-5">
-          <h3 className="text-lg font-semibold text-slate-900">AI insight placeholders</h3>
+          <h3 className="text-lg font-semibold text-theme-primary">AI insight placeholders</h3>
           <div className="mt-4 space-y-3">
             {[
               `Enterprise revenue concentration is ${revenueSegments[0].value}% and should be watched for renewal risk.`,
@@ -93,7 +93,7 @@ export default function RevenueAnalyticsPage() {
               <div key={insight} className="rounded-2xl border border-dashed border-brand-blue/20 bg-blue-50/60 p-4">
                 <div className="flex items-start gap-3">
                   <Sparkles className="mt-0.5 h-4 w-4 text-brand-blue" />
-                  <p className="text-sm leading-6 text-slate-700">{insight}</p>
+                  <p className="text-sm leading-6 text-theme-primary">{insight}</p>
                 </div>
               </div>
             ))}

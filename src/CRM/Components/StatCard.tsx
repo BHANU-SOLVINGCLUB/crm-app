@@ -1,4 +1,4 @@
-﻿import type { LucideIcon } from 'lucide-react'
+import type { LucideIcon } from 'lucide-react'
 import { ArrowDownRight, ArrowUpRight } from 'lucide-react'
 import clsx from 'clsx'
 import './StatCard.css'
@@ -30,8 +30,8 @@ export default function StatCard({ label, value, delta, hint, icon: Icon, accent
     <div className="card p-5">
       <div className="flex items-start justify-between">
         <div>
-          <div className="text-[12px] uppercase tracking-widest text-slate-400 font-semibold">{label}</div>
-          <div className="mt-2.5 text-[28px] font-bold tracking-tight leading-none">{value}</div>
+          <div className="text-[12px] uppercase tracking-widest text-theme-muted font-semibold">{label}</div>
+          <div className="mt-2.5 text-[24px] font-bold tracking-tight leading-none text-theme-primary whitespace-nowrap">{value}</div>
         </div>
         {Icon && (
           <div className={`stat-card-icon ${accentClass}`}>
@@ -51,7 +51,7 @@ export default function StatCard({ label, value, delta, hint, icon: Icon, accent
             {Math.abs(delta).toFixed(1)}%
           </span>
         )}
-        {hint && <span className="text-[12px] text-slate-400">{hint}</span>}
+        {hint && <span className="text-[12px] text-theme-muted">{hint}</span>}
       </div>
     </div>
   )

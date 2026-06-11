@@ -14,8 +14,8 @@ export default function TeamSettings() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h3 className="text-lg font-semibold text-slate-800">Team Management</h3>
-          <p className="text-sm text-slate-500 mt-1">Manage users, roles, and access permissions.</p>
+          <h3 className="text-lg font-semibold text-theme-primary">Team Management</h3>
+          <p className="text-sm text-theme-secondary mt-1">Manage users, roles, and access permissions.</p>
         </div>
         <button className="btn-primary !py-1.5" onClick={() => pushAppToast('Invite user dialog opened.', 'success')}>
           <UserPlus className="h-4 w-4" /> Invite User
@@ -25,7 +25,7 @@ export default function TeamSettings() {
       <div className="card overflow-hidden">
         <table className="w-full text-left border-collapse">
           <thead>
-            <tr className="bg-slate-50 border-b border-line text-[12px] uppercase tracking-wider text-slate-500 font-semibold">
+            <tr className="bg-theme-surface border-b border-theme text-[12px] uppercase tracking-wider text-theme-secondary font-semibold">
               <th className="px-5 py-3">User</th>
               <th className="px-5 py-3">Role</th>
               <th className="px-5 py-3">Status</th>
@@ -34,28 +34,28 @@ export default function TeamSettings() {
           </thead>
           <tbody className="divide-y divide-line text-[13px]">
             {TEAM.map(member => (
-              <tr key={member.id} className="hover:bg-slate-50/50 transition-colors">
+              <tr key={member.id} className="hover:bg-theme-surface transition-colors">
                 <td className="px-5 py-3">
                   <div className="flex items-center gap-3">
                     <div className={`team-avatar team-avatar-${member.id}`}>{member.initials}</div>
                     <div>
-                      <div className="font-medium text-slate-800">{member.name}</div>
-                      <div className="text-[12px] text-slate-500">{member.email}</div>
+                      <div className="font-medium text-theme-primary">{member.name}</div>
+                      <div className="text-[12px] text-theme-secondary">{member.email}</div>
                     </div>
                   </div>
                 </td>
                 <td className="px-5 py-3">
-                  <span className="font-medium text-slate-700">{member.role}</span>
+                  <span className="font-medium text-theme-primary">{member.role}</span>
                 </td>
                 <td className="px-5 py-3">
                   <span className={`inline-flex items-center px-2 py-0.5 rounded text-[11px] font-semibold ${
-                    member.status === 'Active' ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-600'
+                    member.status === 'Active' ? 'bg-emerald-100 text-emerald-700' : 'bg-theme-surface text-theme-secondary'
                   }`}>
                     {member.status}
                   </span>
                 </td>
                 <td className="px-5 py-3 text-right">
-                  <button className="p-1.5 text-slate-400 hover:text-slate-700 rounded-md hover:bg-slate-100 transition-colors" onClick={() => pushAppToast(`Member actions opened for ${member.name}.`, 'success')}>
+                  <button className="p-1.5 text-theme-muted hover:text-theme-primary rounded-md hover:bg-theme-surface transition-colors" onClick={() => pushAppToast(`Member actions opened for ${member.name}.`, 'success')}>
                     <MoreHorizontal className="h-4 w-4" />
                   </button>
                 </td>

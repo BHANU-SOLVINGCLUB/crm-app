@@ -14,7 +14,7 @@ export default function SupportSettingsNav() {
               'inline-flex min-w-max items-center rounded-xl border px-3 py-2 text-sm font-semibold transition',
               isActive
                 ? 'border-brand-blue/20 bg-brand-blue text-white shadow-sm'
-                : 'border-line bg-white text-slate-600 hover:border-slate-300 hover:text-slate-900'
+                : 'border-theme bg-white text-theme-secondary hover:border-slate-300 hover:text-theme-primary'
             )
           }
         >
@@ -29,7 +29,7 @@ export default function SupportSettingsNav() {
                 'inline-flex min-w-max items-center rounded-xl border px-3 py-2 text-sm font-semibold transition',
                 isActive
                   ? 'border-brand-blue/20 bg-brand-blue text-white shadow-sm'
-                  : 'border-line bg-white text-slate-600 hover:border-slate-300 hover:text-slate-900'
+                  : 'border-theme bg-white text-theme-secondary hover:border-slate-300 hover:text-theme-primary'
               )
             }
           >

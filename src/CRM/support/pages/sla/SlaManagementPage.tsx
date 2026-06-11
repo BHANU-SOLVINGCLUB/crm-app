@@ -16,15 +16,15 @@ export default function SlaManagementPage() {
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
         {slaPolicies.map((policy) => (
           <section key={policy.id} className="card p-5">
-            <div className="text-xs font-semibold uppercase tracking-[0.14em] text-slate-400">{policy.level}</div>
-            <div className="mt-3 text-3xl font-bold text-slate-900">{policy.target}</div>
-            <div className="mt-2 text-sm text-slate-500">{formatPercent(policy.compliance)} compliance • {policy.openBreaches} active breaches</div>
+            <div className="text-xs font-semibold uppercase tracking-[0.14em] text-theme-muted">{policy.level}</div>
+            <div className="mt-3 text-3xl font-bold text-theme-primary">{policy.target}</div>
+            <div className="mt-2 text-sm text-theme-secondary">{formatPercent(policy.compliance)} compliance • {policy.openBreaches} active breaches</div>
           </section>
         ))}
       </div>
 
       <section className="card p-5">
-        <h3 className="text-lg font-semibold text-slate-900">SLA compliance by priority</h3>
+        <h3 className="text-lg font-semibold text-theme-primary">SLA compliance by priority</h3>
         <div className="mt-4 h-[320px]">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={slaPolicies} margin={{ left: -18, right: 10, top: 8, bottom: 0 }}>

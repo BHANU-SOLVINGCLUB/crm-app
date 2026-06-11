@@ -33,6 +33,7 @@ import { pushAppToast } from '../store/uiStore'
 import { leadsByIndustry, type LeadColumn, type LeadInteraction, type LeadRow } from '../data/leads'
 import { normalizeIndustryKey } from '../data/industries'
 import { formatINR, formatNumber } from '../lib/format'
+import { useLeadsApi } from '../../hooks/useLeadsApi'
 import './LeadCapture.css'
 
 const statusToneCycle = ['#3b82f6', '#10b981', '#8b5cf6', '#f59e0b', '#ec4899', '#06b6d4', '#f43f5e']
@@ -73,7 +74,7 @@ function CellRenderer({
           className="cell-input appearance-none cursor-pointer pr-6"
         >
           {col.options.map((o) => (
-            <option key={o} value={o} className="bg-white text-slate-800">
+            <option key={o} value={o} className="bg-white text-theme-primary">
               {o}
             </option>
           ))}
@@ -199,8 +200,11 @@ export default function LeadCapture() {
   const resetLeads = useIndustryStore((s) => s.resetLeads)
 
   const safeIndustryKey = normalizeIndustryKey(industryKey)
-  const schema = leadsByIndustry[safeIndustryKey].schema
-  const rows = getLeads(safeIndustryKey)
+  const leadsApi = useLeadsApi(safeIndustryKey)
+  const localSchema = leadsByIndustry[safeIndustryKey].schema
+  const localRows = getLeads(safeIndustryKey)
+  const schema = leadsApi.enabled && leadsApi.schema ? leadsApi.schema : localSchema
+  const rows = leadsApi.enabled ? leadsApi.rows : localRows
 
   const [search, setSearch] = useState('')
   const [statusFilter, setStatusFilter] = useState<string>('All')
@@ -236,6 +240,10 @@ export default function LeadCapture() {
   }, [rows, schema])
 
   const updateCell = (rowIdx: number, key: string, val: string | number) => {
+    if (leadsApi.enabled) {
+      void leadsApi.updateCell(rowIdx, key, val)
+      return
+    }
     updateLead(safeIndustryKey, rowIdx, key, val)
   }
 
@@ -264,7 +272,12 @@ export default function LeadCapture() {
   }
 
   const addRow = () => {
-    addLead(safeIndustryKey, buildBlankLeadRow(schema))
+    const blank = buildBlankLeadRow(schema)
+    if (leadsApi.enabled) {
+      void leadsApi.addRow(blank).then(() => pushToast('New lead row added.')).catch(() => pushToast('Failed to create lead.'))
+      return
+    }
+    addLead(safeIndustryKey, blank)
     pushToast('New lead row added.')
   }
 
@@ -273,13 +286,13 @@ export default function LeadCapture() {
     if (params.get('quickAdd') !== 'lead') return
 
     const timer = window.setTimeout(() => {
-      addLead(safeIndustryKey, buildBlankLeadRow(schema))
+      addRow()
       pushToast('Quick Add created a new lead row.')
       navigate(location.pathname, { replace: true })
     }, 0)
 
     return () => window.clearTimeout(timer)
-  }, [addLead, location.pathname, location.search, navigate, safeIndustryKey, schema])
+  }, [location.pathname, location.search, navigate, safeIndustryKey, schema])
 
   const simulateRealtimeEvent = () => {
     const blank: LeadRow = {}
@@ -292,14 +305,21 @@ export default function LeadCapture() {
     blank.name = names[Math.floor(Math.random() * names.length)] + ' (Live Event)'
     blank.source = 'API Webhook'
     blank.status = schema.statuses[0]
+    if (leadsApi.enabled) {
+      void leadsApi.addRow(blank).then(() => pushToast('New lead incoming via Webhook...'))
+      return
+    }
     addLead(safeIndustryKey, blank)
-
     pushToast('New lead incoming via Webhook...')
   }
 
 
   const deleteSelected = () => {
     if (selected.size === 0) return
+    if (leadsApi.enabled) {
+      void leadsApi.deleteRows(selected).then(() => setSelected(new Set()))
+      return
+    }
     deleteLeads(safeIndustryKey, selected)
     setSelected(new Set())
   }
@@ -371,7 +391,11 @@ export default function LeadCapture() {
       createdAt: new Date().toISOString(),
     }
 
-    addLeadInteraction(safeIndustryKey, interactionDraft.leadId, interaction)
+    if (leadsApi.enabled) {
+      void leadsApi.saveInteraction(interactionLeadIdx, interactionDraft.interactionType, interactionDraft.remarks.trim())
+    } else {
+      addLeadInteraction(safeIndustryKey, interactionDraft.leadId, interaction)
+    }
 
     if (interactionDraft.autoStatusUpdate) {
       const exactStatus = schema.statuses.find(
@@ -398,8 +422,12 @@ export default function LeadCapture() {
     const phone = String(row.phone ?? '').trim()
 
     if (action === 'delete') {
-      deleteLeads(safeIndustryKey, new Set([rowIndex]))
-      pushToast(`${leadName} removed from leads.`)
+      if (leadsApi.enabled) {
+        void leadsApi.deleteRows(new Set([rowIndex])).then(() => pushToast(`${leadName} removed from leads.`))
+      } else {
+        deleteLeads(safeIndustryKey, new Set([rowIndex]))
+        pushToast(`${leadName} removed from leads.`)
+      }
       return
     }
 
@@ -431,15 +459,34 @@ export default function LeadCapture() {
     pushToast(`SMS reminder queued for ${leadName}.`)
   }
 
+  if (leadsApi.enabled && leadsApi.loading) {
+    return <div className="leads-container p-8 text-theme-secondary">Loading leads from backend…</div>
+  }
+
+  if (leadsApi.enabled && leadsApi.error) {
+    return (
+      <div className="leads-container p-8 text-red-500">
+        Backend error: {leadsApi.error}. Make sure Django is running on port 8000.
+      </div>
+    )
+  }
+
   return (
     <div className="leads-container">
       <PageHeader
         eyebrow="Lead Capture"
-        title="Sheet-based lead command center"
+        title=""
         subtitle={`Capture, enrich and triage every inquiry — fields are auto-tuned for ${industry.name.toLowerCase()}.`}
         actions={
           <>
-            <button className="btn-ghost" onClick={() => resetLeads(safeIndustryKey)} title="Reset to sample data">
+            <button
+              className="btn-ghost"
+              onClick={() => {
+                if (leadsApi.enabled) void leadsApi.resetRows().then(() => pushToast('Leads reset to sample data.'))
+                else resetLeads(safeIndustryKey)
+              }}
+              title="Reset to sample data"
+            >
               <RotateCcw className="h-4 w-4" />
               Reset
             </button>
@@ -558,7 +605,7 @@ export default function LeadCapture() {
                   />
                 </th>
                 <th style={{ width: 44 }}>#</th>
-                <th style={{ width: 88 }}>Actions</th>
+                <th style={{ width: 120 }}>Actions</th>
                 {schema.columns.map((col) => (
                   <th key={col.key} style={{ minWidth: col.width ?? 140 }}>
                     {col.label}
@@ -593,11 +640,23 @@ export default function LeadCapture() {
                       />
                     </td>
                     <td className="row-num">{displayIdx + 1}</td>
-                    <td className="row-num">
-                      <LeadActionsMenu
-                        row={row}
-                        onAction={(action) => handleLeadAction(action, row, i)}
-                      />
+                    <td className="!text-center">
+                      <div className="flex items-center justify-center gap-2 h-full">
+                        <button
+                          className="btn-ghost"
+                          style={{ padding: '4px 8px', fontSize: '12px', minHeight: 'unset' }}
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            navigate(`/leads/${getLeadId(row, safeIndustryKey, i)}`)
+                          }}
+                        >
+                          Open
+                        </button>
+                        <LeadActionsMenu
+                          row={row}
+                          onAction={(action) => handleLeadAction(action, row, i)}
+                        />
+                      </div>
                     </td>
                     {schema.columns.map((col) => (
                       <td key={col.key}>

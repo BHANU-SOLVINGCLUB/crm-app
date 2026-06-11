@@ -17,11 +17,11 @@ interface TimelineProps {
 
 export default function Timeline({ events }: TimelineProps) {
   if (!events || events.length === 0) {
-    return <div className="text-sm text-slate-400 py-4">No activity yet.</div>
+    return <div className="text-sm text-theme-muted py-4">No activity yet.</div>
   }
 
   return (
-    <div className="relative border-l border-line ml-4 space-y-6 pb-4">
+    <div className="relative border-l border-theme ml-4 space-y-6 pb-4">
       {events.map((event) => (
         <div key={event.id} className="relative pl-6">
           <span className="timeline-dot">
@@ -36,12 +36,12 @@ export default function Timeline({ events }: TimelineProps) {
             <div>
               <h4 className="text-[14px] font-semibold text-white">{event.title}</h4>
               {event.description && (
-                <p className="text-[13px] text-slate-400 mt-1 leading-relaxed">
+                <p className="text-[13px] text-theme-muted mt-1 leading-relaxed">
                   {event.description}
                 </p>
               )}
             </div>
-            <time className="text-[11px] font-medium text-slate-500 whitespace-nowrap mt-0.5">
+            <time className="text-[11px] font-medium text-theme-secondary whitespace-nowrap mt-0.5">
               {event.date}
             </time>
           </div>

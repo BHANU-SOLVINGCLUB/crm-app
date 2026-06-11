@@ -13,26 +13,26 @@ export default function SlaSettingsPage() {
       <section className="card p-5">
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div>
-            <h3 className="text-lg font-semibold text-slate-900">SLA settings</h3>
-            <p className="mt-1 max-w-2xl text-sm text-slate-500">Manage response targets and escalation thresholds from one page to avoid policy drift.</p>
+            <h3 className="text-lg font-semibold text-theme-primary">SLA settings</h3>
+            <p className="mt-1 max-w-2xl text-sm text-theme-secondary">Manage response targets and escalation thresholds from one page to avoid policy drift.</p>
           </div>
           <button className="btn-primary" onClick={() => pushAppToast('SLA settings saved.', 'success')}>Save changes</button>
         </div>
         <div className="mt-5 grid gap-4 xl:grid-cols-2">
           {policies.map((policy) => (
-            <div key={policy.priority} className="rounded-2xl border border-line bg-slate-50/70 p-4">
+            <div key={policy.priority} className="rounded-2xl border border-theme bg-theme-surface p-4">
               <div className="flex items-center justify-between gap-3">
-                <div className="text-sm font-semibold text-slate-900">{policy.priority}</div>
+                <div className="text-sm font-semibold text-theme-primary">{policy.priority}</div>
                 <span className="chip">{policy.escalation}</span>
               </div>
               <div className="mt-4 grid gap-3 sm:grid-cols-2">
                 <div className="rounded-xl bg-white p-3">
-                  <div className="text-xs font-semibold uppercase tracking-[0.14em] text-slate-400">Response target</div>
-                  <div className="mt-2 text-lg font-bold text-slate-900">{policy.response}</div>
+                  <div className="text-xs font-semibold uppercase tracking-[0.14em] text-theme-muted">Response target</div>
+                  <div className="mt-2 text-lg font-bold text-theme-primary">{policy.response}</div>
                 </div>
                 <div className="rounded-xl bg-white p-3">
-                  <div className="text-xs font-semibold uppercase tracking-[0.14em] text-slate-400">Resolution target</div>
-                  <div className="mt-2 text-lg font-bold text-slate-900">{policy.resolution}</div>
+                  <div className="text-xs font-semibold uppercase tracking-[0.14em] text-theme-muted">Resolution target</div>
+                  <div className="mt-2 text-lg font-bold text-theme-primary">{policy.resolution}</div>
                 </div>
               </div>
             </div>

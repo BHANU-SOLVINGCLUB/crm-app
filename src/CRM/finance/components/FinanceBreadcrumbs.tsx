@@ -21,13 +21,13 @@ export default function FinanceBreadcrumbs() {
   }))
 
   return (
-    <div className="flex flex-wrap items-center gap-1 text-[12px] font-semibold uppercase tracking-[0.14em] text-slate-400">
+    <div className="flex flex-wrap items-center gap-1 text-[12px] font-semibold uppercase tracking-[0.14em] text-theme-muted">
       {crumbs.map((crumb, index) => (
         <div key={crumb.href} className="flex items-center gap-1">
           {index === crumbs.length - 1 ? (
-            <span className="text-slate-500">{crumb.label}</span>
+            <span className="text-theme-secondary">{crumb.label}</span>
           ) : (
-            <Link to={crumb.href} className="hover:text-slate-700">
+            <Link to={crumb.href} className="hover:text-theme-primary">
               {crumb.label}
             </Link>
           )}

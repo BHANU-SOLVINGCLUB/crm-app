@@ -27,9 +27,9 @@ export default function PipelineStats({ deals, wonDeals }: Props) {
           className="rounded-2xl border border-white/10 bg-white/[0.03] p-4 hover:border-blue-500/30 hover:-translate-y-0.5 transition-all cursor-default"
         >
           <div className={`pipeline-stat-icon pipeline-stat-${index + 1}`}>{card.emoji}</div>
-          <div className="text-[12px] text-slate-400 font-medium mb-1">{card.label}</div>
+          <div className="text-[12px] text-theme-muted font-medium mb-1">{card.label}</div>
           <div className="text-[22px] font-bold tracking-tight text-white">{card.value}</div>
-          <div className="text-[11px] text-slate-500 mt-0.5">{card.sub}</div>
+          <div className="text-[11px] text-theme-secondary mt-0.5">{card.sub}</div>
           <div className={`pipeline-stat-trend pipeline-stat-${index + 1}`}>↑ {card.trend}</div>
         </div>
       ))}

@@ -21,15 +21,15 @@ export default function PageHeader({ eyebrow, title, subtitle, actions }: Props)
             {industry.name}
           </span>
           {eyebrow && (
-            <span className="text-[11.5px] uppercase tracking-widest text-slate-500 font-semibold">
+            <span className="text-[11.5px] uppercase tracking-widest text-theme-secondary font-semibold">
               {eyebrow}
             </span>
           )}
         </div>
-        <h1 className="mt-2 text-[34px] font-bold tracking-tight leading-[1.05]">
+        <h1 className="mt-2 text-[34px] font-bold tracking-tight leading-[1.05] text-theme-primary">
           {title}
         </h1>
-        {subtitle && <p className="mt-2 text-[14.5px] text-muted max-w-2xl">{subtitle}</p>}
+        {subtitle && <p className="mt-2 text-[14.5px] text-theme-secondary max-w-2xl">{subtitle}</p>}
       </div>
       {actions && <div className="flex items-center gap-2">{actions}</div>}
     </div>

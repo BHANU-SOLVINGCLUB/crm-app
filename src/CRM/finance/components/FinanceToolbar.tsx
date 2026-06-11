@@ -21,12 +21,12 @@ export default function FinanceToolbar({ primaryAction }: Props) {
           <CalendarRange className="h-3.5 w-3.5" />
           Date range
         </span>
-        <div className="flex rounded-xl border border-line bg-white p-1 shadow-sm">
+        <div className="flex rounded-xl border border-theme bg-white p-1 shadow-sm">
           {ranges.map((range) => (
             <button
               key={range}
               type="button"
-              className={`rounded-lg px-3 py-1.5 text-[12px] font-semibold uppercase transition ${dateRange === range ? 'bg-slate-900 text-white' : 'text-slate-500 hover:bg-slate-100'}`}
+              className={`rounded-lg px-3 py-1.5 text-[12px] font-semibold uppercase transition ${dateRange === range ? 'bg-slate-900 text-white' : 'text-theme-secondary hover:bg-theme-surface'}`}
               onClick={() => setDateRange(range)}
             >
               {range}

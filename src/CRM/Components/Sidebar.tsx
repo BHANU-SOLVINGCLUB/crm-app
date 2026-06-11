@@ -1,11 +1,12 @@
 import { useState } from 'react'
-import { NavLink } from 'react-router-dom'
+import { NavLink, useLocation } from 'react-router-dom'
 import {
   LayoutDashboard,
   Megaphone,
   Target,
   Users,
   Briefcase,
+  Package2,
   Wallet,
   Settings,
   Headphones,
@@ -13,9 +14,11 @@ import {
   ExternalLink,
   HelpCircle,
   Bell,
+  ShoppingCart,
 } from 'lucide-react'
 import HelpSupportDrawer from './HelpSupportDrawer'
 import { pushAppToast } from '../store/uiStore'
+import { productCatalogRoutes } from '../product-catalog/routes'
 import './Sidebar.css'
 
 const nav = [
@@ -23,6 +26,8 @@ const nav = [
   { to: '/marketing', label: 'Marketing', icon: Megaphone, active: true },
   { to: '/leads', label: 'Lead Capture', icon: Target, active: true },
   { to: '/sales', label: 'Sales', icon: Briefcase, active: true },
+  { to: '/products', label: 'Product Catalog', icon: Package2, active: true },
+  { to: '/orders', label: 'Orders', icon: ShoppingCart, active: true },
   { to: '/customers', label: 'Customers', icon: Users, active: true },
   { to: '/finance', label: 'Finance', icon: Wallet, active: true },
   { to: '/support', label: 'Support', icon: Headphones, active: true },
@@ -31,6 +36,8 @@ const nav = [
 
 export default function Sidebar() {
   const [isHelpOpen, setIsHelpOpen] = useState(false)
+  const location = useLocation()
+  const showProductCatalog = location.pathname.startsWith('/products')
 
   return (
     <aside className="sidebar">
@@ -51,25 +58,45 @@ export default function Sidebar() {
         {nav.map((item) => {
           const Icon = item.icon
           return (
-            <NavLink
-              key={item.to}
-              to={item.to}
-              end={item.to === '/'}
-              className={({ isActive }) =>
-                `sidebar-link ${isActive ? 'active' : ''} ${item.active ? '' : 'disabled'}`
-              }
-              onClick={(event) => {
-                if (!item.active) event.preventDefault()
-              }}
-            >
-              {({ isActive }) => (
-                <>
-                  <Icon className="sidebar-link-icon" strokeWidth={isActive ? 2.2 : 1.8} />
-                  <span>{item.label}</span>
-                  {!item.active && <span className="sidebar-soon">Soon</span>}
-                </>
+            <div key={item.to} className="sidebar-group">
+              <NavLink
+                to={item.to}
+                end={item.to === '/'}
+                className={({ isActive }) =>
+                  `sidebar-link ${isActive ? 'active' : ''} ${item.active ? '' : 'disabled'}`
+                }
+                onClick={(event) => {
+                  if (!item.active) event.preventDefault()
+                }}
+              >
+                {({ isActive }) => (
+                  <>
+                    <Icon className="sidebar-link-icon" strokeWidth={isActive ? 2.2 : 1.8} />
+                    <span>{item.label}</span>
+                    {!item.active && <span className="sidebar-soon">Soon</span>}
+                  </>
+                )}
+              </NavLink>
+
+              {item.to === '/products' && showProductCatalog && (
+                <div className="sidebar-subnav">
+                  {productCatalogRoutes.map((route) => {
+                    const RouteIcon = route.icon
+                    return (
+                      <NavLink
+                        key={route.path}
+                        to={route.path}
+                        end={route.path === '/products'}
+                        className={({ isActive }) => `sidebar-subnav-link ${isActive ? 'active' : ''}`}
+                      >
+                        <RouteIcon className="sidebar-link-icon" strokeWidth={2} />
+                        <span>{route.label}</span>
+                      </NavLink>
+                    )
+                  })}
+                </div>
               )}
-            </NavLink>
+            </div>
           )
         })}
       </nav>

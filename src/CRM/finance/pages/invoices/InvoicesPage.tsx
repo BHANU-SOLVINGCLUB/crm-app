@@ -40,12 +40,12 @@ export default function InvoicesPage() {
       header: 'Customer',
       render: (row) => (
         <div>
-          <div className="font-medium text-slate-900">{row.customer}</div>
-          <div className="text-xs text-slate-500">{row.company}</div>
+          <div className="font-medium text-theme-primary">{row.customer}</div>
+          <div className="text-xs text-theme-secondary">{row.company}</div>
         </div>
       ),
     },
-    { key: 'amount', header: 'Amount', render: (row) => <span className="font-semibold text-slate-900">{formatFinanceCurrency(row.amount)}</span> },
+    { key: 'amount', header: 'Amount', render: (row) => <span className="font-semibold text-theme-primary">{formatFinanceCurrency(row.amount)}</span> },
     { key: 'tax', header: 'Tax', render: (row) => formatFinanceCurrency(row.tax) },
     { key: 'dueDate', header: 'Due Date', render: (row) => formatFinanceDate(row.dueDate) },
     { key: 'status', header: 'Status', render: (row) => <FinanceStatusBadge status={row.status} /> },
@@ -58,7 +58,7 @@ export default function InvoicesPage() {
       <section className="card p-5">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div className="relative w-full max-w-md">
-            <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+            <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-theme-muted" />
             <input
               value={query}
               onChange={(event) => setQuery(event.target.value)}
@@ -79,7 +79,7 @@ export default function InvoicesPage() {
           {tabs.map((tab) => (
             <button
               key={tab}
-              className={`rounded-xl px-3 py-2 text-sm font-semibold transition ${activeTab === tab ? 'bg-slate-900 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}`}
+              className={`rounded-xl px-3 py-2 text-sm font-semibold transition ${activeTab === tab ? 'bg-slate-900 text-white' : 'bg-theme-surface text-theme-secondary hover:bg-theme-surface'}`}
               onClick={() => setActiveTab(tab)}
             >
               {tab}

@@ -72,10 +72,10 @@ export default function SupportDashboardPage() {
             {categoryBreakdown.map((item) => (
               <div key={item.name}>
                 <div className="mb-2 flex items-center justify-between text-sm">
-                  <span className="font-medium text-slate-700">{item.name}</span>
-                  <span className="font-semibold text-slate-900">{item.value}</span>
+                  <span className="font-medium text-theme-primary">{item.name}</span>
+                  <span className="font-semibold text-theme-primary">{item.value}</span>
                 </div>
-                <div className="h-2.5 overflow-hidden rounded-full bg-slate-100">
+                <div className="h-2.5 overflow-hidden rounded-full bg-theme-surface">
                   <div className="h-full rounded-full" style={{ width: `${item.value}%`, backgroundColor: item.color }} />
                 </div>
               </div>
@@ -87,15 +87,15 @@ export default function SupportDashboardPage() {
           <SectionHeader title="Pending escalations" subtitle="Tickets with active leadership or specialist involvement." />
           <div className="space-y-3">
             {escalated.length > 0 ? escalated.map((ticket) => (
-              <div key={ticket.id} className="rounded-2xl border border-line p-4">
+              <div key={ticket.id} className="rounded-2xl border border-theme p-4">
                 <div className="flex items-center justify-between gap-2">
-                  <div className="text-sm font-semibold text-slate-900">{ticket.id}</div>
+                  <div className="text-sm font-semibold text-theme-primary">{ticket.id}</div>
                   <SupportPriorityBadge priority={ticket.priority} />
                 </div>
-                <div className="mt-2 text-sm text-slate-600">{ticket.subject}</div>
+                <div className="mt-2 text-sm text-theme-secondary">{ticket.subject}</div>
                 <div className="mt-3"><SupportStatusBadge status={ticket.status} /></div>
               </div>
-            )) : <p className="text-sm text-slate-500">No escalations in the current support window.</p>}
+            )) : <p className="text-sm text-theme-secondary">No escalations in the current support window.</p>}
           </div>
         </section>
 
@@ -108,7 +108,7 @@ export default function SupportDashboardPage() {
               ['Assign unowned work', '/support/unassigned'],
               ['Open knowledge base', '/support/knowledge-base'],
             ].map(([label, href]) => (
-              <Link key={label} to={href} className="flex items-center justify-between rounded-2xl border border-line px-4 py-3 text-sm font-semibold text-slate-700 transition hover:border-brand-blue/20 hover:bg-slate-50 hover:text-brand-blue">
+              <Link key={label} to={href} className="flex items-center justify-between rounded-2xl border border-theme px-4 py-3 text-sm font-semibold text-theme-primary transition hover:border-brand-blue/20 hover:bg-theme-surface hover:text-brand-blue">
                 {label}
                 <ArrowRight className="h-4 w-4" />
               </Link>
@@ -121,16 +121,16 @@ export default function SupportDashboardPage() {
       </div>
 
       <section className="card p-0">
-        <div className="flex items-center justify-between border-b border-line px-5 py-4">
-          <h3 className="text-lg font-semibold text-slate-900">Recent tickets</h3>
+        <div className="flex items-center justify-between border-b border-theme px-5 py-4">
+          <h3 className="text-lg font-semibold text-theme-primary">Recent tickets</h3>
           <Link to="/support/tickets" className="text-sm font-semibold text-brand-blue">Open queue</Link>
         </div>
         <div className="divide-y divide-line">
           {tickets.slice(0, 4).map((ticket) => (
             <div key={ticket.id} className="flex flex-wrap items-center justify-between gap-3 px-5 py-4">
               <div>
-                <div className="text-sm font-semibold text-slate-900">{ticket.id} • {ticket.subject}</div>
-                <div className="mt-1 text-xs text-slate-500">{ticket.company} • updated {formatSupportDate(ticket.updatedDate)}</div>
+                <div className="text-sm font-semibold text-theme-primary">{ticket.id} • {ticket.subject}</div>
+                <div className="mt-1 text-xs text-theme-secondary">{ticket.company} • updated {formatSupportDate(ticket.updatedDate)}</div>
               </div>
               <div className="flex items-center gap-3">
                 <SupportPriorityBadge priority={ticket.priority} />

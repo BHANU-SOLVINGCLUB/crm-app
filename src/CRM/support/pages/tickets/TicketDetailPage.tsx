@@ -25,8 +25,8 @@ export default function TicketDetailPage() {
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div>
             <Link to="/support/tickets" className="text-sm font-semibold text-brand-blue hover:underline">Back to all tickets</Link>
-            <h2 className="mt-3 text-3xl font-bold tracking-tight text-slate-900">{ticket.subject}</h2>
-            <p className="mt-2 text-sm text-slate-500">{`${ticket.id} • ${ticket.company} • ${ticket.channel}`}</p>
+            <h2 className="mt-3 text-3xl font-bold tracking-tight text-theme-primary">{ticket.subject}</h2>
+            <p className="mt-2 text-sm text-theme-secondary">{`${ticket.id} • ${ticket.company} • ${ticket.channel}`}</p>
           </div>
           <div className="flex flex-wrap gap-2">
             <SupportPriorityBadge priority={ticket.priority} />
@@ -44,45 +44,45 @@ export default function TicketDetailPage() {
       <div className="grid gap-6 xl:grid-cols-[1.45fr_1fr]">
         <section className="space-y-6">
           <div className="card p-5">
-            <h3 className="text-lg font-semibold text-slate-900">Ticket summary</h3>
+            <h3 className="text-lg font-semibold text-theme-primary">Ticket summary</h3>
             <div className="mt-4 grid gap-4 md:grid-cols-2">
-              <div className="rounded-2xl bg-slate-50 p-4">
-                <div className="text-xs font-semibold uppercase tracking-[0.14em] text-slate-400">Customer</div>
-                <div className="mt-2 text-sm font-semibold text-slate-900">{ticket.customer}</div>
+              <div className="rounded-2xl bg-theme-surface p-4">
+                <div className="text-xs font-semibold uppercase tracking-[0.14em] text-theme-muted">Customer</div>
+                <div className="mt-2 text-sm font-semibold text-theme-primary">{ticket.customer}</div>
               </div>
-              <div className="rounded-2xl bg-slate-50 p-4">
-                <div className="text-xs font-semibold uppercase tracking-[0.14em] text-slate-400">Issue</div>
-                <div className="mt-2 text-sm font-semibold text-slate-900">{ticket.subject}</div>
+              <div className="rounded-2xl bg-theme-surface p-4">
+                <div className="text-xs font-semibold uppercase tracking-[0.14em] text-theme-muted">Issue</div>
+                <div className="mt-2 text-sm font-semibold text-theme-primary">{ticket.subject}</div>
               </div>
             </div>
-            <p className="mt-4 text-sm leading-7 text-slate-600">{ticket.summary}</p>
+            <p className="mt-4 text-sm leading-7 text-theme-secondary">{ticket.summary}</p>
             <div className="mt-5 grid gap-3 md:grid-cols-3">
-              <div className="rounded-2xl bg-slate-50 p-4"><div className="text-xs font-semibold uppercase tracking-[0.14em] text-slate-400">Assigned Agent</div><div className="mt-2 text-sm font-semibold text-slate-900">{ticket.assignedAgent}</div></div>
-              <div className="rounded-2xl bg-slate-50 p-4"><div className="text-xs font-semibold uppercase tracking-[0.14em] text-slate-400">SLA Timer</div><div className="mt-2 text-sm font-semibold text-slate-900">{ticket.slaTimer}</div></div>
-              <div className="rounded-2xl bg-slate-50 p-4"><div className="text-xs font-semibold uppercase tracking-[0.14em] text-slate-400">Plan</div><div className="mt-2 text-sm font-semibold text-slate-900">{ticket.plan}</div></div>
+              <div className="rounded-2xl bg-theme-surface p-4"><div className="text-xs font-semibold uppercase tracking-[0.14em] text-theme-muted">Assigned Agent</div><div className="mt-2 text-sm font-semibold text-theme-primary">{ticket.assignedAgent}</div></div>
+              <div className="rounded-2xl bg-theme-surface p-4"><div className="text-xs font-semibold uppercase tracking-[0.14em] text-theme-muted">SLA Timer</div><div className="mt-2 text-sm font-semibold text-theme-primary">{ticket.slaTimer}</div></div>
+              <div className="rounded-2xl bg-theme-surface p-4"><div className="text-xs font-semibold uppercase tracking-[0.14em] text-theme-muted">Plan</div><div className="mt-2 text-sm font-semibold text-theme-primary">{ticket.plan}</div></div>
             </div>
           </div>
 
           <div className="card p-5">
             <div className="flex items-center justify-between gap-3">
-              <h3 className="text-lg font-semibold text-slate-900">Conversation timeline</h3>
+              <h3 className="text-lg font-semibold text-theme-primary">Conversation timeline</h3>
               <button className="btn-primary" onClick={() => pushAppToast(`Reply drafted for ${ticket.id}.`, 'success')}>
                 <MessageSquareReply className="h-4 w-4" /> Quick reply
               </button>
             </div>
             <div className="mt-4 space-y-4">
               {ticket.conversation.map((entry) => (
-                <div key={entry.id} className={`rounded-2xl p-4 ${entry.role === 'Agent' ? 'bg-blue-50/70' : entry.role === 'System' ? 'bg-slate-100' : 'border border-line bg-white'}`}>
+                <div key={entry.id} className={`rounded-2xl p-4 ${entry.role === 'Agent' ? 'bg-blue-50/70' : entry.role === 'System' ? 'bg-theme-surface' : 'border border-theme bg-white'}`}>
                   <div className="flex flex-wrap items-center justify-between gap-2">
-                    <div className="text-sm font-semibold text-slate-900">{entry.author} <span className="ml-2 text-xs font-medium text-slate-400">{entry.role}</span></div>
-                    <div className="text-[11px] font-semibold uppercase tracking-[0.12em] text-slate-400">{formatSupportDateTime(entry.timestamp)}</div>
+                    <div className="text-sm font-semibold text-theme-primary">{entry.author} <span className="ml-2 text-xs font-medium text-theme-muted">{entry.role}</span></div>
+                    <div className="text-[11px] font-semibold uppercase tracking-[0.12em] text-theme-muted">{formatSupportDateTime(entry.timestamp)}</div>
                   </div>
-                  <p className="mt-3 text-sm leading-6 text-slate-700">{entry.message}</p>
+                  <p className="mt-3 text-sm leading-6 text-theme-primary">{entry.message}</p>
                 </div>
               ))}
             </div>
-            <div className="mt-5 rounded-2xl border border-line bg-slate-50 p-4">
-              <div className="text-sm font-semibold text-slate-900">Reply box</div>
+            <div className="mt-5 rounded-2xl border border-theme bg-theme-surface p-4">
+              <div className="text-sm font-semibold text-theme-primary">Reply box</div>
               <textarea className="input mt-3 min-h-[120px] resize-none" placeholder="Write a customer-facing response..." />
               <div className="mt-3 flex flex-wrap justify-between gap-2">
                 <button className="btn-ghost" onClick={() => pushAppToast('Attachment picker opened.', 'success')}>
@@ -96,41 +96,41 @@ export default function TicketDetailPage() {
 
         <section className="space-y-6">
           <div className="card p-5">
-            <h3 className="text-lg font-semibold text-slate-900">Customer details</h3>
+            <h3 className="text-lg font-semibold text-theme-primary">Customer details</h3>
             <div className="mt-4 space-y-3 text-sm">
-              <div><span className="text-slate-500">Name:</span> <span className="font-medium text-slate-900">{ticket.customer}</span></div>
-              <div><span className="text-slate-500">Email:</span> <span className="font-medium text-slate-900">{ticket.customerEmail}</span></div>
-              <div><span className="text-slate-500">Phone:</span> <span className="font-medium text-slate-900">{ticket.customerPhone}</span></div>
-              <div><span className="text-slate-500">Company:</span> <span className="font-medium text-slate-900">{ticket.company}</span></div>
+              <div><span className="text-theme-secondary">Name:</span> <span className="font-medium text-theme-primary">{ticket.customer}</span></div>
+              <div><span className="text-theme-secondary">Email:</span> <span className="font-medium text-theme-primary">{ticket.customerEmail}</span></div>
+              <div><span className="text-theme-secondary">Phone:</span> <span className="font-medium text-theme-primary">{ticket.customerPhone}</span></div>
+              <div><span className="text-theme-secondary">Company:</span> <span className="font-medium text-theme-primary">{ticket.company}</span></div>
             </div>
           </div>
 
           <div className="card p-5">
-            <h3 className="text-lg font-semibold text-slate-900">Internal notes</h3>
-            <p className="mt-2 text-sm text-slate-500">Private notes visible only to employees.</p>
+            <h3 className="text-lg font-semibold text-theme-primary">Internal notes</h3>
+            <p className="mt-2 text-sm text-theme-secondary">Private notes visible only to employees.</p>
             <div className="mt-4 space-y-3">
               {ticket.internalNotes.length > 0 ? ticket.internalNotes.map((note) => (
-                <div key={note} className="rounded-2xl bg-slate-50 p-3 text-sm leading-6 text-slate-700">{note}</div>
-              )) : <p className="text-sm text-slate-500">No internal notes yet.</p>}
+                <div key={note} className="rounded-2xl bg-theme-surface p-3 text-sm leading-6 text-theme-primary">{note}</div>
+              )) : <p className="text-sm text-theme-secondary">No internal notes yet.</p>}
             </div>
           </div>
 
           <div className="card p-5">
-            <h3 className="text-lg font-semibold text-slate-900">Attachments</h3>
+            <h3 className="text-lg font-semibold text-theme-primary">Attachments</h3>
             <div className="mt-4 space-y-3">
               {ticket.attachments.length > 0 ? ticket.attachments.map((item) => (
-                <div key={item} className="rounded-xl bg-slate-50 px-3 py-2 text-sm font-medium text-slate-700">{item}</div>
-              )) : <p className="text-sm text-slate-500">No customer attachments on this ticket.</p>}
+                <div key={item} className="rounded-xl bg-theme-surface px-3 py-2 text-sm font-medium text-theme-primary">{item}</div>
+              )) : <p className="text-sm text-theme-secondary">No customer attachments on this ticket.</p>}
             </div>
           </div>
 
           <div className="card p-5">
-            <h3 className="text-lg font-semibold text-slate-900">Resolution section</h3>
+            <h3 className="text-lg font-semibold text-theme-primary">Resolution section</h3>
             <div className="mt-4">
               {ticket.resolution ? (
-                <div className="rounded-2xl border border-line p-4 text-sm leading-6 text-slate-700">{ticket.resolution}</div>
+                <div className="rounded-2xl border border-theme p-4 text-sm leading-6 text-theme-primary">{ticket.resolution}</div>
               ) : (
-                <p className="text-sm text-slate-500">No final resolution has been recorded yet.</p>
+                <p className="text-sm text-theme-secondary">No final resolution has been recorded yet.</p>
               )}
             </div>
           </div>
@@ -138,7 +138,7 @@ export default function TicketDetailPage() {
       </div>
 
       <section className="card p-5">
-        <h3 className="text-lg font-semibold text-slate-900">Activity timeline</h3>
+        <h3 className="text-lg font-semibold text-theme-primary">Activity timeline</h3>
         <div className="mt-5">
           <SupportTimeline items={ticket.timeline} />
         </div>

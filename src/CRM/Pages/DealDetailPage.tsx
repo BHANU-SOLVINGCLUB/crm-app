@@ -120,12 +120,18 @@ function normalizeStage(stage: string): DealStageId {
   return (stage as DealStageId) ?? 'lead'
 }
 
-function formatDateLabel(value: string) {
-  return new Date(value).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })
+function formatDateLabel(value: string | undefined | null) {
+  if (!value) return 'N/A'
+  const date = new Date(value)
+  if (isNaN(date.getTime())) return 'Invalid Date'
+  return date.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })
 }
 
-function formatDateTimeLabel(value: string) {
-  return new Date(value).toLocaleString('en-IN', {
+function formatDateTimeLabel(value: string | undefined | null) {
+  if (!value) return 'N/A'
+  const date = new Date(value)
+  if (isNaN(date.getTime())) return 'Invalid Date'
+  return date.toLocaleString('en-IN', {
     day: 'numeric',
     month: 'short',
     year: 'numeric',
@@ -134,9 +140,11 @@ function formatDateTimeLabel(value: string) {
   })
 }
 
-function daysUntil(date: string) {
+function daysUntil(date: string | undefined | null) {
+  if (!date) return 0
   const current = new Date()
   const target = new Date(date)
+  if (isNaN(target.getTime())) return 0
   const diff = target.getTime() - current.getTime()
   return Math.ceil(diff / (1000 * 60 * 60 * 24))
 }
@@ -223,8 +231,8 @@ export default function DealDetailPage() {
     return (
       <div className="p-6 lg:p-8">
         <div className="card mx-auto max-w-xl p-8 text-center">
-          <h2 className="text-2xl font-bold text-slate-900">Deal not found</h2>
-          <p className="mt-3 text-sm text-slate-500">This deal link is invalid or no longer available.</p>
+          <h2 className="text-2xl font-bold text-theme-primary">Deal not found</h2>
+          <p className="mt-3 text-sm text-theme-secondary">This deal link is invalid or no longer available.</p>
           <button type="button" className="btn-primary mt-6" onClick={() => navigate('/sales')}>
             <ArrowLeft className="h-4 w-4" />
             Back to Sales Pipeline
@@ -784,8 +792,8 @@ function DealDetailWorkspace({ initialDeal }: { initialDeal: DealRecord }) {
               <div className="deal-upload-zone" onClick={() => fileInputRef.current?.click()}>
                 <UploadCloud className="h-6 w-6" />
                 <div>
-                  <div className="font-semibold text-slate-900">Drop files or click to upload</div>
-                  <p className="text-sm text-slate-500">PDF, DOCX, and image files only.</p>
+                  <div className="font-semibold text-theme-primary">Drop files or click to upload</div>
+                  <p className="text-sm text-theme-secondary">PDF, DOCX, and image files only.</p>
                 </div>
               </div>
               <div className="deal-attachment-list">
@@ -793,8 +801,8 @@ function DealDetailWorkspace({ initialDeal }: { initialDeal: DealRecord }) {
                   <div key={item.id} className="deal-attachment-card">
                     <div className="deal-attachment-icon">{getAttachmentIcon(item.type)}</div>
                     <div className="min-w-0 flex-1">
-                      <div className="truncate font-semibold text-slate-900">{item.fileName}</div>
-                      <div className="text-sm text-slate-500">{formatDateTimeLabel(item.uploadedAt)}</div>
+                      <div className="truncate font-semibold text-theme-primary">{item.fileName}</div>
+                      <div className="text-sm text-theme-secondary">{formatDateTimeLabel(item.uploadedAt)}</div>
                     </div>
                     <a
                       className="btn-ghost"

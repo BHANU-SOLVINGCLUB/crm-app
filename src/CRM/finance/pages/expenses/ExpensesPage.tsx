@@ -57,21 +57,21 @@ export default function ExpensesPage() {
         <section className="card p-5">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div className="relative w-full max-w-md">
-              <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+              <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-theme-muted" />
               <input value={query} onChange={(event) => setQuery(event.target.value)} className="input pl-9" placeholder="Search vendor, category, or department" />
             </div>
             <button className="btn-primary" onClick={() => setOpen(true)}>
               <PlusCircle className="h-4 w-4" /> Add expense
             </button>
           </div>
-          <div className="mt-5 overflow-hidden rounded-2xl border border-line">
+          <div className="mt-5 overflow-hidden rounded-2xl border border-theme">
             <FinanceTable columns={columns} rows={rows} getRowKey={(row) => row.id} />
           </div>
         </section>
 
         <section className="card p-5">
-          <h3 className="text-lg font-semibold text-slate-900">Expense categories</h3>
-          <p className="mt-1 text-sm text-slate-500">Department-wise spend visibility for recurring and discretionary cost buckets.</p>
+          <h3 className="text-lg font-semibold text-theme-primary">Expense categories</h3>
+          <p className="mt-1 text-sm text-theme-secondary">Department-wise spend visibility for recurring and discretionary cost buckets.</p>
           <div className="mt-4 h-[280px]">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={categoryData} layout="vertical" margin={{ left: 14, right: 10, top: 8, bottom: 8 }}>
@@ -85,9 +85,9 @@ export default function ExpensesPage() {
           </div>
           <div className="space-y-2">
             {rows.slice(0, 4).map((expense) => (
-              <div key={expense.id} className="flex items-center justify-between rounded-xl bg-slate-50 px-3 py-2 text-sm">
-                <span className="font-medium text-slate-700">{expense.vendor}</span>
-                <span className="font-semibold text-slate-900">{formatFinanceCurrency(expense.amount)}</span>
+              <div key={expense.id} className="flex items-center justify-between rounded-xl bg-theme-surface px-3 py-2 text-sm">
+                <span className="font-medium text-theme-primary">{expense.vendor}</span>
+                <span className="font-semibold text-theme-primary">{formatFinanceCurrency(expense.amount)}</span>
               </div>
             ))}
           </div>

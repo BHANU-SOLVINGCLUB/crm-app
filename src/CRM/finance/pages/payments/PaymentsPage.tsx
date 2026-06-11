@@ -36,7 +36,7 @@ export default function PaymentsPage() {
       <section className="card p-5">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div className="relative w-full max-w-md">
-            <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+            <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-theme-muted" />
             <input value={query} onChange={(event) => setQuery(event.target.value)} className="input pl-9" placeholder="Search payment, invoice, customer, or gateway" />
           </div>
           <div className="chip">Refunds, partials, and failed collections visible</div>

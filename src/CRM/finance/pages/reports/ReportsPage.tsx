@@ -11,21 +11,21 @@ export default function ReportsPage() {
         {reports.map((report) => (
           <section key={report.id} className="card p-5">
             <div className="flex items-start justify-between gap-3">
-              <div className="icon-tile bg-slate-100 text-slate-700">
+              <div className="icon-tile bg-theme-surface text-theme-primary">
                 <FileSpreadsheet className="h-5 w-5" />
               </div>
               <FinanceStatusBadge status={report.format} />
             </div>
-            <h3 className="mt-4 text-lg font-semibold text-slate-900">{report.name}</h3>
-            <p className="mt-1 text-sm text-slate-500">{report.category}</p>
+            <h3 className="mt-4 text-lg font-semibold text-theme-primary">{report.name}</h3>
+            <p className="mt-1 text-sm text-theme-secondary">{report.category}</p>
             <div className="mt-4 space-y-2 text-sm">
               <div className="flex items-center justify-between">
-                <span className="text-slate-500">Last run</span>
-                <span className="font-medium text-slate-900">{formatFinanceDate(report.lastRun)}</span>
+                <span className="text-theme-secondary">Last run</span>
+                <span className="font-medium text-theme-primary">{formatFinanceDate(report.lastRun)}</span>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-slate-500">Schedule</span>
-                <span className="font-medium text-slate-900">{report.schedule}</span>
+                <span className="text-theme-secondary">Schedule</span>
+                <span className="font-medium text-theme-primary">{report.schedule}</span>
               </div>
             </div>
             <div className="mt-5 flex gap-2">

@@ -13,8 +13,8 @@ export default function EscalationsPage() {
           <div className="flex flex-wrap items-start justify-between gap-4">
             <div>
               <div className="text-sm font-semibold text-brand-blue">{ticket.id}</div>
-              <h3 className="mt-2 text-xl font-semibold text-slate-900">{ticket.subject}</h3>
-              <p className="mt-2 text-sm text-slate-500">{ticket.company} • escalation type {ticket.escalationType ?? 'General'}</p>
+              <h3 className="mt-2 text-xl font-semibold text-theme-primary">{ticket.subject}</h3>
+              <p className="mt-2 text-sm text-theme-secondary">{ticket.company} • escalation type {ticket.escalationType ?? 'General'}</p>
             </div>
             <div className="flex items-center gap-2">
               <SupportPriorityBadge priority={ticket.priority} />
@@ -24,7 +24,7 @@ export default function EscalationsPage() {
           <div className="mt-5 grid gap-4 xl:grid-cols-[1fr_1.2fr]">
             <div className="space-y-3">
               <div className="rounded-2xl bg-rose-50 px-4 py-3 text-sm font-medium text-rose-700">SLA indicator: {ticket.slaTimer}</div>
-              <div className="rounded-2xl border border-line p-4 text-sm leading-6 text-slate-700">{ticket.summary}</div>
+              <div className="rounded-2xl border border-theme p-4 text-sm leading-6 text-theme-primary">{ticket.summary}</div>
             </div>
             <SupportTimeline items={ticket.timeline} />
           </div>

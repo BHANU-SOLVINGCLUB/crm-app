@@ -26,7 +26,7 @@ function initials(name: string) {
 }
 
 function SortIcon({ col, sortKey, sortDir }: { col: SortKey; sortKey: SortKey; sortDir: SortDir }) {
-  if (col !== sortKey) return <span className="ml-1 text-slate-600">↕</span>
+  if (col !== sortKey) return <span className="ml-1 text-theme-secondary">↕</span>
   return sortDir === 'asc'
     ? <ChevronUp className="h-3 w-3 ml-1 text-brand-purple inline" />
     : <ChevronDown className="h-3 w-3 ml-1 text-brand-purple inline" />
@@ -42,7 +42,7 @@ function StatusCell({ value, onChange }: { value: CustomerStatus; onChange: (v: 
         onClick={e => e.stopPropagation()}
       >
         {STATUS_OPTIONS.map(s => (
-          <option key={s} value={s} className="bg-white text-slate-800 font-normal">{s}</option>
+          <option key={s} value={s} className="bg-white text-theme-primary font-normal">{s}</option>
         ))}
       </select>
     </div>
@@ -116,9 +116,9 @@ export default function CustomerTable({
                 </td>
                 <td>
                   <div className="px-3 flex items-center gap-2 h-full">
-                    <span className="text-[12px] text-slate-500 truncate">{c.lastActivity}</span>
+                    <span className="text-[12px] text-theme-secondary truncate">{c.lastActivity}</span>
                     {c.lastActivityDays > 0 && (
-                      <span className={clsx('text-[10px] font-semibold ml-auto flex-shrink-0', c.lastActivityDays >= 14 ? 'text-red-400' : c.lastActivityDays >= 7 ? 'text-amber-400' : 'text-slate-500')}>
+                      <span className={clsx('text-[10px] font-semibold ml-auto flex-shrink-0', c.lastActivityDays >= 14 ? 'text-red-400' : c.lastActivityDays >= 7 ? 'text-amber-400' : 'text-theme-secondary')}>
                         {c.lastActivityDays}d ago
                       </span>
                     )}
@@ -143,7 +143,7 @@ export default function CustomerTable({
                   </div>
                 </td>
                 <td className="row-num" onClick={e => e.stopPropagation()}>
-                  <button onClick={() => onDeleteRow(c.id)} className="text-slate-600 hover:text-red-400 transition mx-auto block">
+                  <button onClick={() => onDeleteRow(c.id)} className="text-theme-secondary hover:text-red-400 transition mx-auto block">
                     <Trash2 className="h-3.5 w-3.5" />
                   </button>
                 </td>
@@ -152,7 +152,7 @@ export default function CustomerTable({
           })}
           {rows.length === 0 && (
             <tr>
-              <td colSpan={15} className="text-center py-16 text-slate-500">
+              <td colSpan={15} className="text-center py-16 text-theme-secondary">
                 <div className="text-4xl mb-3">🔍</div>
                 <div className="text-[14px]">No customers match your search or filter.</div>
               </td>

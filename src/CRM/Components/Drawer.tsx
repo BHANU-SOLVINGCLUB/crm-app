@@ -1,4 +1,4 @@
-﻿import React, { useEffect, useRef } from 'react'
+import React, { useEffect, useRef } from 'react'
 import { X } from 'lucide-react'
 import { createPortal } from 'react-dom'
 
@@ -43,17 +43,17 @@ export default function Drawer({ isOpen, onClose, title, subtitle, children, wid
       
       {/* Drawer Panel */}
       <div 
-        className={`relative w-full ${width} bg-panel border-l border-line shadow-2xl flex flex-col transform transition-transform duration-300 ease-in-out h-full`}
+        className={`relative w-full ${width} bg-panel border-l border-theme shadow-2xl flex flex-col transform transition-transform duration-300 ease-in-out h-full`}
       >
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-5 border-b border-line bg-panel2">
+        <div className="flex items-center justify-between px-6 py-5 border-b border-theme bg-panel2">
           <div>
             <h2 className="text-lg font-bold text-white">{title}</h2>
-            {subtitle && <p className="text-sm text-slate-400 mt-0.5">{subtitle}</p>}
+            {subtitle && <p className="text-sm text-theme-muted mt-0.5">{subtitle}</p>}
           </div>
           <button 
             onClick={onClose}
-            className="p-2 rounded-full hover:bg-white/10 text-slate-400 hover:text-white transition"
+            className="p-2 rounded-full hover:bg-white/10 text-theme-muted hover:text-white transition"
           >
             <X className="w-5 h-5" />
           </button>

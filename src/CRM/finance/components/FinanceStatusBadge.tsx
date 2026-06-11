@@ -5,7 +5,7 @@ interface Props {
 }
 
 const toneMap: Record<string, string> = {
-  Draft: 'bg-slate-100 text-slate-600',
+  Draft: 'bg-theme-surface text-theme-secondary',
   Sent: 'bg-sky-100 text-sky-700',
   Viewed: 'bg-violet-100 text-violet-700',
   Paid: 'bg-emerald-100 text-emerald-700',
@@ -14,8 +14,8 @@ const toneMap: Record<string, string> = {
   Pending: 'bg-amber-100 text-amber-700',
   Overdue: 'bg-rose-100 text-rose-700',
   Failed: 'bg-rose-100 text-rose-700',
-  Refunded: 'bg-slate-200 text-slate-700',
-  Cancelled: 'bg-slate-200 text-slate-700',
+  Refunded: 'bg-theme-surface text-theme-primary',
+  Cancelled: 'bg-theme-surface text-theme-primary',
   Approved: 'bg-emerald-100 text-emerald-700',
   Rejected: 'bg-rose-100 text-rose-700',
   Escalated: 'bg-orange-100 text-orange-700',
@@ -31,7 +31,7 @@ export default function FinanceStatusBadge({ status }: Props) {
     <span
       className={clsx(
         'inline-flex items-center rounded-full px-2.5 py-1 text-[11px] font-semibold',
-        toneMap[status] ?? 'bg-slate-100 text-slate-700'
+        toneMap[status] ?? 'bg-theme-surface text-theme-primary'
       )}
     >
       {status}

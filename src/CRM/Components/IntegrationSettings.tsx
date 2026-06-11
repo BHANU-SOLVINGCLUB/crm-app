@@ -26,8 +26,8 @@ export default function IntegrationSettings() {
   return (
     <div className="space-y-6">
       <div>
-        <h3 className="text-lg font-semibold text-slate-800">Integrations</h3>
-        <p className="text-sm text-slate-500 mt-1">Connect your CRM with the tools you use every day.</p>
+        <h3 className="text-lg font-semibold text-theme-primary">Integrations</h3>
+        <p className="text-sm text-theme-secondary mt-1">Connect your CRM with the tools you use every day.</p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
@@ -38,17 +38,17 @@ export default function IntegrationSettings() {
                 {app.icon}
               </div>
               <span className={`text-[11px] font-semibold px-2 py-0.5 rounded-full ${
-                app.connected ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-500'
+                app.connected ? 'bg-emerald-100 text-emerald-700' : 'bg-theme-surface text-theme-secondary'
               }`}>
                 {app.connected ? 'Connected' : 'Not Connected'}
               </span>
             </div>
-            <h4 className="font-semibold text-slate-800 text-[15px]">{app.name}</h4>
-            <p className="text-[13px] text-slate-500 mt-1 mb-5 flex-1">{app.desc}</p>
+            <h4 className="font-semibold text-theme-primary text-[15px]">{app.name}</h4>
+            <p className="text-[13px] text-theme-secondary mt-1 mb-5 flex-1">{app.desc}</p>
             <button
               className={`w-full py-2 rounded-lg text-[13px] font-semibold transition-colors ${
                 app.connected
-                  ? 'bg-slate-50 text-slate-600 border border-slate-200 hover:bg-slate-100'
+                  ? 'bg-theme-surface text-theme-secondary border border-slate-200 hover:bg-theme-surface'
                   : 'bg-brand-blue/10 text-brand-blue hover:bg-brand-blue/20'
               }`}
               onClick={() => toggleIntegration(app.name)}

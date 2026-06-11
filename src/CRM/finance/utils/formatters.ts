@@ -8,10 +8,13 @@ export function formatFinanceCount(value: number) {
   return formatNumber(value)
 }
 
-export function formatFinanceDate(value: string) {
+export function formatFinanceDate(value: string | undefined | null) {
+  if (!value) return 'N/A'
+  const date = new Date(value)
+  if (isNaN(date.getTime())) return 'Invalid Date'
   return new Intl.DateTimeFormat('en-IN', {
-    day: '2-digit',
+    day: 'numeric',
     month: 'short',
     year: 'numeric',
-  }).format(new Date(value))
+  }).format(date)
 }

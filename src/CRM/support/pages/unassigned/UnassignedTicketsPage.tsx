@@ -27,12 +27,12 @@ export default function UnassignedTicketsPage() {
           <SupportTable columns={columns} rows={rows} getRowKey={(row) => row.id} />
         </section>
         <section className="card p-5">
-          <div className="icon-tile bg-slate-100 text-slate-700">
+          <div className="icon-tile bg-theme-surface text-theme-primary">
             <Bot className="h-5 w-5" />
           </div>
-          <h3 className="mt-4 text-lg font-semibold text-slate-900">Auto-assignment placeholder</h3>
-          <p className="mt-2 text-sm leading-6 text-slate-600">Skill-based routing can prioritize technical specialists, enterprise account owners, and SLA-risk tickets automatically from this queue.</p>
-          <div className="mt-5 rounded-2xl border border-dashed border-line bg-slate-50 p-4 text-sm text-slate-600">
+          <h3 className="mt-4 text-lg font-semibold text-theme-primary">Auto-assignment placeholder</h3>
+          <p className="mt-2 text-sm leading-6 text-theme-secondary">Skill-based routing can prioritize technical specialists, enterprise account owners, and SLA-risk tickets automatically from this queue.</p>
+          <div className="mt-5 rounded-2xl border border-dashed border-theme bg-theme-surface p-4 text-sm text-theme-secondary">
             Suggested rule: route integration and security issues to senior specialists first, then balance medium-priority ticket load across available agents.
           </div>
         </section>

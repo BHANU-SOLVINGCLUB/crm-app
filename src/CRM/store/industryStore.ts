@@ -2,6 +2,8 @@ import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import { industries, type IndustryKey, getIndustry } from '../data/industries'
 import { leadsByIndustry, type LeadInteraction, type LeadRow } from '../data/leads'
+import { getLeadDisplayName } from './dashboardSelectors'
+import { pushCRMActivity } from './crmStore'
 
 interface IndustryState {
   current: IndustryKey
@@ -98,27 +100,53 @@ export const useIndustryStore = create<IndustryState>()(
       getLeads: (key) => {
         return getSafeRows(get().leadsOverrides, key)
       },
-      addLead: (key, row) =>
+      addLead: (key, row) => {
         set((s) => {
           const currentRows = getSafeRows(s.leadsOverrides, key)
           return { leadsOverrides: { ...s.leadsOverrides, [key]: withLeadIds(key, [...currentRows, row]) } }
-        }),
-      updateLead: (key, rowIndex, field, value) =>
+        })
+        pushCRMActivity({
+          action: `Lead added: ${getLeadDisplayName(row)}`,
+          user: 'Lead Capture',
+          module: 'Leads',
+          iconType: 'lead',
+          iconColor: '#10b981',
+        })
+      },
+      updateLead: (key, rowIndex, field, value) => {
+        const currentRows = getSafeRows(get().leadsOverrides, key)
+        const target = currentRows[rowIndex]
         set((s) => {
-          const currentRows = getSafeRows(s.leadsOverrides, key)
-          const nextRows = withLeadIds(key, currentRows.map((row, index) =>
-            index === rowIndex ? { ...row, [field]: value } : row
-          ))
+          const rows = getSafeRows(s.leadsOverrides, key)
+          const nextRows = withLeadIds(
+            key,
+            rows.map((row, index) => (index === rowIndex ? { ...row, [field]: value } : row))
+          )
           return { leadsOverrides: { ...s.leadsOverrides, [key]: nextRows } }
-        }),
-      deleteLeads: (key, rowIndexes) =>
+        })
+        if (field === 'status') {
+          const label = target ? getLeadDisplayName(target) : 'Lead'
+          pushCRMActivity({
+            action: `Lead status → ${value} (${label})`,
+            user: 'Lead Capture',
+            module: 'Leads',
+            iconType: 'lead',
+            iconColor: '#3b82f6',
+          })
+        }
+      },
+      deleteLeads: (key, rowIndexes) => {
+        const currentRows = getSafeRows(get().leadsOverrides, key)
+        const deletedNames = currentRows
+          .filter((_, index) => rowIndexes.has(index))
+          .map((row) => getLeadDisplayName(row))
         set((s) => {
-          const currentRows = getSafeRows(s.leadsOverrides, key)
-          const deletedLeadIds = currentRows
+          const rows = getSafeRows(s.leadsOverrides, key)
+          const deletedLeadIds = rows
             .filter((_, index) => rowIndexes.has(index))
             .map((row) => String(row.__leadId ?? ''))
             .filter(Boolean)
-          const nextRows = currentRows.filter((_, index) => !rowIndexes.has(index))
+          const nextRows = rows.filter((_, index) => !rowIndexes.has(index))
           const currentInteractions = { ...(s.leadInteractions[key] ?? {}) }
           deletedLeadIds.forEach((leadId) => {
             delete currentInteractions[leadId]
@@ -127,11 +155,22 @@ export const useIndustryStore = create<IndustryState>()(
             leadsOverrides: { ...s.leadsOverrides, [key]: nextRows },
             leadInteractions: { ...s.leadInteractions, [key]: currentInteractions },
           }
-        }),
+        })
+        pushCRMActivity({
+          action:
+            deletedNames.length === 1
+              ? `Lead removed: ${deletedNames[0]}`
+              : `${rowIndexes.size} lead(s) removed`,
+          user: 'Lead Capture',
+          module: 'Leads',
+          iconType: 'lead',
+          iconColor: '#f43f5e',
+        })
+      },
       setLeads: (key, rows) =>
         set((s) => ({ leadsOverrides: { ...s.leadsOverrides, [key]: withLeadIds(key, sanitizeLeadRows(rows)) } })),
       getLeadInteractions: (key, leadId) => getSafeInteractionList(get().leadInteractions, key, leadId),
-      addLeadInteraction: (key, leadId, interaction) =>
+      addLeadInteraction: (key, leadId, interaction) => {
         set((s) => {
           const currentIndustryInteractions = { ...(s.leadInteractions[key] ?? {}) }
           const existing = getSafeInteractionList(s.leadInteractions, key, leadId)
@@ -143,7 +182,15 @@ export const useIndustryStore = create<IndustryState>()(
               [key]: currentIndustryInteractions,
             },
           }
-        }),
+        })
+        pushCRMActivity({
+          action: `Lead interaction: ${interaction.interactionType} (${interaction.leadLabel})`,
+          user: 'Lead Capture',
+          module: 'Leads',
+          iconType: 'lead',
+          iconColor: '#06b6d4',
+        })
+      },
       resetLeads: (key) =>
         set((s) => {
           const next = { ...s.leadsOverrides }
