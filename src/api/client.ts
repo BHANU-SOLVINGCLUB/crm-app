@@ -68,7 +68,7 @@ export async function apiRequest<T>(
 
   if (!res.ok) {
     const err = (await res.json().catch(() => ({}))) as ApiError
-    throw { status: res.status, ...err }
+    throw {...err, status: res.status,  }
   }
 
   if (res.status === 204) return undefined as T
