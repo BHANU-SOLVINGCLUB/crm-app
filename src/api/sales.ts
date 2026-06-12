@@ -1,6 +1,6 @@
 import { apiRequest } from './client'
 import type { ApiDeal, PaginatedResponse } from './types'
-import type { Deal } from '../data/pipeline'
+import type { Deal } from '../CRM/data/pipeline'
 
 export function apiDealToUi(deal: ApiDeal): Deal {
   return {

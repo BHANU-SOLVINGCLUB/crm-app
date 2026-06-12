@@ -17,7 +17,7 @@ import {
   stockLabel,
 } from './data'
 import { pushAppToast } from '../../store/uiStore'
-import { pushCRMActivity } from '../../store/crmStore'
+import { pushCRMActivity } from '../store/crmStore'
 
 function logCatalogActivity(action: string, productName?: string) {
   pushCRMActivity({

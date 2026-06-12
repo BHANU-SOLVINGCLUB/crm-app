@@ -1,6 +1,6 @@
 import { apiRequest } from './client'
 import type { ApiLead, ApiLeadSchema, PaginatedResponse } from './types'
-import type { LeadRow } from '../data/leads'
+import type { LeadRow } from '../CRM/data/leads'
 
 export function apiLeadToRow(lead: ApiLead): LeadRow {
   return {

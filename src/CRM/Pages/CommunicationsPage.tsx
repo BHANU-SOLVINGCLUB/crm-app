@@ -1,5 +1,5 @@
 import { Mail, MessageCircle, PhoneCall, Send } from 'lucide-react'
-import PageHeader from '../components/common/PageHeader'
+import PageHeader from '../Components/PageHeader'
 import './EnterpriseSuite.css'
 
 const campaigns = [

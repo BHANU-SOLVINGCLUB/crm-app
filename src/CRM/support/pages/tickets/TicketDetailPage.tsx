@@ -8,7 +8,7 @@ import SupportStatusBadge from '../../components/SupportStatusBadge'
 import SupportTimeline from '../../components/SupportTimeline'
 import { tickets } from '../../services/mockSupportData'
 import { formatSupportDateTime } from '../../utils/formatters'
-import { pushAppToast } from '../../../../store/uiStore'
+import { pushAppToast } from '../../../store/uiStore'
 
 export default function TicketDetailPage() {
   const { ticketId } = useParams()

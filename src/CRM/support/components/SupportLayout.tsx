@@ -1,5 +1,5 @@
 import { Outlet } from 'react-router-dom'
-import PageHeader from '../../../components/common/PageHeader'
+import PageHeader from '../../Components/PageHeader'
 import SupportBreadcrumbs from './SupportBreadcrumbs'
 import SupportNav from './SupportNav'
 import SupportToolbar from './SupportToolbar'

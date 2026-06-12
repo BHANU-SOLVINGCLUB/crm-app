@@ -1,5 +1,5 @@
 import { CalendarDays, Clock3, Flag, ListChecks } from 'lucide-react'
-import PageHeader from '../components/common/PageHeader'
+import PageHeader from '../Components/PageHeader'
 import './EnterpriseSuite.css'
 
 const projects = [

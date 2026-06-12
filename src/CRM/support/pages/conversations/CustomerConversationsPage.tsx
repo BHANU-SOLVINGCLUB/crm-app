@@ -1,7 +1,7 @@
 import { BotMessageSquare, Send } from 'lucide-react'
 import { conversationThreads } from '../../services/mockSupportData'
 import { formatSupportDateTime } from '../../utils/formatters'
-import { pushAppToast } from '../../../../store/uiStore'
+import { pushAppToast } from '../../../store/uiStore'
 
 export default function CustomerConversationsPage() {
   return (

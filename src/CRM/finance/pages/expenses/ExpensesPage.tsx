@@ -15,7 +15,7 @@ import FinanceTable, { type FinanceTableColumn } from '../../components/FinanceT
 import { expenses } from '../../services/mockFinanceData'
 import type { ExpenseRecord } from '../../types'
 import { formatFinanceCurrency, formatFinanceDate } from '../../utils/formatters'
-import { pushAppToast } from '../../../../store/uiStore'
+import { pushAppToast } from '../../../store/uiStore'
 
 const categoryData = [
   { name: 'Salaries', amount: 1480000 },

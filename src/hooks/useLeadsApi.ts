@@ -10,8 +10,8 @@ import {
   resetSampleLeads,
   updateLeadApi,
 } from '../api/leads'
-import type { LeadColumn, LeadRow } from '../data/leads'
-import type { IndustryKey } from '../data/industries'
+import type { LeadColumn, LeadRow } from '../CRM/data/leads'
+import type { IndustryKey } from '../CRM/data/industries'
 import { usePlatformStore } from '../store/usePlatformStore'
 
 export interface LeadsSchema {
@@ -27,7 +27,7 @@ function getApiId(row: LeadRow): number | null {
 
 export function useLeadsApi(industryKey: IndustryKey) {
   const authUser = usePlatformStore((s) => s.authUser)
-  const orgId = authUser?.organization
+  const orgId = authUser?.organization?.id
   const enabled = Boolean(orgId)
 
   const [schema, setSchema] = useState<LeadsSchema | null>(null)

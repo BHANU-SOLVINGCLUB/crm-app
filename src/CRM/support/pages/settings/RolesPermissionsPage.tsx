@@ -1,4 +1,4 @@
-import { pushAppToast } from '../../../../store/uiStore'
+import { pushAppToast } from '../../../store/uiStore'
 
 const roles = [
   { name: 'Support Agent', permissions: ['View Tickets', 'Edit Tickets'] },

@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react'
-import PageHeader from '../../../components/common/PageHeader'
+import PageHeader from '../../Components/PageHeader'
 import CatalogEmptyState from '../components/CatalogEmptyState'
 import CatalogStatusBadge from '../components/CatalogStatusBadge'
 import { formatCatalogDate } from '../data'

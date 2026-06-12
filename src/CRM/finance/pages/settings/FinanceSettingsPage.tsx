@@ -1,5 +1,5 @@
 import { financeSettings } from '../../services/mockFinanceData'
-import { pushAppToast } from '../../../../store/uiStore'
+import { pushAppToast } from '../../../store/uiStore'
 
 export default function FinanceSettingsPage() {
   return (

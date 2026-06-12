@@ -10,7 +10,7 @@ import {
   XAxis,
   YAxis,
 } from 'recharts'
-import PageHeader from '../components/common/PageHeader'
+import PageHeader from '../Components/PageHeader'
 import './EnterpriseSuite.css'
 
 const revenueTrend = [

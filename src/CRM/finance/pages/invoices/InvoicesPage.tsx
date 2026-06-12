@@ -8,7 +8,7 @@ import FinanceTable, { type FinanceTableColumn } from '../../components/FinanceT
 import { invoices } from '../../services/mockFinanceData'
 import type { InvoiceRecord, InvoiceStatus } from '../../types'
 import { formatFinanceCurrency, formatFinanceDate } from '../../utils/formatters'
-import { pushAppToast } from '../../../../store/uiStore'
+import { pushAppToast } from '../../../store/uiStore'
 
 const tabs: Array<'All' | InvoiceStatus> = ['All', 'Draft', 'Sent', 'Viewed', 'Paid', 'Partial', 'Overdue', 'Cancelled']
 

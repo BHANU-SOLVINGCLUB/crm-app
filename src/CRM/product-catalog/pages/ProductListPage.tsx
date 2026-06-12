@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Archive, Download, Filter, Plus, RotateCcw, Search, Shield, Trash2 } from 'lucide-react'
-import PageHeader from '../../../components/common/PageHeader'
+import PageHeader from '../../Components/PageHeader'
 import CatalogEmptyState from '../components/CatalogEmptyState'
 import ProductTable from '../components/ProductTable'
 import { stockLabel } from '../data'

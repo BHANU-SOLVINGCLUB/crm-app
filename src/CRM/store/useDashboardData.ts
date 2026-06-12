@@ -1,7 +1,7 @@
 import { useMemo } from 'react'
 import { leadsByIndustry } from '../data/leads'
 import { normalizeIndustryKey } from '../data/industries'
-import { useProductCatalogStore } from '../CRM/product-catalog/store'
+import { useProductCatalogStore } from '../product-catalog/store'
 import { useCRMStore } from './crmStore'
 import {
   buildCustomerOverview,

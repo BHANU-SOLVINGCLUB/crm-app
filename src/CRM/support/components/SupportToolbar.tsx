@@ -1,7 +1,7 @@
 import { CalendarRange, Download, Filter } from 'lucide-react'
 import { useSupportStore } from '../store/useSupportStore'
 import type { SupportDateRange } from '../types'
-import { pushAppToast } from '../../../store/uiStore'
+import { pushAppToast } from '../../store/uiStore'
 
 const ranges: SupportDateRange[] = ['24h', '7d', '30d']
 

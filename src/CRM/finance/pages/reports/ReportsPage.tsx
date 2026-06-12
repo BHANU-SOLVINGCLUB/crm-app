@@ -2,7 +2,7 @@ import { Download, FileSpreadsheet } from 'lucide-react'
 import { reports } from '../../services/mockFinanceData'
 import FinanceStatusBadge from '../../components/FinanceStatusBadge'
 import { formatFinanceDate } from '../../utils/formatters'
-import { pushAppToast } from '../../../../store/uiStore'
+import { pushAppToast } from '../../../store/uiStore'
 
 export default function ReportsPage() {
   return (

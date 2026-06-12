@@ -5,7 +5,7 @@ import SupportPriorityBadge from '../../components/SupportPriorityBadge'
 import SupportTable, { type SupportTableColumn } from '../../components/SupportTable'
 import { tickets } from '../../services/mockSupportData'
 import type { TicketRecord } from '../../types'
-import { pushAppToast } from '../../../../store/uiStore'
+import { pushAppToast } from '../../../store/uiStore'
 
 export default function UnassignedTicketsPage() {
   const [selectedId, setSelectedId] = useState<string | null>(null)

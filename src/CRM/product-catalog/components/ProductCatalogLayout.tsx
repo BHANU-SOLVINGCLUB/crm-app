@@ -1,6 +1,6 @@
 import { Outlet, useNavigate } from 'react-router-dom'
 import { ArrowRight, BarChart3, Shield, Package2, AlertTriangle } from 'lucide-react'
-import PageHeader from '../../../components/common/PageHeader'
+import PageHeader from '../../Components/PageHeader'
 import { getInventoryValue, isInventoryTracked } from '../data'
 import { useProductCatalogStore } from '../store'
 import ProductCatalogNav from './ProductCatalogNav'

@@ -1,9 +1,9 @@
 import type { LeadRow, LeadSchema } from '../data/leads'
 import type { Customer } from '../data/customerData'
-import type { CatalogProduct } from '../CRM/product-catalog/data'
-import { isInventoryTracked, isLowStock } from '../CRM/product-catalog/data'
+import type { CatalogProduct } from '../product-catalog/data'
+import { isInventoryTracked, isLowStock } from '../product-catalog/data'
 import type { ActivityEntry, Order } from './crmStore'
-import { calculateOrderAnalytics, isPendingOrder, isRevenueOrder } from '../CRM/orders/orderData'
+import { calculateOrderAnalytics, isPendingOrder, isRevenueOrder } from '../orders/orderData'
 
 /** Lead statuses that represent a successful conversion */
 export const CONVERTED_STATUSES = new Set([

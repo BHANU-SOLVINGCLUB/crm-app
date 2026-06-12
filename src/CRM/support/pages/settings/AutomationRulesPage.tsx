@@ -1,4 +1,4 @@
-import { pushAppToast } from '../../../../store/uiStore'
+import { pushAppToast } from '../../../store/uiStore'
 
 const rules = [
   { name: 'Critical ticket created', action: 'Assign priority queue', status: 'Planned' },

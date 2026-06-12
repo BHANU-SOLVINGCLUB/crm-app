@@ -1,5 +1,5 @@
 import { GitBranch, Mail, Play, Plus, Workflow, Zap } from 'lucide-react'
-import PageHeader from '../components/common/PageHeader'
+import PageHeader from '../Components/PageHeader'
 import './EnterpriseSuite.css'
 
 const rules = [
