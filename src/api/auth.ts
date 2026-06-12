@@ -18,14 +18,23 @@ export function setStoredUser(user: AuthUser | null) {
   else localStorage.removeItem(USER_KEY)
 }
 
+// ── backend returns { user, tokens } — extract tokens correctly ──
+interface LoginResponse {
+  user: AuthUser
+  tokens: AuthTokens
+}
+
 export async function loginApi(email: string, password: string): Promise<AuthUser> {
-  const tokens = await apiRequest<AuthTokens>('/auth/login/', {
+  const res = await apiRequest<LoginResponse>('/auth/login/', {
     method: 'POST',
     body: JSON.stringify({ email, password }),
   })
-  setTokens(tokens)
 
-  const user = await apiRequest<AuthUser>('/auth/me/')
+  // save tokens correctly from res.tokens not the whole res
+  setTokens(res.tokens)
+
+  // save user with organization as object
+  const user = res.user
   setStoredUser(user)
   return user
 }
@@ -36,16 +45,22 @@ export async function registerApi(payload: {
   password: string
   role?: 'admin' | 'manager' | 'sales'
 }): Promise<AuthUser> {
-  await apiRequest('/auth/register/', {
+  const res = await apiRequest<LoginResponse>('/auth/register/', {
     method: 'POST',
     body: JSON.stringify({
-      email: payload.email,
+      email:    payload.email,
       username: payload.username,
       password: payload.password,
-      role: payload.role ?? 'admin',
+      role:     payload.role ?? 'admin',
     }),
   })
-  return loginApi(payload.email, payload.password)
+
+  // save tokens from register response directly
+  // no need to call loginApi again — register already returns tokens
+  setTokens(res.tokens)
+  const user = res.user
+  setStoredUser(user)
+  return user
 }
 
 export async function fetchMe(): Promise<AuthUser> {

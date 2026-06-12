@@ -17,7 +17,7 @@ export interface AuthUser {
   username: string
   role: UserRole
   phone?: string
-  organization: Organization
+  organization: number
 }
 
 export interface PaginatedResponse<T> {

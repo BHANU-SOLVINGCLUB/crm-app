@@ -112,7 +112,7 @@ function applyAuthUser(user: AuthUser) {
     authError: null,
     organization: {
       ...defaultOrganization,
-      companyName: user.organization.name,
+      companyName: defaultOrganization.companyName,
     },
     signupDraft: {
       ...defaultSignupDraft,
@@ -170,7 +170,7 @@ export const usePlatformStore = create<PlatformState>()(
             signupDraft: draft,
             organization: {
               ...defaultOrganization,
-              companyName: draft.companyName || user.organization.name,
+              companyName: draft.companyName || defaultOrganization.companyName,
               industry: draft.businessType,
             },
             authLoading: false,
