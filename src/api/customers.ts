@@ -1,6 +1,6 @@
 import { apiRequest } from './client'
 import type { ApiCustomer, PaginatedResponse } from './types'
-import type { Customer } from '../CRM/data/customerData'
+import type { Customer } from '../data/customerData'
 
 export function apiCustomerToUi(customer: ApiCustomer): Customer {
   return {

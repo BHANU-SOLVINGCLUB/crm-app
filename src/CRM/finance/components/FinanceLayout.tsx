@@ -1,5 +1,5 @@
 import { Outlet } from 'react-router-dom'
-import PageHeader from '../../Components/PageHeader'
+import PageHeader from '../../../components/common/PageHeader'
 import FinanceBreadcrumbs from './FinanceBreadcrumbs'
 import FinanceNav from './FinanceNav'
 import FinanceToolbar from './FinanceToolbar'

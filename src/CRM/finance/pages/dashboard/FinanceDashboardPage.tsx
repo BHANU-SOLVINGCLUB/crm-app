@@ -12,8 +12,8 @@ import {
   XAxis,
   YAxis,
 } from 'recharts'
-import StatCard from '../../../Components/StatCard'
-import SectionHeader from '../../../Components/SectionHeader'
+import StatCard from '../../../../components/cards/StatCard'
+import SectionHeader from '../../../../components/common/SectionHeader'
 import { collections, financeKpis, invoices, monthlyFinanceData, recentTransactions, revenueSegments } from '../../services/mockFinanceData'
 import { formatFinanceCurrency, formatFinanceDate } from '../../utils/formatters'
 import FinanceStatusBadge from '../../components/FinanceStatusBadge'

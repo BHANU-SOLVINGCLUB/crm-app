@@ -1,4 +1,4 @@
-import { pushAppToast } from '../../../store/uiStore'
+import { pushAppToast } from '../../../../store/uiStore'
 
 const alerts = [
   { name: 'New ticket alerts', destination: 'Queue owner + channel inbox', frequency: 'Immediate' },

@@ -1,5 +1,5 @@
-import type { Customer } from '../data/customerData'
-import { INITIAL_CUSTOMERS } from '../data/customerData'
+import type { Customer } from '../../data/customerData'
+import { INITIAL_CUSTOMERS } from '../../data/customerData'
 import { initialProducts, type CatalogProduct } from '../product-catalog/data'
 
 export type CommerceOrderStatus =

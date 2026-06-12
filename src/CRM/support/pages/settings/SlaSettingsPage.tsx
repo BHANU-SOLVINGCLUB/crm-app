@@ -1,4 +1,4 @@
-import { pushAppToast } from '../../../store/uiStore'
+import { pushAppToast } from '../../../../store/uiStore'
 
 const policies = [
   { priority: 'Critical', response: '15 min', resolution: '4 hr', escalation: 'After 60% consumed' },

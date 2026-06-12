@@ -2,7 +2,7 @@ import { CalendarRange, Download, Filter } from 'lucide-react'
 import type { ReactNode } from 'react'
 import { useFinanceStore } from '../store/useFinanceStore'
 import type { FinanceDateRange } from '../types'
-import { pushAppToast } from '../../store/uiStore'
+import { pushAppToast } from '../../../store/uiStore'
 
 interface Props {
   primaryAction?: ReactNode

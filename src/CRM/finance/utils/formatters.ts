@@ -1,4 +1,4 @@
-import { formatINR, formatNumber } from '../../lib/format'
+import { formatINR, formatNumber } from '../../../lib/format'
 
 export function formatFinanceCurrency(value: number, compact = false) {
   return formatINR(value, compact ? { compact: true } : {})

@@ -1,4 +1,4 @@
-import { pushAppToast } from '../../../store/uiStore'
+import { pushAppToast } from '../../../../store/uiStore'
 
 const numbering = ['SUP-1001', 'SUP-1002', 'SUP-1003']
 const categories = ['Technical', 'Billing', 'Product', 'General']

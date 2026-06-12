@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { ArrowLeft, ImagePlus, Save, Sparkles, Upload } from 'lucide-react'
-import PageHeader from '../../Components/PageHeader'
+import PageHeader from '../../../components/common/PageHeader'
 import CatalogEmptyState from '../components/CatalogEmptyState'
 import CatalogStatusBadge from '../components/CatalogStatusBadge'
 import { parseTags, useProductCatalogStore } from '../store'

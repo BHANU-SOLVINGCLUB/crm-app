@@ -4,7 +4,7 @@ import FinanceEmptyState from '../../components/FinanceEmptyState'
 import FinanceStatusBadge from '../../components/FinanceStatusBadge'
 import { invoices } from '../../services/mockFinanceData'
 import { formatFinanceCurrency, formatFinanceDate } from '../../utils/formatters'
-import { pushAppToast } from '../../../store/uiStore'
+import { pushAppToast } from '../../../../store/uiStore'
 
 export default function InvoiceDetailPage() {
   const { invoiceId } = useParams()

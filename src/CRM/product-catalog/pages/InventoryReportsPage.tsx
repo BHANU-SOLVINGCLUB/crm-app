@@ -8,7 +8,7 @@ import {
   Search,
   TriangleAlert,
 } from 'lucide-react'
-import PageHeader from '../../Components/PageHeader'
+import PageHeader from '../../../components/common/PageHeader'
 import { formatCatalogCurrency, formatCatalogDateTime, getAvailableStock, getInventoryValue, isInventoryTracked } from '../data'
 import { useProductCatalogStore } from '../store'
 

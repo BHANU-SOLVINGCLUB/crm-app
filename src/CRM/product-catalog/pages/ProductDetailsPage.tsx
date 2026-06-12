@@ -17,7 +17,7 @@ import {
   SlidersHorizontal,
   Tag,
 } from 'lucide-react'
-import PageHeader from '../../Components/PageHeader'
+import PageHeader from '../../../components/common/PageHeader'
 import CatalogEmptyState from '../components/CatalogEmptyState'
 import CatalogStatusBadge, { stockTone } from '../components/CatalogStatusBadge'
 import {

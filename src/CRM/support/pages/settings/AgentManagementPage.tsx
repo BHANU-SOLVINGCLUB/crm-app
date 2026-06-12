@@ -1,5 +1,5 @@
 import { agentSummaries } from '../../services/mockSupportData'
-import { pushAppToast } from '../../../store/uiStore'
+import { pushAppToast } from '../../../../store/uiStore'
 
 export default function AgentManagementPage() {
   return (

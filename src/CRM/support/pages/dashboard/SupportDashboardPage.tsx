@@ -12,8 +12,8 @@ import {
   YAxis,
 } from 'recharts'
 import { Link } from 'react-router-dom'
-import SectionHeader from '../../../Components/SectionHeader'
-import StatCard from '../../../Components/StatCard'
+import SectionHeader from '../../../../components/common/SectionHeader'
+import StatCard from '../../../../components/cards/StatCard'
 import SupportPriorityBadge from '../../components/SupportPriorityBadge'
 import SupportStatusBadge from '../../components/SupportStatusBadge'
 import { categoryBreakdown, priorityBreakdown, resolutionTrend, supportKpis, tickets } from '../../services/mockSupportData'

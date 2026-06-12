@@ -6,7 +6,7 @@ import {
   initialCommerceOrders,
   type CommerceOrder,
   type CommerceOrderStatus,
-} from '../orders/orderData'
+} from '../CRM/orders/orderData'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 

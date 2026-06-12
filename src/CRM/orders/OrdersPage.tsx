@@ -27,10 +27,10 @@ import {
   XAxis,
   YAxis,
 } from 'recharts'
-import PageHeader from '../Components/PageHeader'
-import { useCRMStore, type Order } from '../store/crmStore'
+import PageHeader from '../../components/common/PageHeader'
+import { useCRMStore, type Order } from '../../store/crmStore'
 import { useProductCatalogStore } from '../product-catalog/store'
-import { formatINR, formatNumber } from '../lib/format'
+import { formatINR, formatNumber } from '../../lib/format'
 import { Badge } from '../../components/ui/badge'
 import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/card'
 import {

@@ -1,5 +1,5 @@
 import { Boxes, Layers3, Package, Tags } from 'lucide-react'
-import PageHeader from '../Components/PageHeader'
+import PageHeader from '../components/common/PageHeader'
 import './EnterpriseSuite.css'
 
 const products = [

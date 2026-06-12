@@ -1,4 +1,4 @@
-import { pushAppToast } from '../../../store/uiStore'
+import { pushAppToast } from '../../../../store/uiStore'
 
 const teams = [
   { name: 'Technical Support', queues: 'Authentication, API, Integrations', coverage: '24x7', lead: 'Rohan Shah' },
