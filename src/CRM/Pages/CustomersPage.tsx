@@ -114,7 +114,7 @@ export default function CustomersPage() {
   const navigate = useNavigate()
   const location = useLocation()
   const authUser = usePlatformStore((s) => s.authUser)
-  const orgId = authUser?.organization?.id
+  const orgId = authUser?.organization
   const industryKey = useIndustryStore((s) => s.current)
 
   // ── Centralised store ──────────────────────────────────────────────────────

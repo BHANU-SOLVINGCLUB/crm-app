@@ -4,35 +4,39 @@ import type { Deal } from '../CRM/data/pipeline'
 
 export function apiDealToUi(deal: ApiDeal): Deal {
   return {
-    id: deal.id,
-    company: deal.company,
-    contact: deal.contact,
-    email: deal.email,
-    value: deal.value,
-    stage: deal.stage,
-    prob: deal.prob,
-    priority: deal.priority,
-    closeDate: deal.close_date,
-    sector: deal.sector,
-    lastAct: deal.last_act,
-    lastActDays: deal.last_act_days,
+    id:           deal.id,
+    company:      deal.company,
+    contact:      deal.contact,
+    email:        deal.email,
+    // Django DecimalField returns a string from the API ("450000.00"),
+    // not a number — wrapping in Number() fixes the NaN pipeline value bug
+    value:        Number(deal.value),
+    stage:        deal.stage,
+    prob:         deal.prob,
+    priority:     deal.priority,
+    closeDate:    deal.close_date ?? '',
+    sector:       deal.sector,
+    lastAct:      deal.last_act,
+    lastActDays:  deal.last_act_days,
+    assignedTo:   deal.assigned_to,
   }
 }
 
 export function uiDealToApi(deal: Partial<Deal> & { industry?: string }) {
   return {
-    industry: deal.industry,
-    company: deal.company,
-    contact: deal.contact,
-    email: deal.email,
-    value: deal.value,
-    stage: deal.stage,
-    prob: deal.prob,
-    priority: deal.priority,
-    close_date: deal.closeDate,
-    sector: deal.sector,
-    last_act: deal.lastAct,
+    industry:      deal.industry,
+    company:       deal.company,
+    contact:       deal.contact,
+    email:         deal.email,
+    value:         deal.value,
+    stage:         deal.stage,
+    prob:          deal.prob,
+    priority:      deal.priority,
+    close_date:    deal.closeDate || null,
+    sector:        deal.sector,
+    last_act:      deal.lastAct,
     last_act_days: deal.lastActDays,
+    assigned_to:   deal.assignedTo ?? null,
   }
 }
 

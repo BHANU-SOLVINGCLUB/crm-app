@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, type ReactNode } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import {
   Plus, Search, Trash2, Download, Filter,
@@ -19,6 +19,8 @@ import {
   uiDealToApi,
   updateDealApi,
 } from '../../api/sales'
+import { fetchOrgUsers } from '../../api/leads'
+import type { OrgUser } from '../../api/leads'
 import { usePlatformStore } from '../../store/usePlatformStore'
 import { useIndustryStore } from '../store/industryStore'
 
@@ -26,11 +28,6 @@ let nextId = 11
 
 const STAGE_OPTIONS = STAGES.map((stage) => stage.id)
 const PRIORITY_OPTIONS = ['high', 'medium', 'low']
-const DEAL_OWNERS = ['Aarav Shah', 'Priya Menon', 'Neha Rao', 'Karan Malhotra']
-
-function getDealOwner(deal: Deal) {
-  return DEAL_OWNERS[deal.id % DEAL_OWNERS.length]
-}
 
 function hasOverdueFollowUp(deal: Deal) {
   return deal.lastActDays >= 5
@@ -112,11 +109,13 @@ export default function SalesPipeline() {
   const navigate = useNavigate()
   const location = useLocation()
   const authUser = usePlatformStore((s) => s.authUser)
-  const orgId = authUser?.organization?.id
+  const orgId = authUser?.organization
   const industryKey = useIndustryStore((s) => s.current)
+
   const [deals, setDeals] = useState<Deal[]>(INITIAL_DEALS)
   const [apiReady, setApiReady] = useState(false)
   const [wonDeals, setWonDeals] = useState<Deal[]>([])
+  const [orgUsers, setOrgUsers] = useState<OrgUser[]>([])
   const [search, setSearch] = useState('')
   const [filters, setFilters] = useState({
     stage: 'All',
@@ -134,23 +133,38 @@ export default function SalesPipeline() {
   const [toast, setToast] = useState<{ msg: string; green?: boolean } | null>(null)
   const [draggedDealId, setDraggedDealId] = useState<number | null>(null)
 
+  // ── debounce timer refs — one per deal id ──────────────────────────
+  // Keeps a map of pending PATCH timers so each deal's timer is
+  // independent — editing deal A doesn't cancel deal B's pending save.
+  const debounceTimers = useRef<Record<number, ReturnType<typeof setTimeout>>>({})
+
   const showToast = (msg: string, green?: boolean) => {
     setToast({ msg, green })
     setTimeout(() => setToast(null), 3000)
   }
 
+  // ── load deals and org users ───────────────────────────────────────
   useEffect(() => {
-    if (!orgId) {
-      setApiReady(false)
-      return
-    }
+    if (!orgId) { setApiReady(false); return }
+
     fetchDeals(orgId, { industry: industryKey })
       .then((items) => {
         setDeals(items.map(apiDealToUi))
         setApiReady(true)
       })
       .catch(() => showToast('Could not load deals from backend'))
+
+    fetchOrgUsers(orgId)
+      .then(setOrgUsers)
+      .catch(() => setOrgUsers([]))
   }, [orgId, industryKey])
+
+  // ── helper: get display name for a deal's owner ───────────────────
+  const getOwnerName = useCallback((deal: Deal): string => {
+    if (!deal.assignedTo) return 'Unassigned'
+    const user = orgUsers.find((u) => u.id === deal.assignedTo)
+    return user ? (user.username || user.email) : 'Unassigned'
+  }, [orgUsers])
 
   const filtered = useMemo(() => {
     const query = search.trim().toLowerCase()
@@ -159,7 +173,7 @@ export default function SalesPipeline() {
       .filter(({ deal }) => {
         if (filters.stage !== 'All' && deal.stage !== filters.stage) return false
         if (filters.priority !== 'All' && deal.priority !== filters.priority) return false
-        if (filters.owner !== 'All' && getDealOwner(deal) !== filters.owner) return false
+        if (filters.owner !== 'All' && getOwnerName(deal) !== filters.owner) return false
         if (filters.closeDate !== 'All' && getCloseDateBucket(deal.closeDate) !== filters.closeDate) return false
         if (filters.value !== 'All' && getValueBucket(deal.value) !== filters.value) return false
         if (filters.overdueOnly && !hasOverdueFollowUp(deal)) return false
@@ -172,17 +186,17 @@ export default function SalesPipeline() {
           deal.sector,
           deal.priority,
           deal.stage,
-          getDealOwner(deal),
+          getOwnerName(deal),
         ].some((value) => String(value).toLowerCase().includes(query))
       })
-  }, [deals, filters, search])
+  }, [deals, filters, search, getOwnerName])
 
   const stats = useMemo(() => {
-    const totalVal = deals.reduce((sum, deal) => sum + deal.value, 0)
-    const weighted = deals.reduce((sum, deal) => sum + deal.value * deal.prob / 100, 0)
-    const wonVal = wonDeals.reduce((sum, deal) => sum + deal.value, 0) + 540000
-    const overdue = deals.filter(hasOverdueFollowUp).length
-    return { totalVal, weighted, wonVal, wonCount: wonDeals.length + 1, overdue }
+    const totalVal  = deals.reduce((sum, deal) => sum + deal.value, 0)
+    const weighted  = deals.reduce((sum, deal) => sum + deal.value * deal.prob / 100, 0)
+    const wonVal    = wonDeals.reduce((sum, deal) => sum + deal.value, 0)
+    const overdue   = deals.filter(hasOverdueFollowUp).length
+    return { totalVal, weighted, wonVal, wonCount: wonDeals.length, overdue }
   }, [deals, wonDeals])
 
   const stageColumns = useMemo(() => (
@@ -192,16 +206,24 @@ export default function SalesPipeline() {
     }))
   ), [filtered])
 
+  // ── debounced updateCell ────────────────────────────────────────────
+  // Updates local state immediately (instant UI feedback), then waits
+  // 500ms of inactivity before sending the PATCH — so typing a company
+  // name fires only one request when you stop, not one per character.
   const updateCell = (dealId: number, key: keyof Deal, value: string | number) => {
     setDeals((current) => current.map((deal) => (deal.id === dealId ? { ...deal, [key]: value } : deal)))
     if (panelDeal?.id === dealId) setPanelDeal((current) => current ? { ...current, [key]: value } : null)
-    if (apiReady && orgId) {
-      const deal = deals.find((item) => item.id === dealId)
-      if (deal) {
-        const payload = uiDealToApi({ ...deal, [key]: value, industry: industryKey })
-        void updateDealApi(orgId, dealId, payload)
-      }
-    }
+
+    if (!apiReady || !orgId) return
+
+    clearTimeout(debounceTimers.current[dealId])
+    debounceTimers.current[dealId] = setTimeout(() => {
+      const latestDeal = deals.find((d) => d.id === dealId)
+      if (!latestDeal) return
+      const updated = { ...latestDeal, [key]: value }
+      void updateDealApi(orgId, dealId, uiDealToApi({ ...updated, industry: industryKey }))
+        .catch(() => showToast('Failed to save change'))
+    }, 500)
   }
 
   const addRow = () => {
@@ -218,6 +240,7 @@ export default function SalesPipeline() {
       sector: '',
       lastAct: 'Deal created',
       lastActDays: 0,
+      assignedTo: null,
     }
     if (apiReady && orgId) {
       void createDeal(orgId, uiDealToApi({ ...newDeal, industry: industryKey }))
@@ -287,12 +310,14 @@ export default function SalesPipeline() {
             if (panelDeal?.id === editDeal.id) setPanelDeal(mapped)
             showToast(`${data.company} updated!`, true)
           })
+          .catch(() => showToast('Failed to update deal'))
       } else {
         void createDeal(orgId, uiDealToApi({ ...data, industry: industryKey, lastAct: 'Deal created', lastActDays: 0 }))
           .then((created) => {
             setDeals((current) => [apiDealToUi(created), ...current])
             showToast(`${data.company} added!`, true)
           })
+          .catch(() => showToast('Failed to create deal'))
       }
       setModalOpen(false)
       setEditDeal(null)
@@ -311,30 +336,47 @@ export default function SalesPipeline() {
     setEditDeal(null)
   }
 
+  // ── Mark Won / Lost — now persists to backend ──────────────────────
   const handleMarkOutcome = (type: 'won' | 'lost') => {
     if (!panelDeal) return
     const deal = panelDeal
-    setOutcome({ type, deal })
-    if (type === 'won') setWonDeals((current) => [...current, deal])
+    const newStage = type === 'won' ? 'closed' : 'lost'
+
+    // update local state immediately
+    if (type === 'won') {
+      setWonDeals((current) => [...current, { ...deal, stage: 'closed' }])
+    }
     setDeals((current) => current.filter((item) => item.id !== deal.id))
     setPanelDeal(null)
+    setOutcome({ type, deal })
+
+    // persist to backend
+    if (apiReady && orgId) {
+      void updateDealApi(orgId, deal.id, uiDealToApi({
+        ...deal,
+        stage: newStage,
+        industry: industryKey,
+        lastAct: type === 'won' ? 'Deal closed — Won' : 'Deal closed — Lost',
+        lastActDays: 0,
+      })).catch(() => showToast('Outcome saved locally but failed to sync'))
+    }
   }
 
   const openDealDetail = (deal: Deal) => {
     navigate(`/sales/${deal.id}`, {
       state: {
         deal: {
-          id: deal.id,
-          companyName: deal.company,
+          id:            deal.id,
+          companyName:   deal.company,
           contactPerson: deal.contact,
-          contactEmail: deal.email,
-          dealValue: deal.value,
-          stage: deal.stage === 'closed' ? 'closed_won' : deal.stage,
-          priority: deal.priority,
-          probability: deal.prob,
-          closeDate: deal.closeDate,
-          owner: getDealOwner(deal),
-          dealName: `${deal.company} ${deal.sector} Expansion`,
+          contactEmail:  deal.email,
+          dealValue:     deal.value,
+          stage:         deal.stage === 'closed' ? 'closed_won' : deal.stage,
+          priority:      deal.priority,
+          probability:   deal.prob,
+          closeDate:     deal.closeDate,
+          owner:         getOwnerName(deal),
+          dealName:      `${deal.company} ${deal.sector} Expansion`,
         },
       },
     })
@@ -350,7 +392,7 @@ export default function SalesPipeline() {
       deal.priority,
       `${deal.prob}%`,
       deal.closeDate,
-      getDealOwner(deal),
+      getOwnerName(deal),
       hasOverdueFollowUp(deal) ? 'Yes' : 'No',
     ])
 
@@ -371,27 +413,41 @@ export default function SalesPipeline() {
     showToast('Pipeline exported', true)
   }
 
+  // ── Kanban drag-and-drop — now persists to backend ──────────────────
   const moveDealToStage = (dealId: number, stageId: string) => {
-    const probability = STAGES.find((stage) => stage.id === stageId)?.id === 'closed'
-      ? 100
-      : STAGES.find((stage) => stage.id === stageId)?.id === 'negotiation'
-        ? 85
-        : STAGES.find((stage) => stage.id === stageId)?.id === 'proposal'
-          ? 70
-          : STAGES.find((stage) => stage.id === stageId)?.id === 'qualified'
-            ? 55
-            : STAGES.find((stage) => stage.id === stageId)?.id === 'contacted'
-              ? 35
-              : 20
+    const probability =
+      stageId === 'closed'      ? 100 :
+      stageId === 'negotiation' ? 85  :
+      stageId === 'proposal'    ? 70  :
+      stageId === 'qualified'   ? 55  :
+      stageId === 'contacted'   ? 35  : 20
+
+    const stageName = STAGES.find((s) => s.id === stageId)?.name ?? stageId
 
     setDeals((current) => current.map((deal) => (
       deal.id === dealId
-        ? { ...deal, stage: stageId, prob: probability, lastAct: `Moved to ${STAGES.find((stage) => stage.id === stageId)?.name ?? stageId}`, lastActDays: 0 }
+        ? { ...deal, stage: stageId, prob: probability, lastAct: `Moved to ${stageName}`, lastActDays: 0 }
         : deal
     )))
     if (panelDeal?.id === dealId) {
       setPanelDeal((current) => current ? { ...current, stage: stageId, prob: probability } : null)
     }
+
+    // persist to backend
+    if (apiReady && orgId) {
+      const deal = deals.find((d) => d.id === dealId)
+      if (deal) {
+        void updateDealApi(orgId, dealId, uiDealToApi({
+          ...deal,
+          stage: stageId,
+          prob: probability,
+          industry: industryKey,
+          lastAct: `Moved to ${stageName}`,
+          lastActDays: 0,
+        })).catch(() => showToast('Stage move saved locally but failed to sync'))
+      }
+    }
+
     showToast('Deal moved to new stage', true)
   }
 
@@ -414,11 +470,11 @@ export default function SalesPipeline() {
       />
 
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-5 mb-6">
-        <MiniStat label="Active Deals" value={String(deals.length)} hint="across all stages" accent="#3b82f6" icon={<Filter className="h-4 w-4" />} />
-        <MiniStat label="Pipeline Value" value={fmt(stats.totalVal)} hint="if all deals close" accent="#10b981" icon={<CircleDollarSign className="h-4 w-4" />} />
-        <MiniStat label="Weighted Forecast" value={fmt(Math.round(stats.weighted))} hint="probability-adjusted" accent="#f59e0b" icon={<TrendingUp className="h-4 w-4" />} />
-        <MiniStat label="Closed Won" value={String(stats.wonCount)} hint={`${fmt(stats.wonVal)} earned`} accent="#16a34a" icon={<Trophy className="h-4 w-4" />} />
-        <MiniStat label="Overdue Follow-ups" value={String(stats.overdue)} hint="needs attention" accent="#dc2626" icon={<Trash2 className="h-4 w-4" />} />
+        <MiniStat label="Active Deals"       value={String(deals.length)}           hint="across all stages"      accent="#3b82f6" icon={<Filter className="h-4 w-4" />} />
+        <MiniStat label="Pipeline Value"     value={fmt(stats.totalVal)}            hint="if all deals close"     accent="#10b981" icon={<CircleDollarSign className="h-4 w-4" />} />
+        <MiniStat label="Weighted Forecast"  value={fmt(Math.round(stats.weighted))} hint="probability-adjusted"  accent="#f59e0b" icon={<TrendingUp className="h-4 w-4" />} />
+        <MiniStat label="Closed Won"         value={String(stats.wonCount)}         hint={`${fmt(stats.wonVal)} earned`} accent="#16a34a" icon={<Trophy className="h-4 w-4" />} />
+        <MiniStat label="Overdue Follow-ups" value={String(stats.overdue)}          hint="needs attention"        accent="#dc2626" icon={<Trash2 className="h-4 w-4" />} />
       </div>
 
       <div className="card p-4 mb-4">
@@ -455,9 +511,15 @@ export default function SalesPipeline() {
             <option value="medium">Medium</option>
             <option value="low">Low</option>
           </select>
+          {/* Deal Owner filter — now uses real org users instead of hardcoded names */}
           <select className="input" value={filters.owner} onChange={(event) => setFilters((current) => ({ ...current, owner: event.target.value }))}>
             <option value="All">Deal Owner</option>
-            {DEAL_OWNERS.map((owner) => <option key={owner} value={owner}>{owner}</option>)}
+            <option value="Unassigned">Unassigned</option>
+            {orgUsers.map((user) => (
+              <option key={user.id} value={user.username || user.email}>
+                {user.username || user.email}
+              </option>
+            ))}
           </select>
           <select className="input" value={filters.closeDate} onChange={(event) => setFilters((current) => ({ ...current, closeDate: event.target.value }))}>
             <option value="All">Close Date</option>
@@ -544,8 +606,8 @@ export default function SalesPipeline() {
                       {deal.company || 'Open deal'}
                     </button>
                   </td>
-                  <td><input value={deal.contact} onChange={(event) => updateCell(deal.id, 'contact', event.target.value)} className="cell-input" placeholder="Contact" /></td>
-                  <td><input value={deal.email} onChange={(event) => updateCell(deal.id, 'email', event.target.value)} className="cell-input" type="email" placeholder="email@co.in" /></td>
+                  <td><input value={deal.contact}   onChange={(event) => updateCell(deal.id, 'contact', event.target.value)}   className="cell-input" placeholder="Contact" /></td>
+                  <td><input value={deal.email}     onChange={(event) => updateCell(deal.id, 'email', event.target.value)}     className="cell-input" type="email" placeholder="email@co.in" /></td>
                   <td>
                     <input
                       type="number"
@@ -555,9 +617,9 @@ export default function SalesPipeline() {
                       placeholder="0"
                     />
                   </td>
-                  <td><StageCell value={deal.stage} onChange={(value) => updateCell(deal.id, 'stage', value)} /></td>
+                  <td><StageCell    value={deal.stage}    onChange={(value) => updateCell(deal.id, 'stage',    value)} /></td>
                   <td><PriorityCell value={deal.priority} onChange={(value) => updateCell(deal.id, 'priority', value)} /></td>
-                  <td><ProbCell value={deal.prob} onChange={(value) => updateCell(deal.id, 'prob', value)} /></td>
+                  <td><ProbCell     value={deal.prob}     onChange={(value) => updateCell(deal.id, 'prob',     value)} /></td>
                   <td>
                     <input
                       type="date"
@@ -567,9 +629,11 @@ export default function SalesPipeline() {
                     />
                   </td>
                   <td>
-                    <div className="px-3 text-[12px] text-theme-muted font-medium h-full flex items-center">{getDealOwner(deal)}</div>
+                    <div className="px-3 text-[12px] text-theme-muted font-medium h-full flex items-center">
+                      {getOwnerName(deal)}
+                    </div>
                   </td>
-                  <td><input value={deal.sector} onChange={(event) => updateCell(deal.id, 'sector', event.target.value)} className="cell-input" placeholder="Sector" /></td>
+                  <td><input value={deal.sector}  onChange={(event) => updateCell(deal.id, 'sector', event.target.value)}  className="cell-input" placeholder="Sector" /></td>
                   <td>
                     <div className="px-3 flex items-center gap-1 h-full">
                       <span className="text-[11px] text-theme-muted truncate">{deal.lastAct}</span>
@@ -582,7 +646,19 @@ export default function SalesPipeline() {
                   </td>
                   <td className="row-num" onClick={(event) => event.stopPropagation()}>
                     <button
-                      onClick={() => { setDeals((current) => current.filter((item) => item.id !== deal.id)); showToast('Deal removed') }}
+                      onClick={() => {
+                        if (apiReady && orgId) {
+                          void deleteDealApi(orgId, deal.id)
+                            .then(() => {
+                              setDeals((current) => current.filter((item) => item.id !== deal.id))
+                              showToast('Deal removed')
+                            })
+                            .catch(() => showToast('Failed to delete deal'))
+                        } else {
+                          setDeals((current) => current.filter((item) => item.id !== deal.id))
+                          showToast('Deal removed')
+                        }
+                      }}
                       className="text-theme-secondary hover:text-red-400 transition"
                     >
                       <Trash2 className="h-3.5 w-3.5 mx-auto" />

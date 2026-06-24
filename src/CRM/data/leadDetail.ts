@@ -1,7 +1,15 @@
 import type { IndustryKey } from './industries'
 import type { LeadInteraction, LeadRow } from './leads'
 
-export type LeadStage = 'New' | 'Contacted' | 'Booked' | 'Visited' | 'Closed/Won'
+// ── LeadStage is now a plain string ─────────────────────────────────
+// It used to be a fixed 5-value union ('New' | 'Contacted' | 'Booked' |
+// 'Visited' | 'Closed/Won') that only matched healthcare's old status
+// names. Real backend statuses differ per industry (e.g. real estate
+// has "Site Visit"/"Negotiation"/"Token Paid"/"Lost", SaaS has
+// "Trial"/"Activated"/"Won"/"Lost", etc.) so this is now just `string`
+// and the Profile tab / Pipeline Tracker render schema.statuses directly.
+export type LeadStage = string
+
 export type TimelineActivityType =
   | 'whatsapp'
   | 'sms'
@@ -74,39 +82,13 @@ export interface LeadDetailSeed {
   documents: LeadDocumentItem[]
 }
 
-const stageMap: Record<string, LeadStage> = {
-  new: 'New',
-  inquiry: 'New',
-  contacted: 'Contacted',
-  followup: 'Contacted',
-  'follow-up': 'Contacted',
-  discovery: 'Contacted',
-  trial: 'Contacted',
-  counselled: 'Contacted',
-  quoted: 'Contacted',
-  booked: 'Booked',
-  confirmed: 'Booked',
-  proposal: 'Booked',
-  'site visit': 'Booked',
-  'admission offered': 'Booked',
-  negotiation: 'Booked',
-  visited: 'Visited',
-  'checked-in': 'Visited',
-  admitted: 'Visited',
-  activated: 'Visited',
-  shipped: 'Visited',
-  closed: 'Closed/Won',
-  'closed/won': 'Closed/Won',
-  won: 'Closed/Won',
-  signed: 'Closed/Won',
-  ordered: 'Closed/Won',
-  'po received': 'Closed/Won',
-}
-
-function toStage(status: string): LeadStage {
-  const normalized = status.trim().toLowerCase()
-  return stageMap[normalized] ?? 'New'
-}
+// toStage() has been removed. It used to force every real backend status
+// (e.g. "Won", "Site Visit", "Negotiation", "Admitted", "Token Paid") into
+// one of only 5 healthcare-shaped buckets, and silently defaulted anything
+// it didn't recognize — including "Lost", "Spam", "Duplicate", "Cancelled",
+// "Dropped", "Returned" — back to "New". That's why Lost/dead-end statuses
+// never displayed correctly. The real backend status string is now used
+// as-is everywhere.
 
 function getName(row: LeadRow) {
   return String(row.name ?? row.student ?? row.guest ?? row.contact ?? row.company ?? row.parent ?? 'Lead')
@@ -160,7 +142,8 @@ export function getLeadDetailSeed(
   const fullName = getName(row)
   const leadSource = String(row.source ?? row.channel ?? 'Website')
   const assignedStaff = 'Nisha Verma'
-  const status = toStage(String(row.status ?? 'New'))
+  // use the real backend status string directly — no more squashing into 5 buckets
+  const status = String(row.status ?? 'New')
   const preferredDate = getDate(row)
 
   const interactionTimeline = leadInteractions.map<LeadTimelineItem>((interaction, index) => ({
