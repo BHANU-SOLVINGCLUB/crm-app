@@ -740,6 +740,7 @@ export default function SalesPipeline() {
 
       <SidePanel
         deal={panelDeal}
+        orgId={orgId ?? null}
         onClose={() => setPanelDeal(null)}
         onMoveStage={(id, stage) => {
           updateCell(id, 'stage', stage)

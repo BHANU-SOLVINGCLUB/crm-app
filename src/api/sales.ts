@@ -76,3 +76,42 @@ export async function updateDealApi(
 export async function deleteDealApi(orgId: number, dealId: number): Promise<void> {
   await apiRequest(`/orgs/${orgId}/sales/deals/${dealId}/`, { method: 'DELETE' })
 }
+
+// GET single deal by id
+export async function fetchDealById(orgId: number, dealId: number): Promise<ApiDeal> {
+  return apiRequest<ApiDeal>(`/orgs/${orgId}/sales/deals/${dealId}/`)
+}
+
+// ── Deal Activities ───────────────────────────────────────────────────
+
+export interface ApiDealActivity {
+  id: number
+  type: string
+  notes: string
+  performed_by: number | null
+  performed_by_name: string | null
+  created_at: string
+}
+
+// GET /api/orgs/{org_id}/sales/deals/{deal_id}/activities/
+export async function fetchDealActivities(
+  orgId: number,
+  dealId: number
+): Promise<ApiDealActivity[]> {
+  const data = await apiRequest<{ results: ApiDealActivity[] } | ApiDealActivity[]>(
+    `/orgs/${orgId}/sales/deals/${dealId}/activities/`
+  )
+  return Array.isArray(data) ? data : data.results
+}
+
+// POST /api/orgs/{org_id}/sales/deals/{deal_id}/activities/
+export async function createDealActivity(
+  orgId: number,
+  dealId: number,
+  payload: { type: string; notes: string }
+): Promise<ApiDealActivity> {
+  return apiRequest<ApiDealActivity>(
+    `/orgs/${orgId}/sales/deals/${dealId}/activities/`,
+    { method: 'POST', body: JSON.stringify(payload) }
+  )
+}
